@@ -5,9 +5,11 @@
 # This file incorporates age difference into the Adida et al Afrobarometer
 # dataset (Rounds 3 and 4)
 
-library(tidyverse)
-library(haven)
-library(lubridate)
+library(groundhog)
+
+append_age_differences <- c("haven", "lubridate", "tidyverse")
+
+groundhog.library(append_age_differences, "2021-11-01")
 
 # "Not in" convenience operator
 '%!in%' <- function(x,y)!('%in%'(x,y))

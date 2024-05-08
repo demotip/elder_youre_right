@@ -1,6 +1,8 @@
-library(haven)
-library(labelled)
-library(tidyverse)
+library(groundhog)
+clean_and_combine_data <- c("haven", "labelled", "tidyverse")
+
+groundhog.library(clean_and_combine_data, "2021-11-01")
+
 source("scripts/variable_labels.R")
 
 # "Not in" convenience operator

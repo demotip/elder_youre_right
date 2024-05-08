@@ -9,8 +9,8 @@ groundhog.library(plot_30_yr, "2021-11-01")
 font_add_google("Roboto", "Roboto")
 showtext_auto()
 
-source("variable_labels.R")
-age_diff_models <- readRDS("data_clean/age_diff_models_30_yr.rds")
+source("scripts/variable_labels.R")
+age_diff_models <- readRDS("data_clean/age_diff_models.rds")
 
 # Clean up coefficient estimates df ----
 

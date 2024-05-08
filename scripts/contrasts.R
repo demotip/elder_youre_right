@@ -263,4 +263,4 @@ age_diff_models_original_scale <- outcome_age_combos %>%
 rbind(age_diff_models, age_diff_models_original_scale) %>%
   mutate(country = "All") %>%
   bind_rows(age_diff_models_mauritius) %>%
-  saveRDS(., "data_clean/age_diff_models_30_yr.rds")
+  saveRDS(., "data_clean/age_diff_models.rds")
