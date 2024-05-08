@@ -2,11 +2,10 @@
 
 # LOAD NECESSARY PACKAGES ----
 
-library(tidyverse)
-library(glue)
-library(lfe)
-library(lmtest)
-library(sandwich)
+library(groundhog)
+
+constrasts <- c("glue", "lfe", "tidyverse", "lmtest", "sandwich")
+groundhog.library(constrasts, "2021-11-01")
 
 # READ IN DATA AND FUNCTIONS ----
 
@@ -33,6 +32,7 @@ afpr$z_ec_conditions_self <- as.vector(scale(6 - afpr$ec_conditions_self))
 # To define contrasts, our coarsened age variables need to be factors
 # with pre-defined levels. 
 if(!is.factor(afpr$coarsened_age_10) |
+   !is.factor(afpr$coarsened_age_30) |
    !is.factor(afpr$coarsened_age_35) |
    !is.factor(afpr$coarsened_age_40) ) {
   stop("Make sure that coarsened age variables are factors.")
@@ -64,15 +64,17 @@ form_base  <- paste0("{outcome_variable} ~ {age_variable} + ",
 outcome_age_combos_3_4 <- 
   expand.grid(outcome = c(pro_outcomes, pol_outcomes, stat_outcomes, eth_outcomes), 
               age_variable = c("coarsened_age_10", 
+                               "coarsened_age_30", 
                                "coarsened_age_35", 
                                "coarsened_age_40"),
-                stringsAsFactors = FALSE) %>%
+              stringsAsFactors = FALSE) %>%
   mutate(round = "3 and 4")
 
 # Youth outcomes apply only to Round 7
 outcome_age_combos_7 <- 
   expand.grid(outcome = youth_outcomes, 
               age_variable = c("coarsened_age_10", 
+                               "coarsened_age_30",
                                "coarsened_age_35", 
                                "coarsened_age_40"),
               stringsAsFactors = FALSE) %>%
@@ -92,86 +94,23 @@ age_diff_models <-
     if(round == "7") include_round <- 7 else include_round <- 3:4
     
     outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
-         
-         # Run model
-         if(age_variable == "coarsened_age_10") {
-           # Note: no contrasts for 10-year age difference model
-           # because we only have one baseline of interest: same age.
-           model <- felm(as.formula(glue(form_base)), data = afpr[afpr$round %in% include_round, ])
-         } else {
-           
-           contrasts_matrix_list <- list(x = contrasts_matrix)
-           names(contrasts_matrix_list) <- age_variable
-           
-           model <- felm(as.formula(glue(form_base)), data = afpr[afpr$round %in% include_round, ], 
-                         contrasts = contrasts_matrix_list)
-         }
-         
-         n_obs <- nrow(model$response)
-         
-         model <- model %>%
-           # Extract estimates with robust standard errors
-           summary(., robust = TRUE) %>%
-           "$"(coefficients) %>%
-           # Clean up into tidy dataframe
-           data.frame() %>%
-           rownames_to_column() %>%
-           "names<-"(c("term", "estimate", "std.error", "statistic", "p.value")) %>%
-           # Get just coefficients of interest
-           filter(grepl("older_int|younger_int|Interviewer|noncoeth", term)) %>%
-           # Add identifiers for outcome and age difference variable
-           mutate(n_obs = n_obs,
-                  outcome_variable = outcome_variable,
-                  age_variable = age_variable) %>%
-           # Calculate upper and lower confidence bands
-           mutate(upper = estimate + qnorm(.975)*std.error,
-                  lower = estimate - qnorm(.975)*std.error)
-         
-         return(model)
-       }) %>%
-  # Create variable labels column
-  mutate(label = plyr::mapvalues(outcome_variable, 
-                                 paste0("z_", variable_labels$var),
-                                 as.character(variable_labels$label))) %>%
-  # Make sure factor levels are correct for order of variables in plots
-  mutate(label = factor(label, levels = variable_labels$label)) %>%
-  # Create variable grouping column (i.e. stat_outcomes, pol_outcomes, etc.)
-  mutate(group = plyr::mapvalues(outcome_variable, 
-                                 paste0("z_", variable_labels$var),
-                                 variable_labels$group))
-
-# RUN ROUND 7 MODELS FOR JUST MAURITIUS, AND BOTH ----
-
-outcome_age_combos_mauritius <-
-  expand.grid(outcome = youth_outcomes,
-              age_variable = c("coarsened_age_10",
-                               "coarsened_age_35",
-                               "coarsened_age_40"),
-              stringsAsFactors = FALSE)
-
-table(afpr$country)
-
-age_diff_models_mauritius <-
-  pmap_dfr(outcome_age_combos_mauritius, function(outcome, age_variable) {
-
-    outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
-
+    
     # Run model
     if(age_variable == "coarsened_age_10") {
       # Note: no contrasts for 10-year age difference model
       # because we only have one baseline of interest: same age.
-      model <- felm(as.formula(glue(form_base)), data = afpr[afpr$round == 7 & afpr$country %in% "Mauritius", ])
+      model <- felm(as.formula(glue(form_base)), data = afpr[afpr$round %in% include_round, ])
     } else {
-
+      
       contrasts_matrix_list <- list(x = contrasts_matrix)
       names(contrasts_matrix_list) <- age_variable
-
-      model <- felm(as.formula(glue(form_base)), data = afpr[afpr$round == 7 & afpr$country %in% "Mauritius", ],
+      
+      model <- felm(as.formula(glue(form_base)), data = afpr[afpr$round %in% include_round, ], 
                     contrasts = contrasts_matrix_list)
     }
-
+    
     n_obs <- nrow(model$response)
-
+    
     model <- model %>%
       # Extract estimates with robust standard errors
       summary(., robust = TRUE) %>%
@@ -189,7 +128,71 @@ age_diff_models_mauritius <-
       # Calculate upper and lower confidence bands
       mutate(upper = estimate + qnorm(.975)*std.error,
              lower = estimate - qnorm(.975)*std.error)
+    
+    return(model)
+  }) %>%
+  # Create variable labels column
+  mutate(label = plyr::mapvalues(outcome_variable, 
+                                 paste0("z_", variable_labels$var),
+                                 as.character(variable_labels$label))) %>%
+  # Make sure factor levels are correct for order of variables in plots
+  mutate(label = factor(label, levels = variable_labels$label)) %>%
+  # Create variable grouping column (i.e. stat_outcomes, pol_outcomes, etc.)
+  mutate(group = plyr::mapvalues(outcome_variable, 
+                                 paste0("z_", variable_labels$var),
+                                 variable_labels$group))
 
+# RUN ROUND 7 MODELS FOR JUST MAURITIUS, AND BOTH ----
+
+outcome_age_combos_mauritius <-
+  expand.grid(outcome = youth_outcomes,
+              age_variable = c("coarsened_age_10",
+                               "coarsened_age_30",
+                               "coarsened_age_35",
+                               "coarsened_age_40"),
+              stringsAsFactors = FALSE)
+
+table(afpr$country)
+
+age_diff_models_mauritius <-
+  pmap_dfr(outcome_age_combos_mauritius, function(outcome, age_variable) {
+    
+    outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
+    
+    # Run model
+    if(age_variable == "coarsened_age_10") {
+      # Note: no contrasts for 10-year age difference model
+      # because we only have one baseline of interest: same age.
+      model <- felm(as.formula(glue(form_base)), data = afpr[afpr$round == 7 & afpr$country %in% "Mauritius", ])
+    } else {
+      
+      contrasts_matrix_list <- list(x = contrasts_matrix)
+      names(contrasts_matrix_list) <- age_variable
+      
+      model <- felm(as.formula(glue(form_base)), data = afpr[afpr$round == 7 & afpr$country %in% "Mauritius", ],
+                    contrasts = contrasts_matrix_list)
+    }
+    
+    n_obs <- nrow(model$response)
+    
+    model <- model %>%
+      # Extract estimates with robust standard errors
+      summary(., robust = TRUE) %>%
+      "$"(coefficients) %>%
+      # Clean up into tidy dataframe
+      data.frame() %>%
+      rownames_to_column() %>%
+      "names<-"(c("term", "estimate", "std.error", "statistic", "p.value")) %>%
+      # Get just coefficients of interest
+      filter(grepl("older_int|younger_int|Interviewer|noncoeth", term)) %>%
+      # Add identifiers for outcome and age difference variable
+      mutate(n_obs = n_obs,
+             outcome_variable = outcome_variable,
+             age_variable = age_variable) %>%
+      # Calculate upper and lower confidence bands
+      mutate(upper = estimate + qnorm(.975)*std.error,
+             lower = estimate - qnorm(.975)*std.error)
+    
     return(model)
   }) %>%
   # Create variable labels column
@@ -260,5 +263,4 @@ age_diff_models_original_scale <- outcome_age_combos %>%
 rbind(age_diff_models, age_diff_models_original_scale) %>%
   mutate(country = "All") %>%
   bind_rows(age_diff_models_mauritius) %>%
-  saveRDS(., "data_clean/age_diff_models.rds")
-``
+  saveRDS(., "data_clean/age_diff_models_30_yr.rds")
