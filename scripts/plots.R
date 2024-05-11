@@ -135,7 +135,7 @@ plot10yr_align <- align_plots(plotlist = plot10yr,
 
 
 map2(names(plot10yr_align), c(5, 8, 5, 3.5, 5), function(x, y) {
-  save_plot(paste0("figs/", x, "10yr.png"),
+  save_plot(paste0("figs/", x, "10yr.pdf"),
             plot10yr_align[[x]],
             base_width = 7,
             base_height = y)
@@ -189,7 +189,7 @@ plot30yr_align <- align_plots(plotlist = plot30yr,
   lapply(ggdraw)
 
 map2(names(plot30yr_align), c(5, 8, 5, 5, 5), function(x, y) {
-  save_plot(paste0("figs/", x, "30yr.png"),
+  save_plot(paste0("figs/", x, "30yr.pdf"),
             plot30yr_align[[x]],
             base_width = 7,
             base_height = y)
@@ -243,7 +243,7 @@ plot35yr_align <- align_plots(plotlist = plot35yr,
   lapply(ggdraw)
 
 map2(names(plot35yr_align), c(5, 8, 5, 5, 5), function(x, y) {
-  save_plot(paste0("figs/", x, "35yr.png"),
+  save_plot(paste0("figs/", x, "35yr.pdf"),
             plot35yr_align[[x]],
             base_width = 7,
             base_height = y)
@@ -297,7 +297,7 @@ plot40yr_align <- align_plots(plotlist = plot40yr,
   lapply(ggdraw)
 
 map2(names(plot40yr_align), c(5, 8, 5, 3.5, 5), function(x, y) {
-  save_plot(paste0("figs/", x, "40yr.png"),
+  save_plot(paste0("figs/", x, "40yr.pdf"),
             plot40yr_align[[x]],
             base_width = 7,
             base_height = y)
