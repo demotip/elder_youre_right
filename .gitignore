@@ -1,11 +1,9 @@
 # History files
 .Rhistory
 .Rapp.history
-
 # Session Data files
 .RData
 .DS_Store
-
 #directories
 /data_raw/*
 /data_clean/*
@@ -14,4 +12,4 @@
 /old_code/*
 /graveyard/*
 .dta
-
+plots_original.R
