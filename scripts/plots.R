@@ -78,8 +78,6 @@ plotfun <- function(data) {
     ylab("\nEstimated effect (in SDs) of non-coethnic interviewer \nand age difference, with 95% confidence intervals")
 }
 
-
-
 # 10 year age difference plots ----
 
 plot10yr <- lapply(unique(age_diff_models$group), function(x) {
@@ -138,9 +136,7 @@ map2(names(plot10yr_align), c(5, 8, 5, 3.5, 5), function(x, y) {
   save_plot(paste0("figs/", x, "10yr.pdf"),
             plot10yr_align[[x]],
             base_width = 7,
-            base_height = y)
-})
-
+            base_height = y) })
 
 # 30 year age difference plots ----
 
@@ -295,6 +291,8 @@ plot40yr_align <- align_plots(plotlist = plot40yr,
                               align = "hv",
                               axis = "tblr") %>%
   lapply(ggdraw)
+
+plot40yr_align
 
 map2(names(plot40yr_align), c(5, 8, 5, 3.5, 5), function(x, y) {
   save_plot(paste0("figs/", x, "40yr.pdf"),
