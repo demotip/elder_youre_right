@@ -27,8 +27,31 @@ afpr$z_ec_conditions_self <- as.vector(scale(6 - afpr$ec_conditions_self))
 # the model that includes the full set of controls."
 # This being the case, we will only use the 4th model here.
 
+# DEFINE CONTRASTS ----
+
+# To define contrasts, our coarsened age variables need to be factors
+# with pre-defined levels. 
+if(!is.factor(afpr$coarsened_age_10) |
+   !is.factor(afpr$coarsened_age_30) |
+   !is.factor(afpr$coarsened_age_35) |
+   !is.factor(afpr$coarsened_age_40) ) {
+  stop("Make sure that coarsened age variables are factors.")
+}
+
+# SETTING UP CONTRASTS ----
+
+# contrast() function takes the inverse of the matrix of
+# desired contrast weights. So although there are only
+# two contrasts we care about, we need a square matrix,
+# so we specify three contrasts, plus a row 1/4s for the constant
+not_relevant <- c(0 , 0, 1,  0)
+younger_int <- c( -1,   1,  0,    0 )
+older_int <- c( 0,   0,   -1,   1 )
+# Get inverse of contrast matrix and remove constant
+contrasts_matrix <- solve(rbind(constant=1/4, not_relevant, younger_int, older_int))[ , -1]
+
 # DEFINE MODEL FORMULA ----
-# Removed  "| region + tribe + enumeth" from end of formula - should try to add it back again
+# Removed  "| region + tribe + enumeth" from end of formula
 
 form_base_factor  <- paste0("as.factor({outcome_variable})",
                             " ~ {age_variable} + ",
@@ -58,6 +81,9 @@ outcome_age_combos_7 <-
                                "coarsened_age_40")
   ) %>%
   mutate(round = "7") # redefine as numeric
+
+# Combine for full set of outcome-coarsened_age-round combinations
+outcome_age_combos <- bind_rows(outcome_age_combos_3_4, outcome_age_combos_7)
 
 age_diff_models <- 
   pmap_dfr(outcome_age_combos, function(outcome, age_variable, round) {
@@ -462,4 +488,3 @@ rbind(age_diff_models, age_diff_models_original_scale) %>%
   mutate(country = "All") %>%
   bind_rows(age_diff_models_mauritius) %>%
   saveRDS(., "data_clean/age_diff_models_logistic.rds")
-
