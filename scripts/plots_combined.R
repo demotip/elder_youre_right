@@ -127,7 +127,7 @@ map2(names(plots_integrated_align), c(5, 8, 5, 3.5, 5), function(x, y) {
 })
 
 age_diff_models %>%
-  filter(age_variable != "coarsened_age_35_originalscale") %>%
-  dplyr::select(term, label, estimate, std.error, upper, lower) %>%
+  filter(!(term %in% c("coarsened_age_30", "coarsened_age_35", "coarsened_age_40"))) %>%
+  dplyr::select(term, label, estimate, std.error, upper, lower, p.value) %>%
   mutate_if(is.numeric, list(~round(., 4))) %>%
   write.csv("tables/effects_all_cutoffs.csv")
