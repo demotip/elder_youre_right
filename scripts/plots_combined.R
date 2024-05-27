@@ -17,9 +17,9 @@ age_diff_models <- age_diff_models %>%
   # Clean up coefficient estimate names
   mutate(age =
            case_when(grepl("old", ignore.case = T, term) ~
-                       "Interviewer older (relative to younger)",
+                       "Older interviewer for younger respondents",
                      grepl("young", ignore.case = T, term) ~
-                       "Interviewer younger (relative to older)",
+                       "Younger interviewer for older respondents",
                      TRUE ~ term))
 
 names <- c(coarsened_age_30 = "30 cutoff",
@@ -131,3 +131,5 @@ age_diff_models %>%
   dplyr::select(term, label, estimate, std.error, upper, lower, p.value) %>%
   mutate_if(is.numeric, list(~round(., 4))) %>%
   write.csv("tables/effects_all_cutoffs.csv")
+
+
