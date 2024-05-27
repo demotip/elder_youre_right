@@ -21,69 +21,29 @@ age_diff_models_table_grouped <- age_diff_models_table %>%
                        "Interviewer younger (relative to older)",
                      TRUE ~ term))
 
-stat_age_diff <- age_diff_models_table %>%
-  filter(group == "stat_outcomes") %>%
-  filter(term != "noncoeth") %>%
-  filter(age_variable != "coarsened_age_10") %>%
-  filter(age_variable != "coarsened_age_35_originalscale") %>%
-  mutate(sig_pos = ifelse(p.value < 0.05, ifelse(upper < 0, "-", "+"), "null")) %>% 
-  pivot_wider(names_from = term,
-              values_from = sig_pos, outcome_variable)
+unique(age_diff_models$group[!(age_diff_models$group == "youth_outcomes")])
 
-stat_age_diff$no_pos <- rowSums(stat_age_diff == "+")
-stat_age_diff$no_neg <- rowSums(stat_age_diff == "-")
-stat_age_diff$no_sig <- stat_age_diff$no_neg + stat_age_diff$no_pos
-# 
-# stat_age_diff <- stat_age_diff %>%
-#   select(-no_pos, -no_neg)
+sig_tables <- lapply(unique(age_diff_models$group[!(age_diff_models$group == "youth_outcomes")]), function(x) {
+  
+  table <- age_diff_models_table %>%
+    filter(group == x) %>%
+    filter(term != "noncoeth") %>%
+    filter(age_variable != "coarsened_age_10") %>%
+    filter(age_variable != "coarsened_age_35_originalscale") %>%
+    mutate(sig_pos = ifelse(p.value < 0.05, ifelse(upper < 0, "-", "+"), "null")) %>% 
+    pivot_wider(names_from = term,
+                values_from = sig_pos, outcome_variable) 
+  
+  table$no_pos <- rowSums(table == "+")
+  table$no_neg <- rowSums(table == "-")
+  table$no_sig <- table$no_pos + table$no_neg
+  
+  return(table) }) %>%
+  "names<-"(unique(age_diff_models$group[!(age_diff_models$group == "youth_outcomes")]))
 
-eth_age_diff <- age_diff_models_table %>%
-  filter(group == "eth_outcomes") %>%
-  filter(term != "noncoeth") %>%
-  filter(age_variable != "coarsened_age_10") %>%
-  filter(age_variable != "coarsened_age_35_originalscale") %>%
-  mutate(sig_pos = ifelse(p.value < 0.05, ifelse(upper < 0, "-", "+"), "null")) %>% 
-  pivot_wider(names_from = term,
-              values_from = sig_pos, outcome_variable)
+sig_tables
 
-eth_age_diff$no_pos <- rowSums(eth_age_diff == "+")
-eth_age_diff$no_neg <- rowSums(eth_age_diff == "-")
-eth_age_diff$no_sig <- eth_age_diff$no_neg + eth_age_diff$no_pos
-# 
-# eth_age_diff <- eth_age_diff %>%
-#   select(-no_pos, -no_neg)
-
-pol_age_diff <- age_diff_models_table %>%
-  filter(group == "pol_outcomes") %>%
-  filter(term != "noncoeth") %>%
-  filter(age_variable != "coarsened_age_10") %>%
-  filter(age_variable != "coarsened_age_35_originalscale") %>%
-  mutate(sig_pos = ifelse(p.value < 0.05, ifelse(upper < 0, "-", "+"), "null")) %>% 
-  pivot_wider(names_from = term,
-              values_from = sig_pos, outcome_variable)
-
-pol_age_diff$no_pos <- rowSums(pol_age_diff == "+")
-pol_age_diff$no_neg <- rowSums(pol_age_diff == "-")
-# pol_age_diff$no_sig <- pol_age_diff$no_neg + pol_age_diff$no_pos
-# 
-# pol_age_diff <- pol_age_diff %>%
-#   select(-no_pos, -no_neg)
-
-pro_age_diff <- age_diff_models_table %>%
-  filter(group == "pro_outcomes") %>%
-  filter(term != "noncoeth") %>%
-  filter(age_variable != "coarsened_age_10") %>%
-  filter(age_variable != "coarsened_age_35_originalscale") %>%
-  mutate(sig_pos = ifelse(p.value < 0.05, ifelse(upper < 0, "-", "+"), "null")) %>% 
-  pivot_wider(names_from = term,
-              values_from = sig_pos, outcome_variable)
-
-pro_age_diff$no_pos <- rowSums(pro_age_diff == "+")
-pro_age_diff$no_neg <- rowSums(pro_age_diff == "-")
-pro_age_diff$no_sig <- pro_age_diff$no_neg + pro_age_diff$no_pos
-# 
-# pro_age_diff <- pro_age_diff %>%
-#   select(-no_pos, -no_neg)
+## Youth outcomes needs to be done separately bc it's weird
 
 youth_age_diff_mauritius <- age_diff_models_table %>%
   filter(group == "youth_outcomes") %>%
@@ -123,6 +83,7 @@ youth_age_diff <- cbind(youth_age_diff_all_wider, youth_age_diff_mauritius_wider
 youth_age_diff$no_pos <- rowSums(youth_age_diff == "+")
 youth_age_diff$no_neg <- rowSums(youth_age_diff == "-")
 youth_age_diff$no_sig <- youth_age_diff$no_neg + youth_age_diff$no_pos
-#
-# youth_age_diff <- youth_age_diff %>%
-#   select(-no_pos, -no_neg)
+
+sig_tables$youth_outcomes <- youth_age_diff
+
+sig_tables

@@ -1,7 +1,7 @@
 library(groundhog)
 
 plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts",
-                "glue", "lfe", "tidyverse", "lmtest", "sandwich", "modelsummary")
+                "glue", "lfe", "tidyverse", "lmtest", "sandwich", "modelsummary", "labelled")
 groundhog.library(plot_30_yr, "2021-11-01")
 
 font_add_google("Roboto", "Roboto")
@@ -22,16 +22,13 @@ afpr_stat <- afpr %>%
          gender, edu, urban, minority, round, inhomelang, 
          region, tribe, enumeth) 
 
-unique(afpr_stat$aids)
-
-library(magrittr)
-
 afpr_stat$z_ec_conditions_self <- as.vector(6 - afpr_stat$ec_conditions_self)
 afpr_stat$z_notenoughfood <- as.vector(6 - afpr_stat$notenoughfood)
 afpr_stat$z_noincome <- as.vector(6 - afpr_stat$noincome)
 afpr_stat$z_nocleanwater <- as.vector(6 - afpr_stat$nocleanwater)
 afpr_stat$z_crime <- as.vector(6 - afpr_stat$crime)
-afpr_stat$z_aids <- as.vector(afpr_stat$aids) # need to figure out how to negate w/ NA values
+afpr_stat$aids <- remove_labels(afpr_stat$aids, user_na_to_na = TRUE)
+afpr_stat$z_aids <- as.vector(!afpr_stat$aids) # need to figure out how to negate without removing labels
 
 # DEFINE MODEL FORMULA ----
 # Outcomes and coarsened age variables will be glued in in the pmap_dfr() function below
@@ -124,9 +121,8 @@ plotfun <- function(data) {
     scale_shape_manual(values = c(17,15,19)) +
     scale_linetype_manual(values = c(rep("solid", 4))) +
     coord_flip() +
-    scale_y_continuous(breaks = seq(-0.2, 0.2, 0.05),
-                       limits = c(-0.2, 0.2)) +
-    # scale_y_reverse() +
+    scale_y_continuous(breaks = seq(-0.4, 0.4, 0.05),
+                       limits = c(-0.4, 0.4)) +
     theme(axis.title.y = element_blank(),
           legend.title = element_blank(),
           legend.position = "bottom",
@@ -146,7 +142,6 @@ plotfun <- function(data) {
 }
 
 figure_2 <- age_diff_models_stat %>%
-  # filter(country == "All") %>%
   filter(age_variable == "coarsened_age_35") %>%
   plotfun()
 
