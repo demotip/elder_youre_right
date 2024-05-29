@@ -45,7 +45,7 @@ sig_tables
 
 ## Youth outcomes needs to be done separately bc it's weird
 
-youth_age_diff_mauritius <- age_diff_models_table %>%
+youth_mauritius <- age_diff_models_table %>%
   filter(group == "youth_outcomes") %>%
   filter(term != "noncoeth") %>%
   filter(country != "All") %>%
@@ -53,7 +53,7 @@ youth_age_diff_mauritius <- age_diff_models_table %>%
   filter(age_variable != "coarsened_age_35_originalscale") %>%
   mutate(sig_pos = ifelse(p.value < 0.05, ifelse(upper < 0, "-", "+"), "null")) 
 
-youth_age_diff_mauritius_wider <- youth_age_diff_mauritius %>%
+youth_mauritius_wider <- youth_mauritius %>%
   pivot_wider(names_from = term,
               values_from = sig_pos, outcome_variable,
               values_fn = list) %>%
@@ -65,7 +65,7 @@ youth_age_diff_mauritius_wider <- youth_age_diff_mauritius %>%
          older_40_m = coarsened_age_40older_int) %>%
   select(-outcome_variable)
 
-youth_age_diff_all <- age_diff_models_table %>%
+youth_all <- age_diff_models_table %>%
   filter(group == "youth_outcomes") %>%
   filter(term != "noncoeth") %>%
   filter(country != "Mauritius") %>%
@@ -73,23 +73,29 @@ youth_age_diff_all <- age_diff_models_table %>%
   filter(age_variable != "coarsened_age_35_originalscale") %>%
   mutate(sig_pos = ifelse(p.value < 0.05, ifelse(upper < 0, "-", "+"), "null")) 
 
-youth_age_diff_all_wider <- youth_age_diff_all %>%
+youth_all_wider <- youth_all %>%
   pivot_wider(names_from = term,
               values_from = sig_pos, outcome_variable,
               values_fn = list)
 
-youth_age_diff <- cbind(youth_age_diff_all_wider, youth_age_diff_mauritius_wider)
+youth_all_wider$no_pos_all <- rowSums(youth_all_wider == "+")
+youth_all_wider$no_neg_all <- rowSums(youth_all_wider == "-")
+youth_all_wider$no_sig_all <- youth_all_wider$no_neg_all + youth_all_wider$no_pos_all
 
-youth_age_diff$no_pos <- rowSums(youth_age_diff == "+")
-youth_age_diff$no_neg <- rowSums(youth_age_diff == "-")
-youth_age_diff$no_sig <- youth_age_diff$no_neg + youth_age_diff$no_pos
+youth_mauritius_wider$no_pos_m <- rowSums(youth_mauritius_wider == "+")
+youth_mauritius_wider$no_neg_m <- rowSums(youth_mauritius_wider == "-")
+youth_mauritius_wider$no_sig_m <- youth_mauritius_wider$no_neg_m + youth_mauritius_wider$no_pos_m
+
+youth_age_diff <- cbind(youth_all_wider, youth_mauritius_wider)
 
 sig_tables$youth_outcomes <- youth_age_diff
 
+sig_tables$youth_outcomes
+
 ## Exporting these as docx (need to figure out how to functionalize)
 
-datasummary_df(sig_tables$pro_outcomes, output = "sig_table_pro.docx")
-datasummary_df(sig_tables$pol_outcomes, output = "sig_table_pol.docx")
-datasummary_df(sig_tables$stat_outcomes, output = "sig_table_stat.docx")
-datasummary_df(sig_tables$eth_outcomes, output = "sig_table_eth.docx")
-# datasummary_df(sig_tables$youth_outcomes, output = "sig_table_youth.docx") #not working for some reason? debug later 
+datasummary_df(sig_tables$pro_outcomes, output = "tables/sig_table_pro.docx")
+datasummary_df(sig_tables$pol_outcomes, output = "tables/sig_table_pol.docx")
+datasummary_df(sig_tables$stat_outcomes, output = "tables/sig_table_stat.docx")
+datasummary_df(sig_tables$eth_outcomes, output = "tables/sig_table_eth.docx")
+# datasummary_df(sig_tables$youth_outcomes, output = "tables/sig_table_youth.docx") #not working - debug later 
