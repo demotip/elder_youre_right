@@ -88,8 +88,8 @@ sig_tables$youth_outcomes <- youth_age_diff
 
 ## Exporting these as docx (need to figure out how to functionalize)
 
-datasummary_df(sig_tables$pro_outcomes, output = "sig_table_pro.docx")
-datasummary_df(sig_tables$pol_outcomes, output = "sig_table_pol.docx")
-datasummary_df(sig_tables$stat_outcomes, output = "sig_table_stat.docx")
-datasummary_df(sig_tables$eth_outcomes, output = "sig_table_eth.docx")
-# datasummary_df(sig_tables$youth_outcomes, output = "sig_table_youth.docx") #not working for some reason? debug later 
+datasummary_df(sig_tables$pro_outcomes, output = "tables/sig_table_pro.docx")
+datasummary_df(sig_tables$pol_outcomes, output = "tables/sig_table_pol.docx")
+datasummary_df(sig_tables$stat_outcomes, output = "tables/sig_table_stat.docx")
+datasummary_df(sig_tables$eth_outcomes, output = "tables/sig_table_eth.docx")
+# datasummary_df(sig_tables$youth_outcomes, output = "sig_table_youth.docx") #not working - debug later 
