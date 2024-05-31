@@ -15,20 +15,39 @@ source("scripts/variable_labels_flipped.R")
 '%!in%' <- function(x,y)!('%in%'(x,y))
 
 afpr_stat <- afpr %>%
-  select(ec_conditions_self, notenoughfood, noincome, 
+  dplyr::select(ec_conditions_self, notenoughfood, noincome, 
          nocleanwater, crime, aids,
          noncoeth, coarsened_age_10, coarsened_age_30,
          coarsened_age_35, coarsened_age_40, age, 
          gender, edu, urban, minority, round, inhomelang, 
          region, tribe, enumeth) 
 
-afpr_stat$z_ec_conditions_self <- as.vector(6 - afpr_stat$ec_conditions_self)
-afpr_stat$z_notenoughfood <- as.vector(6 - afpr_stat$notenoughfood)
-afpr_stat$z_noincome <- as.vector(6 - afpr_stat$noincome)
-afpr_stat$z_nocleanwater <- as.vector(6 - afpr_stat$nocleanwater)
-afpr_stat$z_crime <- as.vector(6 - afpr_stat$crime)
+afpr_stat$z_ec_conditions_self <- as.numeric(scale((afpr_stat$ec_conditions_self -3 ) * -1))
+
+afpr_stat$z_notenoughfood <- as.vector(scale((afpr_stat$notenoughfood -2 ) * -1))
+
+afpr_stat$z_noincome <-  as.vector(scale((afpr_stat$noincome -2 ) * -1))
+
+afpr_stat$z_nocleanwater <- as.vector(scale((afpr_stat$nocleanwater -2 ) * -1))
+
+afpr_stat$z_crime <- as.vector(scale((afpr_stat$crime -2 ) * -1))
+
 afpr_stat$aids <- remove_labels(afpr_stat$aids, user_na_to_na = TRUE)
 afpr_stat$z_aids <- as.vector(!afpr_stat$aids) # need to figure out how to negate without removing labels
+
+table(afpr_stat$ec_conditions_self) #1-5
+table(afpr_stat$notenoughfood) #0-4
+table(afpr_stat$noincome) #0-4
+table(afpr_stat$nocleanwater) #0-4
+table(afpr_stat$crime) #0-4
+
+table(afpr_stat$z_ec_conditions_self)
+table(afpr_stat$z_notenoughfood)
+table(afpr_stat$z_noincome)
+table(afpr_stat$z_nocleanwater)
+table(afpr_stat$z_crime)
+
+
 
 # DEFINE MODEL FORMULA ----
 # Outcomes and coarsened age variables will be glued in in the pmap_dfr() function below
@@ -117,12 +136,12 @@ plotfun <- function(data) {
     geom_errorbar(aes(ymin = lower, ymax = upper),
                   position = position_dodge(width = 0.5),
                   width = 0.3) +
-    scale_colour_manual(values = c("black", "gray50", "gray80")) +
+    scale_colour_manual(values = c("gray50", "black", "gray80")) +
     scale_shape_manual(values = c(17,15,19)) +
     scale_linetype_manual(values = c(rep("solid", 4))) +
     coord_flip() +
-    scale_y_continuous(breaks = seq(-0.4, 0.4, 0.05),
-                       limits = c(-0.4, 0.4)) +
+    scale_y_continuous(breaks = seq(-0.2, 0.2, 0.1),
+                       limits = c(-0.2, 0.2)) +
     theme(axis.title.y = element_blank(),
           legend.title = element_blank(),
           legend.position = "bottom",
@@ -141,6 +160,7 @@ plotfun <- function(data) {
     ylab("\nEstimated effect (in SDs) of non-coethnic interviewer \nand age difference, with 95% confidence intervals")
 }
 
+
 figure_2 <- age_diff_models_stat %>%
   filter(age_variable == "coarsened_age_35") %>%
   plotfun()
@@ -149,3 +169,8 @@ figure_2 <- figure_2 +
   geom_vline(xintercept = 1.5, size = 0.3)
 
 figure_2
+
+save_plot(paste0("figs/flipped_fig_2.pdf"),
+          figure_2,
+          base_width = 7,
+          base_height = 6)
