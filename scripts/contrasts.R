@@ -20,7 +20,31 @@ source("scripts/variable_labels.R")
 '%!in%' <- function(x,y)!('%in%'(x,y))
 
 # Reverse code present living conditions so direction is consistent with other variables
-afpr$z_ec_conditions_self <- as.vector(scale(6 - afpr$ec_conditions_self))
+# afpr$z_ec_conditions_self <- as.vector(scale(6 - afpr$ec_conditions_self))
+
+# STAT OUTCOMES
+# afpr$z_ec_conditions_self <- as.vector(scale(afpr$ec_conditions_self -2 ))
+afpr$z_notenoughfood <- as.vector(scale((afpr$notenoughfood -2 ) * -1))
+afpr$z_noincome <-  as.vector(scale((afpr$noincome -2 ) * -1))
+afpr$z_nocleanwater <- as.vector(scale((afpr$nocleanwater -2 ) * -1))
+afpr$z_crime <- as.vector(scale((afpr$crime -2 ) * -1))
+afpr$z_aids <- as.vector((afpr$aids * -1) + 1) 
+
+# YOUTH OUTCOMES
+afpr$z_youth_needs <- as.vector(scale((afpr$youth_needs -2 ) * -1))
+afpr$z_youth_employment <- as.vector(scale((afpr$youth_employment -2 ) * -1))
+afpr$z_youth_pregnancy <- as.vector(scale((afpr$youth_pregnancy -2 ) * -1))
+afpr$z_youth_drugabuse <- as.vector(scale((afpr$youth_drugabuse -2 ) * -1))
+afpr$z_youth_alcohol <- as.vector(scale((afpr$youth_alcohol -2 ) * -1))
+afpr$z_youth_delinquency <- as.vector(scale((afpr$youth_delinquency -2 ) * -1))
+afpr$z_youth_smoking <- as.vector(scale((afpr$youth_smoking -2 ) * -1))
+
+# ETH OUTCOMES
+afpr$z_idrank <- as.vector(scale((afpr$idrank -2 ) * -1))
+afpr$z_netrust <- as.vector(scale((afpr$netrust) * -1))
+
+# POL OUTCOMES 
+afpr$z_trust_opposition <- as.vector(scale((afpr$trust_opposition - 1) * -1))
 
 # According to Adida et al.:
 # "The estimates reported in Figures 1 to 4 correspond with Model 4, 

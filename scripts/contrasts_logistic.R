@@ -245,7 +245,7 @@ age_diff_models <-
     
     if (model[["call"]][[1]] == "MASS::polr") {
       levs <- model %>% "$"(lev)
-    } else {levs <- "null"}
+    } else {levs <- NULL}
     
     coefs <- model %>% "$"(coefficients)
     
@@ -279,8 +279,31 @@ age_diff_models <-
   # # Create variable grouping column (i.e. stat_outcomes, pol_outcomes, etc.)
   # mutate(group = plyr::mapvalues(outcome_variable, 
   #                                paste0("z_", variable_labels$var),
-  #                                variable_labels$group))
+  #   variable_labels$group))
 
+# polr_only <- list(list())
+# 
+# polr_only <- for (x in 1:140) {
+#   
+#   ifelse(age_diff_models[[x]][[2]] == "null", 
+#          polr_only[[x]] <- age_diff_models[[x]][[1]],
+#          polr_only[[x]] <- x)
+# }
+
+levs <- list()
+
+for (x in 1:140) { levs[x] <- age_diff_models[[x]][[2]] }
+
+levs <- as.vector(levs)
+
+function_test <- function(x) { ifelse(is.null(levs[x]),
+                   polr_only[[x]] <- age_diff_models[[x]][[1]],
+                   polr_only[[x]] <- x) }
+
+lapply(age_diff_models,
+       function_test)
+
+polr_only <- na.omit(age_diff_models)
 
 # RUN ROUND 7 MODELS FOR JUST MAURITIUS, AND BOTH ----
 

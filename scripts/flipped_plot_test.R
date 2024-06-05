@@ -15,14 +15,15 @@ source("scripts/variable_labels_flipped.R")
 '%!in%' <- function(x,y)!('%in%'(x,y))
 
 afpr_stat <- afpr %>%
-  dplyr::select(ec_conditions_self, notenoughfood, noincome, 
+  dplyr::select(z_ec_conditions_self, notenoughfood, noincome, 
          nocleanwater, crime, aids,
          noncoeth, coarsened_age_10, coarsened_age_30,
          coarsened_age_35, coarsened_age_40, age, 
          gender, edu, urban, minority, round, inhomelang, 
          region, tribe, enumeth) 
 
-afpr_stat$z_ec_conditions_self <- as.numeric(scale((afpr_stat$ec_conditions_self -3 ) * -1))
+# afpr_stat$z_ec_conditions_self <- as.numeric(scale((afpr_stat$ec_conditions_self -3 ) * -1))
+# Already done in contrasts!!! 
 
 afpr_stat$z_notenoughfood <- as.vector(scale((afpr_stat$notenoughfood -2 ) * -1))
 

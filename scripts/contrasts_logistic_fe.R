@@ -8,8 +8,6 @@ library(groundhog)
 contrasts_fe <- c("glue", "lfe", "tidyverse", "lmtest", 
                "sandwich", "MASS", "ordinal", "lme4")
 
-library(alpaca)
-
 groundhog.library(contrasts_fe, "2021-11-01")
 
 # Load Adida et al. Afrobarometer data with age difference appended
@@ -56,13 +54,6 @@ contrasts_matrix <- solve(rbind(constant=1/4, not_relevant, younger_int, older_i
 # DEFINE MODEL FORMULA ----
 # Removed  "| region + tribe + enumeth" from end of formula
 
-form_base_logistic  <- paste0("as.factor({outcome_variable})",
-                            " ~ {age_variable} + ",
-                            "noncoeth +", 
-                            "age + gender + edu + ",
-                            "urban + minority +",
-                            "round + inhomelang |region + tribe + enumeth")
-
 form_base_factor  <- paste0("as.factor({outcome_variable})",
                             " ~ {age_variable} + ",
                             "noncoeth +", 
@@ -92,10 +83,6 @@ outcome_age_combos_7 <-
   ) %>%
   mutate(round = "7") # redefine as numeric
 
-
-
-lengths(unique(afpr[,"hostile"]), use.names = FALSE)
-
 # Combine for full set of outcome-coarsened_age-round combinations
 outcome_age_combos <- bind_rows(outcome_age_combos_3_4, outcome_age_combos_7)
 
@@ -111,20 +98,14 @@ age_diff_models_fe <-
     # Run model
     if(age_variable == "coarsened_age_10") {
       
-      if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
+      if(length(unique(afpr[{outcome_variable},])==2)) {
         
-        print(outcome_variable)
-        print("1")
-        
-        model <- feglm(as.formula(glue(form_base_logistic)),
+        model <- glmer(as.formula(glue(form_base_factor)),
                      data = afpr[afpr$round %in% include_round, ],
-                     family = binomial())
+                     binomial(link = "logit"))
       } else {
         # Note: no contrasts for 10-year age difference model
         # because we only have one baseline of interest: same age.
-        
-        print(outcome_variable)
-        print("2")
         
         model <- ordinal::clmm(as.formula(glue(form_base_factor)),
                             method = "logistic",
@@ -136,20 +117,14 @@ age_diff_models_fe <-
       contrasts_matrix_list <- list(x = contrasts_matrix)
       names(contrasts_matrix_list) <- age_variable
       
-      if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
+      if(length(unique(afpr[{outcome_variable},])==2)) {
         
-        print(outcome_variable)
-        print("3")
-        
-        model <- glmer(as.formula(glue(form_base_logistic)),
+        model <- glmer(as.formula(glue(form_base_factor)),
                      data = afpr[afpr$round %in% include_round, ],
-                     family = binomial(), 
+                     family = binomial(link = "logit"), 
                      contrasts = contrasts_matrix_list
                      )
       } else {
-        
-        print(outcome_variable)
-        print("4")
         
         model <- ordinal::clmm(as.formula(glue(form_base_factor)),
                             method = "logistic",
