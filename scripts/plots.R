@@ -47,18 +47,150 @@ age_diff_models_int <- age_diff_models_og %>%
   # Clean up coefficient estimate names
   mutate(age =
            case_when(grepl("old", ignore.case = T, term) ~
-                       "Older interviewer for younger respondents",
+                       "Effect of older interviewer on younger respondents",
                      grepl("young", ignore.case = T, term) ~
-                       "Younger interviewer for older respondents",
+                       "Effect of younger interviewer on older respondents",
                      TRUE ~ term))
 
 names <- c(coarsened_age_30 = "30 cutoff",
            coarsened_age_35 = "35 cutoff",
            coarsened_age_40 = "40 cutoff")
 
+# Making a wider df format for the significant_across and sign_flip conditionals ----
+
+age_diff_models_wide <- age_diff_models_int %>%
+  mutate(age =
+           case_when(grepl("old", ignore.case = T, term) ~
+                       "old",
+                     grepl("young", ignore.case = T, term) ~
+                       "young",
+                     TRUE ~ term)) %>%
+  mutate(age_label =
+           case_when(grepl("old", ignore.case = T, age) ~
+                       "Effect of older interviewer on younger respondents",
+                     grepl("young", ignore.case = T, age) ~
+                       "Effect of younger interviewer on older respondents",
+                     grepl("noncoeth", ignore.case = T, age) ~
+                       "Non-coethnic interviewer",
+                     TRUE ~ age)) %>%
+  rename(p_value = p.value) %>%
+  select(-term, -std.error, -statistic, -n_obs, -country) %>%
+  filter(age_variable != "coarsened_age_10") %>%
+  filter(age_variable != "coarsened_age_35_originalscale") %>%
+  pivot_wider(names_from = c(age_variable), 
+              values_from = c(estimate, p_value, upper, lower),
+              names_sep = ".") %>%
+  mutate(., sig_across = ifelse(age != "noncoeth", 
+                                ifelse(p_value.coarsened_age_30 < 0.05 &
+                                   p_value.coarsened_age_35 < 0.05 &
+                                   p_value.coarsened_age_40 < 0.05, 1, 0), 0)) %>%
+  mutate(., sign_flip = ifelse(age != "noncoeth", 
+                               ifelse(p_value.coarsened_age_35 < 0.05,
+                               ifelse(p_value.coarsened_age_40 < 0.05 &
+                                        lower.coarsened_age_35*lower.coarsened_age_40 < 0 , 1,
+                                      ifelse(p_value.coarsened_age_30 < 0.05 &
+                                               lower.coarsened_age_35*lower.coarsened_age_30 < 0 , 1, 0)), 0), 0)) 
+
+plotfun_wide <- function(data) {
+  data %>%
+    ggplot(aes(label,
+             estimate.coarsened_age_35,
+             colour = age_label,
+             linetype = factor(sign_flip),
+             shape = age_label,
+             size = factor(sig_across))) +
+  theme_linedraw() +
+  geom_point(position = position_dodge(width = 0.5),
+             size = 2) +
+  geom_errorbar(aes(ymin = lower.coarsened_age_35, 
+                    ymax = upper.coarsened_age_35), 
+                width = 0.4,
+                position = position_dodge(width = 0.5)) +
+  scale_colour_manual(values = c("gray50", "black", "gray80")) +
+  scale_shape_manual(values = c(17,15,19)) +
+  scale_size_manual(values = c(0.5,1.5)) + 
+  coord_flip() +
+  scale_y_continuous(breaks = seq(-0.2, 0.2, 0.05),
+                                  limits = c(-0.2, 0.2)) +
+  theme(axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.position = "bottom",
+        legend.text = element_text(size = 7),
+        legend.key.width=unit(3,"line"),
+        strip.background = element_blank(),
+        strip.text = element_blank(),
+        text = element_text(family = "Roboto"),
+        panel.grid.major = element_line(color = 'gray80'),
+        panel.grid.minor = element_line(color = 'gray80')) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  guides(colour = guide_legend(reverse = TRUE,
+                               ncol = 1),
+         linetype = "none",
+         shape = guide_legend(reverse = TRUE,
+                              ncol = 1),
+         size = "none"
+         ) +
+  ylab("\nEstimated effect (in SDs) of non-coethnic interviewer \nand age difference, with 95% confidence intervals") }
+
+plot35yr_paper <- lapply(unique(age_diff_models_wide$group), function(x) {
+  plot <- age_diff_models_wide %>%
+    filter(group == x) %>%
+    plotfun_wide()
+  
+  if(x == "pol_outcomes") {
+    plot <- plot +
+      geom_vline(xintercept = 2.5, size = 0.3)
+    # geom_vline(xintercept = 4.5, size = 0.3)
+  } else if (x == "stat_outcomes") {
+    plot <- plot +
+      geom_vline(xintercept = 1.5, size = 0.3)
+  } else if (x == "pro_outcomes") {
+    plot <- plot +
+      coord_flip(ylim = c(-0.2, 0.2)) +
+      scale_y_continuous(breaks = seq(-0.4, 0.4, 0.05))
+  } else if (x == "youth_outcomes") {
+    plot <- plot +
+      coord_flip(ylim = c(-0.7, 0.7)) +
+      scale_y_continuous(breaks = seq(-0.8, 0.8, 0.1))
+  }
+  else if (x == "eth_outcomes") {
+    plot <- plot +
+      coord_flip(ylim = c(-0.2, 0.2)) +
+      scale_y_continuous(breaks = seq(-0.4, 0.4, 0.05))
+  }
+  return(plot)
+}) %>%
+  "names<-"(unique(age_diff_models$group))
+
+plot35yr_paper$eth_outcomes
+
+plot35yr_paper$youth_outcomes <- plot35yr_paper$youth_outcomes +
+  # Facet the question that was asked in all countries
+  # "Addressing *needs* of youth"
+  facet_grid(rows = vars(grepl("needs", outcome_variable)),
+             labeller = labeller(.rows = function(x) {
+               ifelse(x, "All\ncountries", "Mauritius only")
+             }, .cols = names),
+             scales = "free" , space = "free" ) +
+  theme(strip.text.y = element_text(size = 8, margin = margin(l = 3),
+                                    vjust = 0, hjust = 0.5)) 
+
+plot35yr_paper_align <- align_plots(plotlist = plot35yr_paper,
+                                      align = "hv",
+                                      axis = "tblr") %>%
+  lapply(ggdraw)
+
+map2(names(plot35yr_paper_align), c(5, 8, 5, 5, 5), function(x, y) {
+  save_plot(paste0("figs/", x, "paper.pdf"),
+            plot35yr_paper_align[[x]],
+            base_width = 7,
+            base_height = y)
+})
+
 # PLOT FUNCTION ----
 # This function plots coefficients from models
 # created in contrasts.Rmd along with error bars
+
 plotfun <- function(data) {
   data %>%
     ggplot(aes(label,
@@ -136,6 +268,13 @@ plotfun_integrated <- function(data) {
                                 ncol = 1)) +
     ylab("\nEstimated effect (in SDs) of age difference, with 95% confidence intervals")
 }
+
+x <- age_diff_models_int %>%
+  filter(country == "All") %>%
+  filter(group == "stat_outcomes") %>%
+  filter(age_variable != "coarsened_age_10") %>%
+  filter(age_variable != "coarsened_age_35_originalscale" ) %>%
+  filter(term != "noncoeth")
 
 # Integrated age plots ----
 
@@ -324,16 +463,6 @@ plot35yr <- lapply(unique(age_diff_models$group), function(x) {
       coord_flip(ylim = c(-0.7, 0.7)) +
       scale_y_continuous(breaks = seq(-0.8, 0.8, 0.1))
   }
-  # else if (x == "eth_outcomes") {
-  # plot <- plot +
-  #   # geom_point(data = subset(age_diff_models, outcome_variable == "z_patronage"),
-  #   #            size = 4)
-  #   geom_errorbar(data = subset(age_diff_models, outcome_variable == "z_patronage"),
-  #                 aes(ymin = lower, ymax = upper),
-  #                 width = 0.5) # Larger error bars for patronage
-  #   # geom_point(data = subset(age_diff_models, outcome_variable == "z_patronage"),
-  #   #            size = 4)
-  # }
   return(plot)
 }) %>%
   "names<-"(unique(age_diff_models$group))
@@ -427,3 +556,129 @@ age_diff_models %>%
   dplyr::select(term, label, estimate, std.error, upper, lower) %>%
   mutate_if(is.numeric, list(~round(., 4))) %>%
   write.csv("tables/effects_original_scales.csv")
+# 35 year country fe plots
+
+plotfun_wide_fe <- function(data) {
+  data %>%
+    ggplot(aes(label,
+               estimate.coarsened_age_35,
+               colour = age_label,
+               linetype = factor(sign_flip),
+               shape = age_label,
+               size = factor(sig_across))) +
+    theme_linedraw() +
+    geom_point(position = position_dodge(width = 0.5),
+               size = 2) +
+    geom_errorbar(aes(ymin = lower.coarsened_age_35, 
+                      ymax = upper.coarsened_age_35), 
+                  width = 0.4,
+                  position = position_dodge(width = 0.5)) +
+    scale_colour_manual(values = c("gray50", "black", "gray80")) +
+    scale_shape_manual(values = c(17,15,19)) +
+    scale_size_manual(values = c(0.5,1.5)) + 
+    coord_flip() +
+    scale_y_continuous(breaks = seq(-0.2, 0.2, 0.05),
+                       limits = c(-0.2, 0.2)) +
+    theme(axis.title.y = element_blank(),
+          legend.title = element_blank(),
+          legend.position = "bottom",
+          legend.text = element_text(size = 7),
+          legend.key.width=unit(3,"line"),
+          strip.background = element_blank(),
+          strip.text = element_blank(),
+          text = element_text(family = "Roboto"),
+          panel.grid.major = element_line(color = 'gray80'),
+          panel.grid.minor = element_line(color = 'gray80')) +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    guides(colour = guide_legend(reverse = TRUE,
+                                 ncol = 1),
+           linetype = "none",
+           shape = guide_legend(reverse = TRUE,
+                                ncol = 1),
+           size = "none"
+    ) +
+    ylab("\nEstimated effect (in SDs) of non-coethnic interviewer \nand age difference, with 95% confidence intervals: \n Fixed effects by country only") }
+
+age_diff_models_fe <- age_diff_models_countryfe %>%
+  mutate(age =
+           case_when(grepl("old", ignore.case = T, term) ~
+                       "old",
+                     grepl("young", ignore.case = T, term) ~
+                       "young",
+                     TRUE ~ term)) %>%
+  mutate(age_label =
+           case_when(grepl("old", ignore.case = T, age) ~
+                       "Effect of older interviewer on younger respondents",
+                     grepl("young", ignore.case = T, age) ~
+                       "Effect of younger interviewer on older respondents",
+                     grepl("noncoeth", ignore.case = T, age) ~
+                       "Non-coethnic interviewer",
+                     TRUE ~ age)) %>%
+  rename(p_value = p.value) %>%
+  select(-term, -std.error, -statistic, -n_obs) %>%
+  filter(age_variable != "coarsened_age_10") %>%
+  filter(age_variable != "coarsened_age_35_originalscale") %>%
+  pivot_wider(names_from = c(age_variable), 
+              values_from = c(estimate, p_value, upper, lower),
+              names_sep = ".") %>%
+  mutate(., sig_across = ifelse(age != "noncoeth", 
+                                ifelse(p_value.coarsened_age_30 < 0.05 &
+                                         p_value.coarsened_age_35 < 0.05 &
+                                         p_value.coarsened_age_40 < 0.05, 1, 0), 0)) %>%
+  mutate(., sign_flip = ifelse(age != "noncoeth", 
+                               ifelse(p_value.coarsened_age_35 < 0.05,
+                                      ifelse(p_value.coarsened_age_40 < 0.05 &
+                                               lower.coarsened_age_35*lower.coarsened_age_40 < 0 , 1,
+                                             ifelse(p_value.coarsened_age_30 < 0.05 &
+                                                      lower.coarsened_age_35*lower.coarsened_age_30 < 0 , 1, 0)), 0), 0)) 
+
+plot35yr_countryfe <- lapply(unique(age_diff_models_fe$group), function(x) {
+  plot <- age_diff_models_fe %>%
+    filter(group == x) %>%
+    plotfun_wide_fe()
+  
+  if(x == "pol_outcomes") {
+    plot <- plot +
+      geom_vline(xintercept = 2.5, size = 0.3)
+    # geom_vline(xintercept = 4.5, size = 0.3)
+  } else if (x == "stat_outcomes") {
+    plot <- plot +
+      geom_vline(xintercept = 1.5, size = 0.3)
+  } else if (x == "pro_outcomes") {
+    plot <- plot +
+      coord_flip(ylim = c(-0.2, 0.2)) +
+      scale_y_continuous(breaks = seq(-0.4, 0.4, 0.05))
+  } else if (x == "youth_outcomes") {
+    plot <- plot +
+      coord_flip(ylim = c(-0.7, 0.7)) +
+      scale_y_continuous(breaks = seq(-0.8, 0.8, 0.1))
+  }
+  return(plot)
+}) %>%
+  "names<-"(unique(age_diff_models_countryfe$group))
+
+
+plot35yr_countryfe$youth_outcomes <- plot35yr_countryfe$youth_outcomes +
+  # Facet the question that was asked in all countries
+  # "Addressing *needs* of youth"
+  facet_grid(rows = vars(grepl("needs", outcome_variable)),
+             labeller = labeller(.rows = function(x) {
+               ifelse(x, "All\ncountries", "Mauritius only")
+             }),
+             scales = "free", space = "free") +
+  theme(strip.text.y = element_text(size = 8, margin = margin(l = 3),
+                                    vjust = 0, hjust = 0.5))
+
+plot35yr_countryfe$stat_outcomes
+
+plot35yr_countryfe_align <- align_plots(plotlist = plot35yr_countryfe,
+                              align = "hv",
+                              axis = "tblr") %>%
+  lapply(ggdraw)
+
+map2(names(plot35yr_countryfe_align), c(5, 8, 5, 5, 5), function(x, y) {
+  save_plot(paste0("figs/", x, "35yr_countryfe.pdf"),
+            plot35yr_countryfe_align[[x]],
+            base_width = 7,
+            base_height = y)
+})
