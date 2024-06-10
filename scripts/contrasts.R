@@ -28,7 +28,7 @@ afpr$z_notenoughfood <- as.vector(scale((afpr$notenoughfood -2 ) * -1))
 afpr$z_noincome <-  as.vector(scale((afpr$noincome -2 ) * -1))
 afpr$z_nocleanwater <- as.vector(scale((afpr$nocleanwater -2 ) * -1))
 afpr$z_crime <- as.vector(scale((afpr$crime -2 ) * -1))
-afpr$z_aids <- as.vector((afpr$aids * -1) + 1) 
+afpr$z_aids <- as.vector(scale((afpr$aids * -1) + 1))
 
 # YOUTH OUTCOMES
 afpr$z_youth_needs <- as.vector(scale((afpr$youth_needs -2 ) * -1))
@@ -175,8 +175,6 @@ outcome_age_combos_mauritius <-
                                "coarsened_age_35",
                                "coarsened_age_40"),
               stringsAsFactors = FALSE)
-
-table(afpr$country)
 
 age_diff_models_mauritius <-
   pmap_dfr(outcome_age_combos_mauritius, function(outcome, age_variable) {
