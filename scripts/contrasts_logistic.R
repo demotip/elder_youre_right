@@ -60,6 +60,13 @@ form_base_factor  <- paste0("as.factor({outcome_variable})",
                             "urban + minority +",
                             "round + inhomelang")
 
+form_base_factor_unstandard  <- paste0("as.factor({outcome})",
+                            " ~ {age_variable} + ",
+                            "noncoeth +", 
+                            "age + gender + edu + ",
+                            "urban + minority +",
+                            "round + inhomelang")
+
 # Generate all outcome-coarsened age combinations
 outcome_age_combos_3_4 <- 
   expand.grid(outcome = c(pro_outcomes, pol_outcomes, stat_outcomes, eth_outcomes), 
@@ -197,7 +204,7 @@ age_diff_models <-
         print(outcome_variable)
         print(1)
         
-        model <- glm(as.formula(glue(form_base_factor)),
+        model <- glm(as.formula(glue(form_base_factor_unstandard)),
                      data = afpr[afpr$round %in% include_round, ],
                      family = "binomial")
       } else {
@@ -221,7 +228,7 @@ age_diff_models <-
         print(outcome_variable)
         print(3)
         
-        model <- glm(as.formula(glue(form_base_factor)),
+        model <- glm(as.formula(glue(form_base_factor_unstandard)),
                      data = afpr[afpr$round %in% include_round, ],
                      family = "binomial",
                      contrasts = contrasts_matrix_list

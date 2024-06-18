@@ -6,7 +6,7 @@ source("scripts/variable_labels.R")
 library(groundhog)
 
 cv <- c("glue", "lfe", "tidyverse", "lmtest", 
-        "sandwich", "modelsummary", "boot", "caret")
+        "sandwich", "modelsummary", "boot", "caret", "rms")
 groundhog.library(cv, "2021-11-01")
 
 # To define contrasts, our coarsened age variables need to be factors
@@ -45,8 +45,8 @@ afpr$country <- as.factor(afpr$country)
 # an error in glm() because some factor variables only have 1 level aftwerwards,
 # so there was a contrasts error
 
-# Comparing original fixed effects to country fixed effects ----
 
+# All the fucking forms ----
 form_base  <- paste0("{outcome_variable} ~ {age_variable} + ",
                      "noncoeth +", 
                      "age + gender + edu + ",
@@ -54,16 +54,17 @@ form_base  <- paste0("{outcome_variable} ~ {age_variable} + ",
                      "round + inhomelang + region + tribe + enumeth")
 
 form_base_factor  <- paste0("as.factor({outcome_variable}) ~ {age_variable} + ",
-                     "noncoeth +", 
-                     "age + gender + edu + ",
-                     "urban + minority +",
-                     "round + inhomelang + country") # removed  "+ region + tribe + enumeth": just being silly with it
+                            "noncoeth +", 
+                            "age + gender + edu + ",
+                            "urban + minority +",
+                            "round + inhomelang + country") # removed  "+ region + tribe + enumeth": just being silly with it
 
 form_base_country  <- paste0("{outcome_variable} ~ {age_variable} + ",
                              "noncoeth +", 
                              "age + gender + edu + ",
                              "urban + minority +",
                              "round + inhomelang + country") # removed + country
+# COMPARING ORIGINAL FE TO COUNTRY FE ----
 
 set.seed(2)
 
@@ -141,6 +142,7 @@ cv_fixed_effects <-
     
     return(cv.error)
   })
+
 
 # Test function ----
 
@@ -285,14 +287,15 @@ table(afpr$region)
 table(afpr$region)
 
 
-# The second function ----
+
+# COMPARING LOGISTIC/ORDERED TO LINEAR ----
 
 cv_lin_log <- 
   pmap(outcome_age_combos, function(outcome, age_variable, round) {
     
     if(round == "7") include_round <- 7 else include_round <- 3:4
     
-    outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
+    outcome_variable <- paste0(outcome) # "z_" is standardized variables
     
     print(outcome_variable)
     
@@ -326,13 +329,14 @@ cv_lin_log <-
         
         print(3)
         
-        model_log <- plsRglm::plsRglm(as.formula(glue(form_base_factor)),
+        model_log <- MASS::polr(as.formula(glue(form_base_factor)),
                             method = "logistic",
                             data = afpr[afpr$round %in% include_round & 
-                                          complete.cases(afpr[ , c(outcome_variable,age_variable, 
+                                          complete.cases(afpr[ , c({outcome_variable},{age_variable},
                                                                    "noncoeth", "age", "gender", "edu", "urban", 
                                                                    "minority", "round", "inhomelang", "country")]), ],
-                            Hess = T) }
+                            Hess = T
+                            ) }
       
     } else {
       
@@ -363,7 +367,7 @@ cv_lin_log <-
         
         print(6)
         
-        model_log <- plsRglm::plsRglm(as.formula(glue(form_base_factor)),
+        model_log <- MASS::polr(as.formula(glue(form_base_factor)),
                             method = "logistic",
                             data = afpr[afpr$round %in% include_round & 
                                           complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
@@ -404,10 +408,137 @@ cv_lin_log <-
 
 model_log <- plsRglm::plsRglm(z_aids ~ coarsened_age_10 + noncoeth +
                                 age + gender + edu + urban + minority + round + inhomelang + country,
-                              modele ="pls-glm-logistic",
+                              modele = "pls-glm-logistic",
                               data = afpr[afpr$round %in% 3:4 & 
                                             complete.cases(afpr[ , c("aids", "coarsened_age_10", 
                                                                      "noncoeth", "age", "gender", "edu", "urban", 
                                                                      "minority", "round", "inhomelang", "country")]), ],
                               Hess = T)
+
+plsRglm::cv.plsR()
+
+### The most recent function with rms ----
+
+cv_lin_log <- 
+  pmap(outcome_age_combos, function(outcome, age_variable, round) {
+    
+    if(round == "7") include_round <- 7 else include_round <- 3:4
+    
+    outcome_variable <- outcome # not standardizing variables
+    
+    print(outcome_variable)
+    
+    # Run model
+    if(age_variable == "coarsened_age_10") {
+      # Note: no contrasts for 10-year age difference model
+      # because we only have one baseline of interest: same age.
+      
+      print(1)
+      
+      model_lin <- rms::ols(as.formula(glue(form_base_country)), data = 
+                              droplevels(afpr[afpr$round %in% include_round & 
+                                                complete.cases(afpr[ , c({outcome_variable},{age_variable},
+                                                                         "noncoeth", "age", "gender", "edu", "urban", 
+                                                                         "minority", "round", "inhomelang", "country")]), ]),
+                            x = TRUE,  # need x and y to be TRUE for validate.ols to work
+                            y = TRUE
+      )
+      
+      if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
+        
+        print(2)
+        
+        model_log <- rms::lrm(as.formula(glue(form_base_factor)),
+                              data = droplevels(afpr[afpr$round %in% include_round & 
+                                                       complete.cases(afpr[ , c({outcome_variable},{age_variable},
+                                                                                "noncoeth", "age", "gender", "edu", "urban", 
+                                                                                "minority", "round", "inhomelang", "country")]), ]),
+                              x = TRUE,
+                              y = TRUE)
+      } else {
+        # Note: no contrasts for 10-year age difference model
+        # because we only have one baseline of interest: same age.
+        
+        print(3)
+        
+        model_log <- rms::orm(as.formula(glue(form_base_factor)),
+                              data = afpr[afpr$round %in% include_round & 
+                                            complete.cases(afpr[ , c({outcome_variable},{age_variable},
+                                                                     "noncoeth", "age", "gender", "edu", "urban", 
+                                                                     "minority", "round", "inhomelang", "country")]), ],
+                              x = TRUE,
+                              y = TRUE ) }
+      
+    } else {
+      
+      contrasts_matrix_list <- list(x = contrasts_matrix)
+      names(contrasts_matrix_list) <- age_variable
+      
+      print(4)
+      
+      model_lin <- rms::ols(as.formula(glue(form_base_country)), data =
+                              droplevels(afpr[afpr$round %in% include_round & 
+                                                complete.cases(afpr[ , c({outcome_variable},{age_variable},
+                                                                         "noncoeth", "age", "gender", "edu", "urban", 
+                                                                         "minority", "round", "inhomelang", "country")]), ]),
+                            x = TRUE,
+                            y = TRUE
+                            # contrasts = contrasts_matrix_list
+      ) 
+      
+      if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
+        print(5)
+        
+        model_log <- rms::lrm(as.formula(glue(form_base_factor)),
+                              droplevels(afpr[afpr$round %in% include_round & 
+                                                complete.cases(afpr[ , c({outcome_variable},{age_variable},
+                                                                         "noncoeth", "age", "gender", "edu", "urban", 
+                                                                         "minority", "round", "inhomelang", "country")]), ]),
+                              x = TRUE,
+                              y = TRUE
+                              # contrasts = contrasts_matrix_list
+        )
+      } else {
+        
+        print(6)
+        
+        model_log <- rms::orm(as.formula(glue(form_base_factor)),
+                              data = afpr[afpr$round %in% include_round & 
+                                            complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
+                                                                     "noncoeth", "age", "gender", "edu", "urban", 
+                                                                     "minority", "round", "inhomelang", "country")]), ],
+                              x = TRUE,
+                              y = TRUE
+                              # contrasts = contrasts_matrix
+        ) }
+      
+    }
+    
+    
+    print(7)
+    
+    # cv.error.1 <- cv.glm(afpr[afpr$round %in% include_round & 
+    #                             complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
+    #                                                      "noncoeth", "age", "gender", "edu", "urban", 
+    #                                                      "minority", "round", "inhomelang", "country")]), ], 
+    #                      model_lin, K = 10)$delta[2]
+    # 
+    # print(cv.error.1)
+    
+    cv.error.1 <- rms::validate(model_lin)
+    
+    # cv.error.2 <- cv.glm(afpr[afpr$round %in% include_round & 
+    #                             complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
+    #                                                      "noncoeth", "age", "gender", "edu", "urban", 
+    #                                                      "minority", "round", "inhomelang", "country")]), ], 
+    #                      model_log, K = 10)$delta[2]
+    # 
+    # print(cv.error.2)
+    
+    cv.error.2 <- rms::validate(model_log)
+    
+    cv.error <- list(cv.error.1, cv.error.2)
+    
+    return(cv.error)
+  })
 
