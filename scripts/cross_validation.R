@@ -31,21 +31,14 @@ older_int <- c( 0,   0,   -1,   1 )
 # Get inverse of contrast matrix and remove constant
 contrasts_matrix <- solve(rbind(constant=1/4, not_relevant, younger_int, older_int))[ , -1]
 
+contrasts_matrix
+
 # Setting up fixed effects as factors ----
 
 afpr$region <- as.factor(afpr$region)
 afpr$tribe <- as.factor(afpr$tribe)
 afpr$enumeth <- as.factor(afpr$enumeth)
 afpr$country <- as.factor(afpr$country)
-
-# afpr <- na.omit(afpr) # doing this throws the error: 
-# Error in `contrasts<-`(`*tmp*`, value = contr.funs[1 + isOF[nn]]) : 
-# contrasts can be applied only to factors with 2 or more levels
-
-# In message write: "I tried just applying na.omit to afpr but that caused
-# an error in glm() because some factor variables only have 1 level aftwerwards,
-# so there was a contrasts error
-
 
 # All the fucking forms ----
 form_base  <- paste0("{outcome_variable} ~ {age_variable} + ",
@@ -428,11 +421,33 @@ model_log <- plsRglm::plsRglm(z_aids ~ coarsened_age_10 + noncoeth +
                                                                      "minority", "round", "inhomelang", "country")]), ],
                               Hess = T)
 
-plsRglm::cv.plsR()
+model_lin <- rms::ols(z_aids ~ coarsened_age_30 + noncoeth +
+                        age + gender + edu + urban + minority + round + inhomelang + country, 
+                      data = 
+                        droplevels(afpr[afpr$round %in% 3:4 & 
+                                          complete.cases(afpr[ , c("aids", "coarsened_age_30",
+                                                                   "noncoeth", "age", "gender", "edu", "urban", 
+                                                                   "minority", "round", "inhomelang", "country")]), ]),
+                      x = TRUE,  # need x and y to be TRUE for validate.ols to work
+                      y = TRUE)
 
-### The most recent function with rms ----
+levels(afpr$coarsened_age_30)
 
-time <- Sys.time()
+dd <- datadist(afpr)
+options(datadist = "dd")
+print(dd$limits)
+
+contrasts <- list(
+  "Both younger (age 30 cutoff)" = c(0, 0, 1, 0),
+  "Both older (age 30 cutoff)" = c(0, 0, 1, 0),
+  "Interviewer younger (age 30 cutoff)" = c(-1, 1, 0, 0),
+  "Interviewer older (age 30 cutoff)" = c(0, 0, -1,  1 )
+  )
+
+contrast(model_lin, contrasts)
+
+# The most recent function with rms, split by round ----
+
 cv_lin_log_3_4 <- 
   pmap(outcome_age_combos_3_4, function(outcome, age_variable, round) {
     
@@ -531,17 +546,24 @@ cv_lin_log_3_4 <-
     
     print(7)
     
-    cv.error.1 <- rms::validate(model_lin)
+    cv.error.1 <- rms::validate(model_lin, method = "crossvalidation", B = 10)
+    cv.error.2 <- rms::validate(model_log, method = "crossvalidation", B = 10)
     
-    cv.error.2 <- rms::validate(model_log)
+    cv.error.1 <- as.numeric(cv.error.1[3,3])
+    cv.error.1 <- exp(cv.error.1)/I(1 + exp(cv.error.1))
     
-    cv.error <- list(cv.error.1, cv.error.2)
+    if(dim(cv.error.2)[1] == 5) {
+      cv.error.2 <- as.numeric(cv.error.2[4,3])
+    } else {
+      cv.error.2 <- as.numeric(cv.error.2[10,3])
+    }
+    cv.error.2 <- exp(cv.error.2)/I(1 + exp(cv.error.2))
+    
+    cv.error <- c(cv.error.1, cv.error.2)
     
     return(cv.error)
   })
-elapsed_time <- (Sys.time() - time)
 
-time_7 <- Sys.time()
 cv_lin_log_7 <- 
   pmap(outcome_age_combos_7, function(outcome, age_variable, round) {
     
@@ -566,6 +588,7 @@ cv_lin_log_7 <-
                             x = TRUE,  # need x and y to be TRUE for validate.ols to work
                             y = TRUE
       )
+      
       
       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
         
@@ -640,14 +663,146 @@ cv_lin_log_7 <-
     
     print(7)
     
-    cv.error.1 <- rms::validate(model_lin)
+    cv.error.1 <- rms::validate(model_lin, method = "crossvalidation", B = 10)
+    cv.error.2 <- rms::validate(model_log, method = "crossvalidation", B = 10)
     
-    cv.error.2 <- rms::validate(model_log)
+    cv.error.1 <- as.numeric(cv.error.1[3,3])
+    cv.error.1 <- exp(cv.error.1)/I(1 + exp(cv.error.1)) # Converting log-odds to probabilities: e^(g)/(1 + e^(g)) 
     
-    cv.error <- list(cv.error.1, cv.error.2)
+    # no need for an ifelse statement here bc there's no binary outcomes
+    
+    cv.error.2 <- as.numeric(cv.error.2[4,3])
+    cv.error.2 <- exp(cv.error.2)/I(1 + exp(cv.error.2))
+    
+    cv.error <- c(cv.error.1, cv.error.2)
     
     return(cv.error)
   })
-elapsed_time_7 <- (Sys.time() - time_7)
 
-elapsed_time_7
+cv_lin_log <- c(cv_lin_log_3_4, cv_lin_log_7)
+
+
+# I chose the test one but idk if this is the correct choice?
+# index.orig           0.55129127
+# training             0.55210914
+# test                 0.53573864
+# optimism             0.01637051
+# index.corrected      0.53492077
+# n                    10.00000000
+
+# cv_lin_log_7 <- 
+#   pmap(outcome_age_combos_7, function(outcome, age_variable, round) {
+#     
+#     if(round == "7") include_round <- 7 else include_round <- 3:4
+#     
+#     outcome_variable <- outcome # not standardizing variables
+#     
+#     print(outcome_variable)
+#     
+#     # Run model
+#     if(age_variable == "coarsened_age_10") {
+#       # Note: no contrasts for 10-year age difference model
+#       # because we only have one baseline of interest: same age.
+#       
+#       print(1)
+#       
+#       model_lin <- rms::ols(as.formula(glue(form_base_7)), data = 
+#                               droplevels(afpr[afpr$round %in% include_round & 
+#                                                 complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                          "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                          "minority", "round", "inhomelang", "country")]), ]),
+#                             x = TRUE,  # need x and y to be TRUE for validate.ols to work
+#                             y = TRUE
+#       )
+#       
+#       
+#       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
+#         
+#         print(2)
+#         
+#         model_log <- rms::lrm(as.formula(glue(form_base_factor_7)),
+#                               data = droplevels(afpr[afpr$round %in% include_round & 
+#                                                        complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                                 "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                                 "minority", "round", "inhomelang", "country")]), ]),
+#                               x = TRUE,
+#                               y = TRUE)
+#       } else {
+#         # Note: no contrasts for 10-year age difference model
+#         # because we only have one baseline of interest: same age.
+#         
+#         print(3)
+#         
+#         model_log <- rms::orm(as.formula(glue(form_base_factor_7)),
+#                               data = afpr[afpr$round %in% include_round & 
+#                                             complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                      "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                      "minority", "round", "inhomelang", "country")]), ],
+#                               x = TRUE,
+#                               y = TRUE ) }
+#       
+#     } else {
+#       
+#       contrasts_matrix_list <- list(x = contrasts_matrix)
+#       names(contrasts_matrix_list) <- age_variable
+#       
+#       print(4)
+#       
+#       model_lin <- rms::ols(as.formula(glue(form_base_7)), data =
+#                               droplevels(afpr[afpr$round %in% include_round & 
+#                                                 complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                          "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                          "minority", "round", "inhomelang", "country")]), ]),
+#                             x = TRUE,
+#                             y = TRUE
+#                             # contrasts = contrasts_matrix_list
+#       ) 
+#       
+#       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
+#         print(5)
+#         
+#         model_log <- rms::lrm(as.formula(glue(form_base_factor_7)),
+#                               droplevels(afpr[afpr$round %in% include_round & 
+#                                                 complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                          "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                          "minority", "round", "inhomelang", "country")]), ]),
+#                               x = TRUE,
+#                               y = TRUE
+#                               # contrasts = contrasts_matrix_list
+#         )
+#       } else {
+#         
+#         print(6)
+#         
+#         model_log <- rms::orm(as.formula(glue(form_base_factor_7)),
+#                               data = afpr[afpr$round %in% include_round & 
+#                                             complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
+#                                                                      "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                      "minority", "round", "inhomelang", "country")]), ],
+#                               x = TRUE,
+#                               y = TRUE
+#                               # contrasts = contrasts_matrix
+#         ) }
+#       
+#     }
+#     
+#     
+#     print(7)
+#     
+#     cv.error.1 <- rms::validate(model_lin, method = "crossvalidation", B = 10)
+#     cv.error.2 <- rms::validate(model_log, method = "crossvalidation", B = 10)
+#     
+#     # cv.error.1 <- as.numeric(cv.error.1[3,3])
+#     # exp(cv.error.1)/I(1 + exp(cv.error.1)) # Converting log-odds to probabilities: e^(g)/(1 + e^(g)) 
+#     # 
+#     # if(dim(cv.error.2)[1] == 5) {
+#     #   cv.error.2 <- as.numeric(cv.error.2[4,3])
+#     # } else {
+#     #   cv.error.2 <- as.numeric(cv.error.2[10,3])
+#     # }
+#     # exp(cv.error.2)/I(1 + exp(cv.error.2))
+#     
+#     cv.error <- list(cv.error.1, cv.error.2)
+#     
+#     return(cv.error)
+#   })
