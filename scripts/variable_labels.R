@@ -3,12 +3,12 @@ eth_outcomes <- c("idrank", "patronage", "etrust",
                   "netrust", "ecconditions_group", 
                   "polinfluence_group", "treatedunfairly_group") 
 
-pol_outcomes <- c("demosupp", "performance", "bribe1", 
-                  "ec_conditions_ctry", "trust_rulingparty", "trust_opposition",  
-                  "gov_manage_economy", "voted", "pubaffairs", 
-                  "meeting", "knows_MP")  
+pol_outcomes <- c("demosupp", "performance", "bribe1", "trust_opposition",
+                  "voted", "pubaffairs", "meeting", "knows_MP")  
 
-stat_outcomes <- c("ec_conditions_self", "notenoughfood", "noincome", 
+stat_outcomes <- c("gov_manage_economy", #from pol_outcomes
+                   "ec_conditions_ctry", #from pol_outcomes
+                   "ec_conditions_self", "notenoughfood", "noincome", 
                    "nocleanwater", "crime", "aids")
 
 pro_outcomes <- c("hostile", "uncooperative", 

@@ -5,9 +5,9 @@ source("scripts/variable_labels.R")
 
 library(groundhog)
 
-
 cv <- c("glue", "lfe", "tidyverse", "lmtest", 
         "sandwich", "modelsummary", "boot", "caret", "rms", "htmlTable")
+
 groundhog.library(cv, "2021-11-01")
 
 # To define contrasts, our coarsened age variables need to be factors
@@ -40,7 +40,7 @@ afpr$tribe <- as.factor(afpr$tribe)
 afpr$enumeth <- as.factor(afpr$enumeth)
 afpr$country <- as.factor(afpr$country)
 
-# All the fucking forms ----
+# All the forms ----
 form_base  <- paste0("{outcome_variable} ~ {age_variable} + ",
                      "noncoeth +", 
                      "age + gender + edu + ",
@@ -70,366 +70,20 @@ form_base_7  <- paste0("{outcome_variable} ~ {age_variable} + ",
                               "age + gender + edu + ",
                               "urban + minority +",
                               "round + inhomelang")
-# COMPARING ORIGINAL FE TO COUNTRY FE ----
-
-set.seed(2)
-
-cv.error <- list()
-
-cv_fixed_effects <- 
-  pmap(outcome_age_combos, function(outcome, age_variable, round) {
-    
-    if(round == "7") include_round <- 7 else include_round <- 3:4
-    
-    outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
-    
-    # Run model
-    if(age_variable == "coarsened_age_10") {
-      # Note: no contrasts for 10-year age difference model
-      # because we only have one baseline of interest: same age.
-      
-      print(outcome_variable)
-      print(1)
-      
-      
-      model <- glm(as.formula(glue(form_base)), data = 
-                     afpr[afpr$round %in% include_round & 
-                        complete.cases(afpr[ , c(outcome_variable,age_variable, 
-                                                 "noncoeth", "age", "gender", "edu", "urban", 
-                                                   "minority", "round", "inhomelang")]), ])
-      
-      model_cfe <- glm(as.formula(glue(form_base_country)), data = 
-                         afpr[afpr$round %in% include_round & 
-                          complete.cases(afpr[ , c(outcome_variable,age_variable, 
-                                                    "noncoeth", "age", "gender", "edu", "urban", 
-                                                   "minority", "round", "inhomelang")]), ])
-      
-    } else {
-      
-      contrasts_matrix_list <- list(x = contrasts_matrix)
-      names(contrasts_matrix_list) <- age_variable
-      
-      print(outcome_variable)
-      print(2)
-      
-      
-      model <- glm(as.formula(glue(form_base)), data =
-                     afpr[afpr$round %in% include_round & 
-                             complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                      "noncoeth", "age", "gender", "edu", "urban", 
-                                                        "minority", "round", "inhomelang")]), ], 
-                    contrasts = contrasts_matrix_list)
-      
-      model_cfe <- glm(as.formula(glue(form_base_country)), data =
-                         afpr[afpr$round %in% include_round & 
-                                complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                         "noncoeth", "age", "gender", "edu", "urban", 
-                                                         "minority", "round", "inhomelang")]), ],
-                    contrasts = contrasts_matrix_list)
-    }
-    
-    print(3)
-    
-    cv.error.1 <- cv.glm(afpr[afpr$round %in% include_round & 
-                                  complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                           "noncoeth", "age", "gender", "edu", "urban", 
-                                                           "minority", "round", "inhomelang")]), ], model, K = 10)$delta[2]
-    
-    print(cv.error.1)
-    
-    cv.error.2 <- cv.glm(afpr[afpr$round %in% include_round & 
-                                  complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                           "noncoeth", "age", "gender", "edu", "urban", 
-                                                           "minority", "round", "inhomelang")]), ], model_cfe, K = 10)$delta[2]
-    
-    print(cv.error.2)
-    
-    cv.error <- list(cv.error.1, cv.error.2)
-    
-    return(cv.error)
-  })
-
-
-# Test function ----
-
-paste0("{outcome_variable} ~ {age_variable} + ",
-       "noncoeth +", 
-       "age + gender + edu + ",
-       "urban + minority +",
-       "round + inhomelang")
-
-contrasts_matrix_list <- list(x = contrasts_matrix)
-names(contrasts_matrix_list) <- "coarsened_age_30"
-
-afpr_tidy <- afpr[afpr$round %in% 7, ] %>%
-  drop_na(., any_of(c("z_youth_employment","coarsened_age_30", "noncoeth", 
-                      "age", "gender", "edu", "urban", 
-                    "minority", "round", "inhomelang", "country")))
-
-table(afpr_tidy$country)
-table(afpr_tidy$z_youth_pregnancy)
-
-afpr_tidy_2 <- afpr[afpr$round %in% 3:4 & complete.cases(afpr[ , c("z_aids","coarsened_age_30", "noncoeth", "age", "gender", "edu", "urban", 
-                                                                   "minority", "round", "inhomelang")]), ]
-  
-
-model <- glm(as.formula(z_aids ~ coarsened_age_30 + noncoeth + 
-                          age + gender + edu + urban + 
-                          minority + round + inhomelang),
-             data = afpr_tidy 
-             # contrasts = contrasts_matrix_list
-             )
-
-
-cv.error.2 <- cv.glm(afpr_tidy, model, K = 10)$delta[2]
-
-cv.error.2
-
-# No. of factor vars with < 10 observations ----
-
-region_t <- table(afpr$region)
-region_t <- region_t[region_t < 10]
-length(region_t) #19
-
-enumeth_t <- table(afpr$enumeth)
-enumeth_t <- enumeth_t[enumeth_t < 10]
-length(enumeth_t) #7
-
-tribe_t <- table(afpr$tribe)
-tribe_t <- tribe_t[tribe_t < 10]
-length(tribe_t) #143
-
-country_t <- table(afpr$country)
-country_t <- country_t[country_t < 10]
-length(country_t) #0
-
-# No. of factor vars with < 5 observations ----
-
-region_t_5 <- table(afpr$region)
-region_t_5 <- region_t_5[region_t_5 < 5]
-length(region_t_5) #12
-
-enumeth_t_5 <- table(afpr$enumeth)
-enumeth_t_5 <- enumeth_t_5[enumeth_t_5 < 5]
-length(enumeth_t_5) #4
-
-tribe_t_5 <- table(afpr$tribe)
-tribe_t_5 <- tribe_t_5[tribe_t_5 < 5]
-length(tribe_t_5) #80
-
-country_t_5 <- table(afpr$country)
-country_t_5 <- country_t_5[country_t_5 < 5]
-length(country_t_5) #0
-
-# cv.glm guts ----
-
-function (data, glmfit, cost = function(y, yhat) mean((y - yhat)^2), 
-          K = n) 
-{
-  call <- match.call()
-  if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) 
-    runif(1)
-  seed <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  n <- nrow(data)
-  if ((K > n) || (K <= 1)) 
-    stop("'K' outside allowable range")
-  K.o <- K
-  K <- round(K)
-  kvals <- unique(round(n/(1L:floor(n/2))))
-  temp <- abs(kvals - K)
-  if (!any(temp == 0)) 
-    K <- kvals[temp == min(temp)][1L]
-  if (K != K.o) 
-    warning(gettextf("'K' has been set to %f", K), 
-            domain = NA)
-  f <- ceiling(n/K)
-  s <- sample0(rep(1L:K, f), n)
-  n.s <- table(s)
-  glm.y <- glmfit$y
-  cost.0 <- cost(glm.y, fitted(glmfit))
-  ms <- max(s)
-  CV <- 0
-  Call <- glmfit$call
-  for (i in seq_len(ms)) {
-    j.out <- seq_len(n)[(s == i)]
-    j.in <- seq_len(n)[(s != i)]
-    Call$data <- data[j.in, , drop = FALSE]
-    d.glm <- eval.parent(Call)
-    p.alpha <- n.s[i]/n
-    cost.i <- cost(glm.y[j.out], predict(d.glm, data[j.out, 
-                                                     , drop = FALSE], type = "response"))
-    CV <- CV + p.alpha * cost.i
-    cost.0 <- cost.0 - p.alpha * cost(glm.y, predict(d.glm, 
-                                                     data, type = "response"))
-  }
-  list(call = call, K = K, delta = as.numeric(c(CV, CV + cost.0)), 
-       seed = seed)
-}
-
-# Function for stratified sampling ----
-
-stratified <- function(df, column, percent){
-  #split dataframe into groups based on column
-  listdf<-split(df, df[[column]])
-  testsubgroups<-lapply(listdf, function(x){
-    #pick the number of samples per group, round up.
-    numsamples <- ceiling(percent*nrow(x))
-    #selects the rows
-    whichones <-sample(1:nrow(x), numsamples, replace = FALSE)
-    testsubgroup <-x[whichones,] 
-  })  
-  #combine the subgroups into one data frame
-  testgroup<-do.call(rbind, testsubgroups)
-  testgroup
-}
-
-testgroup<-stratified(afpr, "region", 0.1)
-
-s <- boot:::sample0(rep(1L:10, ceiling(nrow(afpr)/10)), nrow(afpr))
-table(s)
-getAnywhere(sample0)
-
-table(afpr$region)
-table(afpr$region)
-
-
-
-# COMPARING LOGISTIC/ORDERED TO LINEAR ----
-
-cv_lin_log <- 
-  pmap(outcome_age_combos, function(outcome, age_variable, round) {
-    
-    if(round == "7") include_round <- 7 else include_round <- 3:4
-    
-    outcome_variable <- paste0(outcome) # "z_" is standardized variables
-    
-    print(outcome_variable)
-    
-    # Run model
-    if(age_variable == "coarsened_age_10") {
-      # Note: no contrasts for 10-year age difference model
-      # because we only have one baseline of interest: same age.
-
-      print(1)
-      
-      model_lin <- glm(as.formula(glue(form_base_country)), data = 
-                         afpr[afpr$round %in% include_round & 
-                                complete.cases(afpr[ , c({outcome_variable},{age_variable},
-                                                         "noncoeth", "age", "gender", "edu", "urban", 
-                                                         "minority", "round", "inhomelang", "country")]), ],
-                       family = "gaussian")
-      
-      if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-
-        print(2)
-        
-        model_log <- glm(as.formula(glue(form_base_factor)),
-                     data = afpr[afpr$round %in% include_round & 
-                                   complete.cases(afpr[ , c({outcome_variable},{age_variable},
-                                                            "noncoeth", "age", "gender", "edu", "urban", 
-                                                            "minority", "round", "inhomelang", "country")]), ],
-                     family = "binomial")
-      } else {
-        # Note: no contrasts for 10-year age difference model
-        # because we only have one baseline of interest: same age.
-        
-        print(3)
-        
-        model_log <- MASS::polr(as.formula(glue(form_base_factor)),
-                            method = "logistic",
-                            data = afpr[afpr$round %in% include_round & 
-                                          complete.cases(afpr[ , c({outcome_variable},{age_variable},
-                                                                   "noncoeth", "age", "gender", "edu", "urban", 
-                                                                   "minority", "round", "inhomelang", "country")]), ],
-                            Hess = T
-                            ) }
-      
-    } else {
-      
-      contrasts_matrix_list <- list(x = contrasts_matrix)
-      names(contrasts_matrix_list) <- age_variable
-      
-      print(4)
-      
-      model_lin <- glm(as.formula(glue(form_base_country)), data =
-                         afpr[afpr$round %in% include_round & 
-                                complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                         "noncoeth", "age", "gender", "edu", "urban", 
-                                                         "minority", "round", "inhomelang", "country")]), ],
-                       contrasts = contrasts_matrix_list)
-      
-      if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-        print(5)
-        
-        model_log <- glm(as.formula(glue(form_base_factor)),
-                     data = afpr[afpr$round %in% include_round & 
-                                   complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                            "noncoeth", "age", "gender", "edu", "urban", 
-                                                            "minority", "round", "inhomelang", "country")]), ],
-                     family = "binomial",
-                     contrasts = contrasts_matrix_list
-        )
-      } else {
-        
-        print(6)
-        
-        model_log <- MASS::polr(as.formula(glue(form_base_factor)),
-                            method = "logistic",
-                            data = afpr[afpr$round %in% include_round & 
-                                          complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                                   "noncoeth", "age", "gender", "edu", "urban", 
-                                                                   "minority", "round", "inhomelang", "country")]), ],
-                            Hess = T
-                            # contrasts = contrasts_matrix
-        ) }
-      
-      
-      
-    }
-    
-    print(7)
-    
-    cv.error.1 <- cv.glm(afpr[afpr$round %in% include_round & 
-                                complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                         "noncoeth", "age", "gender", "edu", "urban", 
-                                                         "minority", "round", "inhomelang", "country")]), ], 
-                         model_lin, K = 10)$delta[2]
-    
-    print(cv.error.1)
-    
-    cv.error.2 <- cv.glm(afpr[afpr$round %in% include_round & 
-                                complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                         "noncoeth", "age", "gender", "edu", "urban", 
-                                                         "minority", "round", "inhomelang", "country")]), ], 
-                         model_log, K = 10)$delta[2]
-    
-    print(cv.error.2)
-    
-    cv.error <- list(cv.error.1, cv.error.2)
-    
-    return(cv.error)
-  })
 
 # Test functions for the second function ----
 
-model_log <- plsRglm::plsRglm(z_aids ~ coarsened_age_10 + noncoeth +
-                                age + gender + edu + urban + minority + round + inhomelang + country,
-                              modele = "pls-glm-logistic",
-                              data = afpr[afpr$round %in% 3:4 & 
-                                            complete.cases(afpr[ , c("aids", "coarsened_age_10", 
-                                                                     "noncoeth", "age", "gender", "edu", "urban", 
-                                                                     "minority", "round", "inhomelang", "country")]), ],
-                              Hess = T)
-
-model_lin <- rms::ols(z_aids ~ coarsened_age_30 + noncoeth +
+model_lin <- rms::ols(youth_employment ~ coarsened_age_10 + noncoeth +
                         age + gender + edu + urban + minority + round + inhomelang + country, 
                       data = 
-                        droplevels(afpr[afpr$round %in% 3:4 & 
-                                          complete.cases(afpr[ , c("aids", "coarsened_age_30",
+                        droplevels(afpr[afpr$round %in% 7 & 
+                                          complete.cases(afpr[ , c("youth_employment", "coarsened_age_10",
                                                                    "noncoeth", "age", "gender", "edu", "urban", 
                                                                    "minority", "round", "inhomelang", "country")]), ]),
                       x = TRUE,  # need x and y to be TRUE for validate.ols to work
                       y = TRUE)
+cv.error.1 <- rms::validate(model_lin, method = "crossvalidation", B = 10)
+cv.error.1
 
 levels(afpr$coarsened_age_30)
 
@@ -449,7 +103,7 @@ contrast(model_lin, contrasts)
 # The most recent function with rms, split by round ----
 
 cv_lin_log_3_4 <- 
-  pmap(outcome_age_combos_3_4, function(outcome, age_variable, round) {
+  pmap_dfr(outcome_age_combos_3_4, function(outcome, age_variable, round) {
     
     if(round == "7") include_round <- 7 else include_round <- 3:4
     
@@ -550,22 +204,46 @@ cv_lin_log_3_4 <-
     cv.error.2 <- rms::validate(model_log, method = "crossvalidation", B = 10)
     
     cv.error.1 <- as.numeric(cv.error.1[3,3])
-    cv.error.1 <- exp(cv.error.1)/I(1 + exp(cv.error.1))
+    # cv.error.1 <- exp(cv.error.1)/I(1 + exp(cv.error.1))
     
     if(dim(cv.error.2)[1] == 5) {
       cv.error.2 <- as.numeric(cv.error.2[4,3])
+      cv.error.3 <- NA
     } else {
       cv.error.2 <- as.numeric(cv.error.2[10,3])
     }
-    cv.error.2 <- exp(cv.error.2)/I(1 + exp(cv.error.2))
+    # cv.error.2.a <- exp(cv.error.2.a)/I(1 + exp(cv.error.2.a))
     
-    cv.error <- c(cv.error.1, cv.error.2)
+    winner <- ifelse(cv.error.1 > cv.error.2, 1.0, ifelse(cv.error.1 < cv.error.2, 2.0, NA))
+    
+    cv.error <- data.frame("linear" = cv.error.1, "log/ordered" = cv.error.2, "winner" = winner)
     
     return(cv.error)
   })
+  
+
+#       index.orig training   test optimism index.corrected  n
+# rho       0.1372   0.1374 0.1324   0.0050          0.1321 10
+# R2        0.0358   0.0360 0.0335   0.0025          0.0333 10
+# Slope     1.0000   1.0000 0.9614   0.0386          0.9614 10
+# g         0.5017   0.5028 0.4827   0.0201          0.4816 10
+# pdm       0.3843   0.3843 0.3842   0.0000          0.3842 10
+
+#           index.orig training   test optimism index.corrected  n
+# Dxy           0.2700   0.2703 0.2655   0.0048          0.2653 10
+# R2            0.0596   0.0597 0.0579   0.0018          0.0578 10
+# Intercept     0.0000   0.0000 0.0215  -0.0215          0.0215 10
+# Slope         1.0000   1.0000 0.9815   0.0185          0.9815 10
+# Emax          0.0000   0.0000 0.0079   0.0079          0.0079 10
+# D             0.0405   0.0406 0.0391   0.0015          0.0390 10
+# U            -0.0001  -0.0001 0.0002  -0.0003          0.0002 10
+# Q             0.0406   0.0406 0.0389   0.0018          0.0388 10
+# B             0.1740   0.1739 0.1743  -0.0003          0.1743 10
+# g             0.5674   0.5679 0.5570   0.0109          0.5564 10
+# gp            0.0976   0.0977 0.0959   0.0019          0.0958 10
 
 cv_lin_log_7 <- 
-  pmap(outcome_age_combos_7, function(outcome, age_variable, round) {
+  pmap_dfr(outcome_age_combos_7, function(outcome, age_variable, round) {
     
     if(round == "7") include_round <- 7 else include_round <- 3:4
     
@@ -586,9 +264,7 @@ cv_lin_log_7 <-
                                                                          "noncoeth", "age", "gender", "edu", "urban", 
                                                                          "minority", "round", "inhomelang", "country")]), ]),
                             x = TRUE,  # need x and y to be TRUE for validate.ols to work
-                            y = TRUE
-      )
-      
+                            y = TRUE)
       
       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
         
@@ -628,9 +304,7 @@ cv_lin_log_7 <-
                                                                          "noncoeth", "age", "gender", "edu", "urban", 
                                                                          "minority", "round", "inhomelang", "country")]), ]),
                             x = TRUE,
-                            y = TRUE
-                            # contrasts = contrasts_matrix_list
-      ) 
+                            y = TRUE) 
       
       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
         print(5)
@@ -660,149 +334,32 @@ cv_lin_log_7 <-
       
     }
     
-    
     print(7)
     
     cv.error.1 <- rms::validate(model_lin, method = "crossvalidation", B = 10)
     cv.error.2 <- rms::validate(model_log, method = "crossvalidation", B = 10)
     
     cv.error.1 <- as.numeric(cv.error.1[3,3])
-    cv.error.1 <- exp(cv.error.1)/I(1 + exp(cv.error.1)) # Converting log-odds to probabilities: e^(g)/(1 + e^(g)) 
+    # cv.error.1 <- exp(cv.error.1)/I(1 + exp(cv.error.1)) # Converting log-odds to probabilities: e^(g)/(1 + e^(g)) 
     
     # no need for an ifelse statement here bc there's no binary outcomes
     
     cv.error.2 <- as.numeric(cv.error.2[4,3])
-    cv.error.2 <- exp(cv.error.2)/I(1 + exp(cv.error.2))
+    # cv.error.2 <- exp(cv.error.2)/I(1 + exp(cv.error.2))
     
-    cv.error <- c(cv.error.1, cv.error.2)
+    # cv.error <- c(cv.error.1, cv.error.2)
+    
+    winner <- ifelse(cv.error.1 > cv.error.2, 1.0, ifelse(cv.error.1 < cv.error.2, 2.0, NA))
+    
+    cv.error <- data.frame("linear" = cv.error.1, "log.ordered" = cv.error.2, "winner" = winner)
     
     return(cv.error)
   })
 
-cv_lin_log <- c(cv_lin_log_3_4, cv_lin_log_7)
+cv_lin_log_x <- rbind(cv_lin_log_3_4, cv_lin_log_7)
+cv_lin_log_x <- cv_lin_log_x %>%
+  na_if(., 'NaN')
 
+x <- colMeans(cv_lin_log_x, na.rm = TRUE) 
 
-# I chose the test one but idk if this is the correct choice?
-# index.orig           0.55129127
-# training             0.55210914
-# test                 0.53573864
-# optimism             0.01637051
-# index.corrected      0.53492077
-# n                    10.00000000
-
-# cv_lin_log_7 <- 
-#   pmap(outcome_age_combos_7, function(outcome, age_variable, round) {
-#     
-#     if(round == "7") include_round <- 7 else include_round <- 3:4
-#     
-#     outcome_variable <- outcome # not standardizing variables
-#     
-#     print(outcome_variable)
-#     
-#     # Run model
-#     if(age_variable == "coarsened_age_10") {
-#       # Note: no contrasts for 10-year age difference model
-#       # because we only have one baseline of interest: same age.
-#       
-#       print(1)
-#       
-#       model_lin <- rms::ols(as.formula(glue(form_base_7)), data = 
-#                               droplevels(afpr[afpr$round %in% include_round & 
-#                                                 complete.cases(afpr[ , c({outcome_variable},{age_variable},
-#                                                                          "noncoeth", "age", "gender", "edu", "urban", 
-#                                                                          "minority", "round", "inhomelang", "country")]), ]),
-#                             x = TRUE,  # need x and y to be TRUE for validate.ols to work
-#                             y = TRUE
-#       )
-#       
-#       
-#       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-#         
-#         print(2)
-#         
-#         model_log <- rms::lrm(as.formula(glue(form_base_factor_7)),
-#                               data = droplevels(afpr[afpr$round %in% include_round & 
-#                                                        complete.cases(afpr[ , c({outcome_variable},{age_variable},
-#                                                                                 "noncoeth", "age", "gender", "edu", "urban", 
-#                                                                                 "minority", "round", "inhomelang", "country")]), ]),
-#                               x = TRUE,
-#                               y = TRUE)
-#       } else {
-#         # Note: no contrasts for 10-year age difference model
-#         # because we only have one baseline of interest: same age.
-#         
-#         print(3)
-#         
-#         model_log <- rms::orm(as.formula(glue(form_base_factor_7)),
-#                               data = afpr[afpr$round %in% include_round & 
-#                                             complete.cases(afpr[ , c({outcome_variable},{age_variable},
-#                                                                      "noncoeth", "age", "gender", "edu", "urban", 
-#                                                                      "minority", "round", "inhomelang", "country")]), ],
-#                               x = TRUE,
-#                               y = TRUE ) }
-#       
-#     } else {
-#       
-#       contrasts_matrix_list <- list(x = contrasts_matrix)
-#       names(contrasts_matrix_list) <- age_variable
-#       
-#       print(4)
-#       
-#       model_lin <- rms::ols(as.formula(glue(form_base_7)), data =
-#                               droplevels(afpr[afpr$round %in% include_round & 
-#                                                 complete.cases(afpr[ , c({outcome_variable},{age_variable},
-#                                                                          "noncoeth", "age", "gender", "edu", "urban", 
-#                                                                          "minority", "round", "inhomelang", "country")]), ]),
-#                             x = TRUE,
-#                             y = TRUE
-#                             # contrasts = contrasts_matrix_list
-#       ) 
-#       
-#       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-#         print(5)
-#         
-#         model_log <- rms::lrm(as.formula(glue(form_base_factor_7)),
-#                               droplevels(afpr[afpr$round %in% include_round & 
-#                                                 complete.cases(afpr[ , c({outcome_variable},{age_variable},
-#                                                                          "noncoeth", "age", "gender", "edu", "urban", 
-#                                                                          "minority", "round", "inhomelang", "country")]), ]),
-#                               x = TRUE,
-#                               y = TRUE
-#                               # contrasts = contrasts_matrix_list
-#         )
-#       } else {
-#         
-#         print(6)
-#         
-#         model_log <- rms::orm(as.formula(glue(form_base_factor_7)),
-#                               data = afpr[afpr$round %in% include_round & 
-#                                             complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-#                                                                      "noncoeth", "age", "gender", "edu", "urban", 
-#                                                                      "minority", "round", "inhomelang", "country")]), ],
-#                               x = TRUE,
-#                               y = TRUE
-#                               # contrasts = contrasts_matrix
-#         ) }
-#       
-#     }
-#     
-#     
-#     print(7)
-#     
-#     cv.error.1 <- rms::validate(model_lin, method = "crossvalidation", B = 10)
-#     cv.error.2 <- rms::validate(model_log, method = "crossvalidation", B = 10)
-#     
-#     # cv.error.1 <- as.numeric(cv.error.1[3,3])
-#     # exp(cv.error.1)/I(1 + exp(cv.error.1)) # Converting log-odds to probabilities: e^(g)/(1 + e^(g)) 
-#     # 
-#     # if(dim(cv.error.2)[1] == 5) {
-#     #   cv.error.2 <- as.numeric(cv.error.2[4,3])
-#     # } else {
-#     #   cv.error.2 <- as.numeric(cv.error.2[10,3])
-#     # }
-#     # exp(cv.error.2)/I(1 + exp(cv.error.2))
-#     
-#     cv.error <- list(cv.error.1, cv.error.2)
-#     
-#     return(cv.error)
-#   })
+cv_lin_log <- rbind(cv_lin_log_x, x) #appending it to the end of the df seems like a bad idea
