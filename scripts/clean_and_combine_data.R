@@ -173,13 +173,11 @@ ab7_full <- ab7_full %>%
                                        NA, 
                                        treatedunfairly_group)) %>%
   mutate(idrank = ifelse(idrank %in% c(-1, 7, 8, 9, 99), NA, idrank - 1)) %>%
-  mutate(gender = case_when(gender == 2 ~ 0,
-                            gender == 1 ~ 1,
+  mutate(gender = case_when(gender == 2 ~ 0, #2 = female
+                            gender == 1 ~ 1, #1 = male
                             gender == -1 ~ NA_real_)) %>%
   mutate(urban = ifelse(urban == 1, 1, 0)) %>%
   mutate(round = 7)
-
-
 
 # FIX THE REGION VARIABLE SO IT MATCHES IN ALL ROUNDS ----
 
