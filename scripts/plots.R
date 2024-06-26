@@ -119,12 +119,12 @@ plotfun_integrated <- function(data) {
     ylab("\nEstimated effect (in SDs) of age difference, with 95% confidence intervals")
 }
 
-x <- age_diff_models_int %>%
-  filter(country == "All") %>%
-  filter(group == "stat_outcomes") %>%
-  filter(age_variable != "coarsened_age_10") %>%
-  filter(age_variable != "coarsened_age_35_originalscale" ) %>%
-  filter(term != "noncoeth")
+# x <- age_diff_models_int %>%
+#   filter(country == "All") %>%
+#   filter(group == "stat_outcomes") %>%
+#   filter(age_variable != "coarsened_age_10") %>%
+#   filter(age_variable != "coarsened_age_35_originalscale" ) %>%
+#   filter(term != "noncoeth")
 
 # Age plots w/ all cutoffs ----
 
@@ -428,9 +428,45 @@ age_diff_models %>%
 
 # For the paper: 35 year age difference plots with country fixed effects ----
 
+age_diff_models_cfe <- readRDS("data_clean/age_diff_models_countryfe.rds")
+
+age_diff_models_fe <- age_diff_models_cfe %>%
+  filter(country == "All") %>%
+  filter(!(term %in% c("coarsened_age_30", "coarsened_age_35", "coarsened_age_40"))) %>%
+  mutate(age =
+           case_when(grepl("old", ignore.case = T, term) ~
+                       "old",
+                     grepl("young", ignore.case = T, term) ~
+                       "young",
+                     TRUE ~ term)) %>%
+  mutate(age_label =
+           case_when(grepl("old", ignore.case = T, age) ~
+                       "Effect of old interviewer on young respondents",
+                     grepl("young", ignore.case = T, age) ~
+                       "Effect of young interviewer on old respondents",
+                     grepl("noncoeth", ignore.case = T, age) ~
+                       "Non-coethnic interviewer",
+                     TRUE ~ age)) %>%
+  rename(p_value = p.value) %>%
+  select(-term, -std.error, -statistic, -n_obs) %>%
+  pivot_wider(names_from = c(age_variable), 
+              values_from = c(estimate, p_value, upper, lower),
+              names_sep = ".")
+# %>%
+#   mutate(., sig_across = ifelse(age != "noncoeth", 
+#                                 ifelse(p_value.coarsened_age_30 < 0.05 &
+#                                          p_value.coarsened_age_35 < 0.05 &
+#                                          p_value.coarsened_age_40 < 0.05, 1, 0), 0)) %>%
+#   mutate(., sign_flip = ifelse(age != "noncoeth", 
+#                                ifelse(p_value.coarsened_age_35 < 0.05,
+#                                       ifelse(p_value.coarsened_age_40 < 0.05 &
+#                                                lower.coarsened_age_35*lower.coarsened_age_40 < 0 , 1,
+#                                              ifelse(p_value.coarsened_age_30 < 0.05 &
+#                                                       lower.coarsened_age_35*lower.coarsened_age_30 < 0 , 1, 0)), 0), 0)) 
+
 plotfun_wide_fe <- function(data) {
   data %>%
-    mutate(label = fct_relevel(fct_reorder(label, estimate.coarsened_age_35, .desc = TRUE), # replaced .fun = max
+    mutate(label = fct_relevel(fct_reorder(label, estimate.coarsened_age_35, .fun = max),
                                "Knows MP's name", "Exposure to vote buying")) %>%
     ggplot(aes(label,
                estimate.coarsened_age_35,
@@ -438,11 +474,11 @@ plotfun_wide_fe <- function(data) {
                shape = age_label
                # linetype = factor(sign_flip), # extra visual indicators for sign_flip and sig_across conditions
                # size = factor(sig_across)
-               )) +
+    )) +
     theme_linedraw() +
     geom_point(position = position_dodge(width = 0.5)
                # size = 2
-               ) +
+    ) +
     geom_errorbar(aes(ymin = lower.coarsened_age_35, 
                       ymax = upper.coarsened_age_35), 
                   width = 0.4,
@@ -473,39 +509,8 @@ plotfun_wide_fe <- function(data) {
     ) +
     ylab("\nEstimated effect (in SDs) of non-coethnic interviewer \nand age difference, with 95% confidence intervals: \n Fixed effects by country only") }
 
-age_diff_models_fe <- age_diff_models_countryfe %>%
-  mutate(age =
-           case_when(grepl("old", ignore.case = T, term) ~
-                       "old",
-                     grepl("young", ignore.case = T, term) ~
-                       "young",
-                     TRUE ~ term)) %>%
-  mutate(age_label =
-           case_when(grepl("old", ignore.case = T, age) ~
-                       "Effect of old interviewer on young respondents",
-                     grepl("young", ignore.case = T, age) ~
-                       "Effect of young interviewer on old respondents",
-                     grepl("noncoeth", ignore.case = T, age) ~
-                       "Non-coethnic interviewer",
-                     TRUE ~ age)) %>%
-  rename(p_value = p.value) %>%
-  select(-term, -std.error, -statistic, -n_obs) %>%
-  filter(age_variable != "coarsened_age_10") %>%
-  filter(age_variable != "coarsened_age_35_originalscale") %>%
-  pivot_wider(names_from = c(age_variable), 
-              values_from = c(estimate, p_value, upper, lower),
-              names_sep = ".") 
-# %>%
-#   mutate(., sig_across = ifelse(age != "noncoeth", 
-#                                 ifelse(p_value.coarsened_age_30 < 0.05 &
-#                                          p_value.coarsened_age_35 < 0.05 &
-#                                          p_value.coarsened_age_40 < 0.05, 1, 0), 0)) %>%
-#   mutate(., sign_flip = ifelse(age != "noncoeth", 
-#                                ifelse(p_value.coarsened_age_35 < 0.05,
-#                                       ifelse(p_value.coarsened_age_40 < 0.05 &
-#                                                lower.coarsened_age_35*lower.coarsened_age_40 < 0 , 1,
-#                                              ifelse(p_value.coarsened_age_30 < 0.05 &
-#                                                       lower.coarsened_age_35*lower.coarsened_age_30 < 0 , 1, 0)), 0), 0)) 
+# Changing label to a factor (necessary for fct_reorder() function)
+age_diff_models_fe$label <- as.factor(age_diff_models_fe$label)
 
 plot35yr_countryfe <- lapply(unique(age_diff_models_fe$group), function(x) {
   plot <- age_diff_models_fe %>%
@@ -530,7 +535,7 @@ plot35yr_countryfe <- lapply(unique(age_diff_models_fe$group), function(x) {
   }
   return(plot)
 }) %>%
-  "names<-"(unique(age_diff_models_countryfe$group))
+  "names<-"(unique(age_diff_models_fe$group))
 
 
 plot35yr_countryfe$youth_outcomes <- plot35yr_countryfe$youth_outcomes +

@@ -11,57 +11,57 @@
 "10","Interviewer 35 and under (relative to both over 35)","Respondent was suspicious",0.0759,0.0131,0.1015,0.0502
 "11","Interviewer over 35 (relative to both 35 and under)","Respondent was suspicious",-0.0773,0.0137,-0.0504,-0.1043
 "12","Non-coethnic interviewer","Respondent was suspicious",0.0251,0.0081,0.0411,0.0091
-"13","Interviewer 35 and under (relative to both over 35)","Preference for democracy",-0.0189,0.0113,0.0032,-0.041
-"14","Interviewer over 35 (relative to both 35 and under)","Preference for democracy",0.0534,0.0113,0.0756,0.0313
-"15","Non-coethnic interviewer","Preference for democracy",0.0182,0.0069,0.0317,0.0046
-"16","Interviewer 35 and under (relative to both over 35)","Approval of president's performance",-0.0062,0.0122,0.0178,-0.0301
-"17","Interviewer over 35 (relative to both 35 and under)","Approval of president's performance",0.019,0.0125,0.0436,-0.0055
-"18","Non-coethnic interviewer","Approval of president's performance",0.026,0.0073,0.0403,0.0118
-"19","Interviewer 35 and under (relative to both over 35)","Exposure to vote buying",0.1002,0.0282,0.1555,0.045
-"20","Interviewer over 35 (relative to both 35 and under)","Exposure to vote buying",-0.0508,0.0307,0.0095,-0.111
-"21","Non-coethnic interviewer","Exposure to vote buying",0.0034,0.0207,0.0439,-0.0372
-"22","Interviewer 35 and under (relative to both over 35)","Country's economic conditions",0.123,0.0309,0.1837,0.0624
-"23","Interviewer over 35 (relative to both 35 and under)","Country's economic conditions",-0.1634,0.0312,-0.1023,-0.2245
-"24","Non-coethnic interviewer","Country's economic conditions",0.0275,0.0191,0.0649,-0.0099
-"25","Interviewer 35 and under (relative to both over 35)","Trust in ruling party",-0.0269,0.0282,0.0283,-0.0822
-"26","Interviewer over 35 (relative to both 35 and under)","Trust in ruling party",0.1005,0.029,0.1574,0.0436
-"27","Non-coethnic interviewer","Trust in ruling party",0.0666,0.017,0.1,0.0333
-"28","Interviewer 35 and under (relative to both over 35)","Distrust in opposition parties",-0.0715,0.0283,-0.0159,-0.127
-"29","Interviewer over 35 (relative to both 35 and under)","Distrust in opposition parties",0.0976,0.0289,0.1543,0.0409
-"30","Non-coethnic interviewer","Distrust in opposition parties",-0.0286,0.0172,0.005,-0.0623
-"31","Interviewer 35 and under (relative to both over 35)","Government's handling of the economy",0.0884,0.025,0.1374,0.0394
-"32","Interviewer over 35 (relative to both 35 and under)","Government's handling of the economy",-0.0899,0.0254,-0.0402,-0.1396
-"33","Non-coethnic interviewer","Government's handling of the economy",-0.0038,0.0146,0.0248,-0.0324
-"34","Interviewer 35 and under (relative to both over 35)","Voted in last national election",-0.0325,0.0094,-0.014,-0.051
-"35","Interviewer over 35 (relative to both 35 and under)","Voted in last national election",0.0166,0.0122,0.0404,-0.0073
-"36","Non-coethnic interviewer","Voted in last national election",0.0134,0.0068,0.0267,1e-04
-"37","Interviewer 35 and under (relative to both over 35)","Interest in public affairs",-0.0466,0.0265,0.0053,-0.0985
-"38","Interviewer over 35 (relative to both 35 and under)","Interest in public affairs",0.099,0.0276,0.1532,0.0448
-"39","Non-coethnic interviewer","Interest in public affairs",-0.0021,0.0166,0.0304,-0.0346
-"40","Interviewer 35 and under (relative to both over 35)","Attendance at community meetings",0.0413,0.0328,0.1055,-0.023
-"41","Interviewer over 35 (relative to both 35 and under)","Attendance at community meetings",0.0956,0.0328,0.16,0.0312
-"42","Non-coethnic interviewer","Attendance at community meetings",0.0207,0.019,0.058,-0.0165
-"43","Interviewer 35 and under (relative to both over 35)","Knows MP's name",0.0013,0.0092,0.0193,-0.0167
-"44","Interviewer over 35 (relative to both 35 and under)","Knows MP's name",0.0066,0.0093,0.0249,-0.0117
-"45","Non-coethnic interviewer","Knows MP's name",-0.0249,0.0064,-0.0124,-0.0374
-"46","Interviewer 35 and under (relative to both over 35)","Own present living conditions good",0.115,0.0296,0.173,0.0571
-"47","Interviewer over 35 (relative to both 35 and under)","Own present living conditions good",-0.171,0.0302,-0.1117,-0.2303
-"48","Non-coethnic interviewer","Own present living conditions good",-0.0296,0.0183,0.0061,-0.0654
-"49","Interviewer 35 and under (relative to both over 35)","Has always had enough food",-0.0139,0.0304,0.0457,-0.0735
-"50","Interviewer over 35 (relative to both 35 and under)","Has always had enough food",0.0109,0.0311,0.0718,-0.05
-"51","Non-coethnic interviewer","Has always had enough food",-0.0328,0.018,0.0026,-0.0681
-"52","Interviewer 35 and under (relative to both over 35)","Has always had cash income",-0.0956,0.0321,-0.0326,-0.1586
-"53","Interviewer over 35 (relative to both 35 and under)","Has always had cash income",0.1487,0.0333,0.214,0.0835
-"54","Non-coethnic interviewer","Has always had cash income",-0.0232,0.0195,0.0151,-0.0615
-"55","Interviewer 35 and under (relative to both over 35)","Has always had clean water",-0.0031,0.0339,0.0633,-0.0695
-"56","Interviewer over 35 (relative to both 35 and under)","Has always had clean water",0.1114,0.0353,0.1807,0.0421
-"57","Non-coethnic interviewer","Has always had clean water",-0.0228,0.0208,0.018,-0.0637
-"58","Interviewer 35 and under (relative to both over 35)","Has not feared crime in own home",-0.0737,0.0322,-0.0105,-0.1369
-"59","Interviewer over 35 (relative to both 35 and under)","Has not feared crime in own home",0.0896,0.0327,0.1536,0.0256
-"60","Non-coethnic interviewer","Has not feared crime in own home",-0.0515,0.0181,-0.0159,-0.087
-"61","Interviewer 35 and under (relative to both over 35)","Does not know someone who died of AIDS",0.0034,0.0111,0.0252,-0.0185
-"62","Interviewer over 35 (relative to both 35 and under)","Does not know someone who died of AIDS",0.0107,0.0115,0.0333,-0.0118
-"63","Non-coethnic interviewer","Does not know someone who died of AIDS",-0.0052,0.0065,0.0076,-0.018
+"13","Interviewer 35 and under (relative to both over 35)","Exposure to vote buying",0.1002,0.0282,0.1555,0.045
+"14","Interviewer over 35 (relative to both 35 and under)","Exposure to vote buying",-0.0508,0.0307,0.0095,-0.111
+"15","Non-coethnic interviewer","Exposure to vote buying",0.0034,0.0207,0.0439,-0.0372
+"16","Interviewer 35 and under (relative to both over 35)","Knows MP's name",0.0013,0.0092,0.0193,-0.0167
+"17","Interviewer over 35 (relative to both 35 and under)","Knows MP's name",0.0066,0.0093,0.0249,-0.0117
+"18","Non-coethnic interviewer","Knows MP's name",-0.0249,0.0064,-0.0124,-0.0374
+"19","Interviewer 35 and under (relative to both over 35)","Approval of president's performance",-0.0062,0.0122,0.0178,-0.0301
+"20","Interviewer over 35 (relative to both 35 and under)","Approval of president's performance",0.019,0.0125,0.0436,-0.0055
+"21","Non-coethnic interviewer","Approval of president's performance",0.026,0.0073,0.0403,0.0118
+"22","Interviewer 35 and under (relative to both over 35)","Attendance at community meetings",0.0413,0.0328,0.1055,-0.023
+"23","Interviewer over 35 (relative to both 35 and under)","Attendance at community meetings",0.0956,0.0328,0.16,0.0312
+"24","Non-coethnic interviewer","Attendance at community meetings",0.0207,0.019,0.058,-0.0165
+"25","Interviewer 35 and under (relative to both over 35)","Interest in public affairs",-0.0466,0.0265,0.0053,-0.0985
+"26","Interviewer over 35 (relative to both 35 and under)","Interest in public affairs",0.099,0.0276,0.1532,0.0448
+"27","Non-coethnic interviewer","Interest in public affairs",-0.0021,0.0166,0.0304,-0.0346
+"28","Interviewer 35 and under (relative to both over 35)","Preference for democracy",-0.0189,0.0113,0.0032,-0.041
+"29","Interviewer over 35 (relative to both 35 and under)","Preference for democracy",0.0534,0.0113,0.0756,0.0313
+"30","Non-coethnic interviewer","Preference for democracy",0.0182,0.0069,0.0317,0.0046
+"31","Interviewer 35 and under (relative to both over 35)","Distrust in opposition parties",-0.0715,0.0283,-0.0159,-0.127
+"32","Interviewer over 35 (relative to both 35 and under)","Distrust in opposition parties",0.0976,0.0289,0.1543,0.0409
+"33","Non-coethnic interviewer","Distrust in opposition parties",-0.0286,0.0172,0.005,-0.0623
+"34","Interviewer 35 and under (relative to both over 35)","Trust in ruling party",-0.0269,0.0282,0.0283,-0.0822
+"35","Interviewer over 35 (relative to both 35 and under)","Trust in ruling party",0.1005,0.029,0.1574,0.0436
+"36","Non-coethnic interviewer","Trust in ruling party",0.0666,0.017,0.1,0.0333
+"37","Interviewer 35 and under (relative to both over 35)","Voted in last national election",-0.0325,0.0094,-0.014,-0.051
+"38","Interviewer over 35 (relative to both 35 and under)","Voted in last national election",0.0166,0.0122,0.0404,-0.0073
+"39","Non-coethnic interviewer","Voted in last national election",0.0134,0.0068,0.0267,1e-04
+"40","Interviewer 35 and under (relative to both over 35)","Own present living conditions good",0.115,0.0296,0.173,0.0571
+"41","Interviewer over 35 (relative to both 35 and under)","Own present living conditions good",-0.171,0.0302,-0.1117,-0.2303
+"42","Non-coethnic interviewer","Own present living conditions good",-0.0296,0.0183,0.0061,-0.0654
+"43","Interviewer 35 and under (relative to both over 35)","Has always had enough food",-0.0139,0.0304,0.0457,-0.0735
+"44","Interviewer over 35 (relative to both 35 and under)","Has always had enough food",0.0109,0.0311,0.0718,-0.05
+"45","Non-coethnic interviewer","Has always had enough food",-0.0328,0.018,0.0026,-0.0681
+"46","Interviewer 35 and under (relative to both over 35)","Has always had cash income",-0.0956,0.0321,-0.0326,-0.1586
+"47","Interviewer over 35 (relative to both 35 and under)","Has always had cash income",0.1487,0.0333,0.214,0.0835
+"48","Non-coethnic interviewer","Has always had cash income",-0.0232,0.0195,0.0151,-0.0615
+"49","Interviewer 35 and under (relative to both over 35)","Has always had clean water",-0.0031,0.0339,0.0633,-0.0695
+"50","Interviewer over 35 (relative to both 35 and under)","Has always had clean water",0.1114,0.0353,0.1807,0.0421
+"51","Non-coethnic interviewer","Has always had clean water",-0.0228,0.0208,0.018,-0.0637
+"52","Interviewer 35 and under (relative to both over 35)","Has not feared crime in own home",-0.0737,0.0322,-0.0105,-0.1369
+"53","Interviewer over 35 (relative to both 35 and under)","Has not feared crime in own home",0.0896,0.0327,0.1536,0.0256
+"54","Non-coethnic interviewer","Has not feared crime in own home",-0.0515,0.0181,-0.0159,-0.087
+"55","Interviewer 35 and under (relative to both over 35)","Does not know someone who died of AIDS",0.0034,0.0111,0.0252,-0.0185
+"56","Interviewer over 35 (relative to both 35 and under)","Does not know someone who died of AIDS",0.0107,0.0115,0.0333,-0.0118
+"57","Non-coethnic interviewer","Does not know someone who died of AIDS",-0.0052,0.0065,0.0076,-0.018
+"58","Interviewer 35 and under (relative to both over 35)","Government's handling of the economy",0.0884,0.025,0.1374,0.0394
+"59","Interviewer over 35 (relative to both 35 and under)","Government's handling of the economy",-0.0899,0.0254,-0.0402,-0.1396
+"60","Non-coethnic interviewer","Government's handling of the economy",-0.0038,0.0146,0.0248,-0.0324
+"61","Interviewer 35 and under (relative to both over 35)","Country's economic conditions",0.123,0.0309,0.1837,0.0624
+"62","Interviewer over 35 (relative to both 35 and under)","Country's economic conditions",-0.1634,0.0312,-0.1023,-0.2245
+"63","Non-coethnic interviewer","Country's economic conditions",0.0275,0.0191,0.0649,-0.0099
 "64","Interviewer 35 and under (relative to both over 35)","Ethnic vs. national identification",-0.0782,0.0313,-0.0169,-0.1395
 "65","Interviewer over 35 (relative to both 35 and under)","Ethnic vs. national identification",0.0416,0.0314,0.1032,-0.02
 "66","Non-coethnic interviewer","Ethnic vs. national identification",0.0305,0.0183,0.0665,-0.0054
@@ -83,24 +83,24 @@
 "82","Interviewer 35 and under (relative to both over 35)","Ethnic group is treated unfairly",0.0665,0.024,0.1135,0.0194
 "83","Interviewer over 35 (relative to both 35 and under)","Ethnic group is treated unfairly",-0.1127,0.0246,-0.0646,-0.1608
 "84","Non-coethnic interviewer","Ethnic group is treated unfairly",-0.0963,0.0152,-0.0665,-0.1261
-"85","Interviewer 35 and under (relative to both over 35)","Bad gov't handling of addressing needs of youth",-0.0185,0.0201,0.021,-0.058
-"86","Interviewer over 35 (relative to both 35 and under)","Bad gov't handling of addressing needs of youth",-0.0243,0.0197,0.0142,-0.0629
-"87","Non-coethnic interviewer","Bad gov't handling of addressing needs of youth",0.0067,0.0156,0.0374,-0.0239
-"88","Interviewer 35 and under (relative to both over 35)","Bad gov't handling of youth employment",-0.2658,0.0698,-0.129,-0.4026
-"89","Interviewer over 35 (relative to both 35 and under)","Bad gov't handling of youth employment",0.1462,0.0874,0.3176,-0.0252
-"90","Non-coethnic interviewer","Bad gov't handling of youth employment",-0.0474,0.0525,0.0556,-0.1503
-"91","Interviewer 35 and under (relative to both over 35)","Bad gov't handling teenage pregnancy",-0.2412,0.077,-0.0903,-0.3921
-"92","Interviewer over 35 (relative to both 35 and under)","Bad gov't handling teenage pregnancy",0.1827,0.1012,0.3811,-0.0157
-"93","Non-coethnic interviewer","Bad gov't handling teenage pregnancy",-0.0278,0.0728,0.1149,-0.1704
-"94","Interviewer 35 and under (relative to both over 35)","Bad gov't handling of drug abuse among youth",-0.2331,0.0749,-0.0863,-0.3798
-"95","Interviewer over 35 (relative to both 35 and under)","Bad gov't handling of drug abuse among youth",0.1718,0.1019,0.3714,-0.0279
-"96","Non-coethnic interviewer","Bad gov't handling of drug abuse among youth",-0.1514,0.0655,-0.0229,-0.2798
-"97","Interviewer 35 and under (relative to both over 35)","Bad gov't handling of underage consumption of alcohol",-0.2807,0.073,-0.1376,-0.4237
-"98","Interviewer over 35 (relative to both 35 and under)","Bad gov't handling of underage consumption of alcohol",0.1565,0.0961,0.3449,-0.0319
-"99","Non-coethnic interviewer","Bad gov't handling of underage consumption of alcohol",-0.1307,0.0643,-0.0047,-0.2568
-"100","Interviewer 35 and under (relative to both over 35)","Bad gov't handling of youth delinquency",-0.2354,0.0733,-0.0918,-0.379
-"101","Interviewer over 35 (relative to both 35 and under)","Bad gov't handling of youth delinquency",0.1801,0.0972,0.3705,-0.0104
-"102","Non-coethnic interviewer","Bad gov't handling of youth delinquency",-0.1221,0.0639,0.0032,-0.2474
-"103","Interviewer 35 and under (relative to both over 35)","Bad gov't handling of smoking among youth",-0.1867,0.0671,-0.0552,-0.3182
-"104","Interviewer over 35 (relative to both 35 and under)","Bad gov't handling of smoking among youth",0.0632,0.0939,0.2472,-0.1208
-"105","Non-coethnic interviewer","Bad gov't handling of smoking among youth",-0.0865,0.0636,0.0381,-0.2111
+"85","Interviewer 35 and under (relative to both over 35)","Good gov't handling of addressing needs of youth",-0.0185,0.0201,0.021,-0.058
+"86","Interviewer over 35 (relative to both 35 and under)","Good gov't handling of addressing needs of youth",-0.0243,0.0197,0.0142,-0.0629
+"87","Non-coethnic interviewer","Good gov't handling of addressing needs of youth",0.0067,0.0156,0.0374,-0.0239
+"88","Interviewer 35 and under (relative to both over 35)","Good gov't handling of youth employment",-0.2658,0.0698,-0.129,-0.4026
+"89","Interviewer over 35 (relative to both 35 and under)","Good gov't handling of youth employment",0.1462,0.0874,0.3176,-0.0252
+"90","Non-coethnic interviewer","Good gov't handling of youth employment",-0.0474,0.0525,0.0556,-0.1503
+"91","Interviewer 35 and under (relative to both over 35)","Good gov't handling teenage pregnancy",-0.2412,0.077,-0.0903,-0.3921
+"92","Interviewer over 35 (relative to both 35 and under)","Good gov't handling teenage pregnancy",0.1827,0.1012,0.3811,-0.0157
+"93","Non-coethnic interviewer","Good gov't handling teenage pregnancy",-0.0278,0.0728,0.1149,-0.1704
+"94","Interviewer 35 and under (relative to both over 35)","Good gov't handling of drug abuse among youth",-0.2331,0.0749,-0.0863,-0.3798
+"95","Interviewer over 35 (relative to both 35 and under)","Good gov't handling of drug abuse among youth",0.1718,0.1019,0.3714,-0.0279
+"96","Non-coethnic interviewer","Good gov't handling of drug abuse among youth",-0.1514,0.0655,-0.0229,-0.2798
+"97","Interviewer 35 and under (relative to both over 35)","Good gov't handling of underage consumption of alcohol",-0.2807,0.073,-0.1376,-0.4237
+"98","Interviewer over 35 (relative to both 35 and under)","Good gov't handling of underage consumption of alcohol",0.1565,0.0961,0.3449,-0.0319
+"99","Non-coethnic interviewer","Good gov't handling of underage consumption of alcohol",-0.1307,0.0643,-0.0047,-0.2568
+"100","Interviewer 35 and under (relative to both over 35)","Good gov't handling of youth delinquency",-0.2354,0.0733,-0.0918,-0.379
+"101","Interviewer over 35 (relative to both 35 and under)","Good gov't handling of youth delinquency",0.1801,0.0972,0.3705,-0.0104
+"102","Non-coethnic interviewer","Good gov't handling of youth delinquency",-0.1221,0.0639,0.0032,-0.2474
+"103","Interviewer 35 and under (relative to both over 35)","Good gov't handling of smoking among youth",-0.1867,0.0671,-0.0552,-0.3182
+"104","Interviewer over 35 (relative to both 35 and under)","Good gov't handling of smoking among youth",0.0632,0.0939,0.2472,-0.1208
+"105","Non-coethnic interviewer","Good gov't handling of smoking among youth",-0.0865,0.0636,0.0381,-0.2111

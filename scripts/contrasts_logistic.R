@@ -187,7 +187,7 @@ outcome_age_combos <- bind_rows(outcome_age_combos_3_4, outcome_age_combos_7)
 #                                  paste0("z_", variable_labels$var),
 #                                  variable_labels$group))
 
-age_diff_models <- 
+age_diff_models_logistic <- 
   pmap(outcome_age_combos, function(outcome, age_variable, round) {
     
     if(round == 7) {

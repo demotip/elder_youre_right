@@ -3,13 +3,14 @@ eth_outcomes <- c("idrank", "patronage", "etrust",
                   "netrust", "ecconditions_group", 
                   "polinfluence_group", "treatedunfairly_group") 
 
-pol_outcomes <- c("demosupp", "performance", "bribe1", "trust_opposition",
-                  "voted", "pubaffairs", "meeting", "knows_MP")  
+pol_outcomes <- c("bribe1","knows_MP", "performance", "meeting", "pubaffairs",
+                  "demosupp", "trust_opposition", "trust_rulingparty", "voted")  
 
-stat_outcomes <- c("gov_manage_economy", #from pol_outcomes
-                   "ec_conditions_ctry", #from pol_outcomes
-                   "ec_conditions_self", "notenoughfood", "noincome", 
-                   "nocleanwater", "crime", "aids")
+stat_outcomes <- c("ec_conditions_self", "notenoughfood", "noincome", 
+                   "nocleanwater", "crime", "aids",
+                   "gov_manage_economy", #from pol_outcomes
+                   "ec_conditions_ctry" #from pol_outcomes
+                   )
 
 pro_outcomes <- c("hostile", "uncooperative", 
                   "impatient", "suspicious")
@@ -42,7 +43,7 @@ variable_labels <-
       "Attendance at community meetings",
       "Interest in public affairs",
       "Preference for democracy",
-      "Distrust in opposition parties",
+      "Distrust in opposition parties", #FLIPPED
       "Trust in ruling party",
       "Voted in last national election",
       # ETH OUTCOMES
@@ -58,14 +59,14 @@ variable_labels <-
       "Respondent was suspicious",
       "Respondent was hostile",
       "Respondent was impatient", 
-      # YOUTH OUTCOMES # ALL YOUTH OUTCOMES FLIPPED HERE
-      "Bad gov't handling of addressing needs of youth", 
-      "Bad gov't handling of youth employment",
-      "Bad gov't handling teenage pregnancy",
-      "Bad gov't handling of drug abuse among youth",
-      "Bad gov't handling of underage consumption of alcohol",
-      "Bad gov't handling of youth delinquency",
-      "Bad gov't handling of smoking among youth")),
+      # YOUTH OUTCOMES
+      "Good gov't handling of addressing needs of youth", 
+      "Good gov't handling of youth employment",
+      "Good gov't handling teenage pregnancy",
+      "Good gov't handling of drug abuse among youth",
+      "Good gov't handling of underage consumption of alcohol",
+      "Good gov't handling of youth delinquency",
+      "Good gov't handling of smoking among youth")),
     
     var = c(# STAT OUTCOMES
       "aids",

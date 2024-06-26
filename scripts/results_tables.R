@@ -58,16 +58,19 @@ age_diff_models_results_countryfe <- age_diff_models_results_countryfe %>%
   filter(country == "All") %>%
   filter(term != "noncoeth") %>%
   filter(age_variable != "coarsened_age_10") %>%
-  filter(age_variable != "coarsened_age_35_originalscale") %>% mutate(age =
-         case_when(grepl("old", ignore.case = T, term) ~
-                     "Older interviewer on younger respondents",
-                   grepl("young", ignore.case = T, term) ~
-                     "Younger interviewer on older respondents",
-                   TRUE ~ term))
+  filter(age_variable != "coarsened_age_35_originalscale") %>% 
+  filter(age_variable != "coarsened_age_30") %>%
+  filter(age_variable != "coarsened_age_40") %>%
+  mutate(age =
+           case_when(grepl("old", ignore.case = T, term) ~
+                       "Older interviewer on younger respondents",
+                     grepl("young", ignore.case = T, term) ~
+                       "Younger interviewer on older respondents",
+                     TRUE ~ term))
 
 results_tables_countryfe <- lapply(unique(age_diff_models_results_countryfe$group[!(age_diff_models_results_countryfe$group == "youth_outcomes")]), function(x) {
   
-  table <- age_diff_models_results %>%
+  table <- age_diff_models_results_countryfe %>%
     filter(group == x) %>%
     select(-outcome_variable, -group, -country, -age_variable,
            -p.value, -statistic, -n_obs, -upper, -lower) %>%
@@ -79,14 +82,12 @@ results_tables_countryfe <- lapply(unique(age_diff_models_results_countryfe$grou
     tab_spanner(., label = "Old int. on young resp.", columns = contains("Older interviewer")) %>%
     fmt_number(., columns = contains("respondents"),
                rows = everything(),
-               decimals = 2)%>%
+               decimals = 2) %>%
     # as_word() %>% #not compatible with this version of gt
     gtsave(., filename = paste0("tables/", x, "results_countryfe.html"))
   
   return(table) }) %>%
   "names<-"(unique(age_diff_models_results_countryfe$group[!(age_diff_models_results_countryfe$group == "youth_outcomes")]))
-
-results_tables_countryfe$pol_outcomes
 
 ### (ORDERED) LOGISTIC ----
 # 
