@@ -33,22 +33,20 @@ results_tables <- lapply(unique(age_diff_models_results$group[!(age_diff_models_
       pivot_wider(names_from = c(age, term),
     values_from = c(estimate, std.error),
     names_sep = ".") %>%
-    gt() %>%
-    tab_spanner(., label = "Young int. on old resp.", columns = contains("Younger interviewer")) %>%
-    tab_spanner(., label = "Old int. on young resp.", columns = contains("Older interviewer")) %>%
-    fmt_number(., columns = contains("respondents"),
-               rows = everything(),
-               decimals = 2) %>%
-    # as_word() %>% #not compatible with this version of gt
-    gtsave(., filename = paste0("tables/", x, "results.html"))
-    
-    # %>%
-    # datasummary_df(., paste0("tables/", x, "results.docx"))
-  
+    # gt() %>%
+    # tab_spanner(., label = "Young int. on old resp.", columns = contains("Younger interviewer")) %>%
+    # tab_spanner(., label = "Old int. on young resp.", columns = contains("Older interviewer")) %>%
+    # fmt_number(., columns = contains("respondents"),
+    #            rows = everything(),
+    #            decimals = 2) 
+  # %>%
+  #   # as_word() %>% #not compatible with this version of gt
+  #   gtsave(., filename = paste0("tables/", x, "results.html"))
+  #   
   return(table) }) %>%
   "names<-"(unique(age_diff_models_results$group[!(age_diff_models_results$group == "youth_outcomes")]))
 
-results_tables$pol_outcomes
+saveRDS(results_tables, "tables/results_tables_adidafe")
 
 ### COUNTRY FIXED EFFECTS ----
 
@@ -77,34 +75,16 @@ results_tables_countryfe <- lapply(unique(age_diff_models_results_countryfe$grou
     pivot_wider(names_from = c(age, term),
                 values_from = c(estimate, std.error),
                 names_sep = ".") %>%
-    gt() %>%
-    tab_spanner(., label = "Young int. on old resp.", columns = contains("Younger interviewer")) %>%
-    tab_spanner(., label = "Old int. on young resp.", columns = contains("Older interviewer")) %>%
-    fmt_number(., columns = contains("respondents"),
-               rows = everything(),
-               decimals = 2) %>%
-    # as_word() %>% #not compatible with this version of gt
-    gtsave(., filename = paste0("tables/", x, "results_countryfe.html"))
+    # gt() %>%
+    # tab_spanner(., label = "Young int. on old resp.", columns = contains("Younger interviewer")) %>%
+    # tab_spanner(., label = "Old int. on young resp.", columns = contains("Older interviewer")) %>%
+    # fmt_number(., columns = contains("respondents"),
+    #            rows = everything(),
+    #            decimals = 2) %>%
+    # # as_word() %>% #not compatible with this version of gt
+    # gtsave(., filename = paste0("tables/", x, "results_countryfe.html"))
   
   return(table) }) %>%
   "names<-"(unique(age_diff_models_results_countryfe$group[!(age_diff_models_results_countryfe$group == "youth_outcomes")]))
 
-### (ORDERED) LOGISTIC ----
-# 
-# age_diff_models_results_logistic <- readRDS("data_clean/age_diff_models_logistic.rds")
-# 
-# age_diff_models_results_logistic <- age_diff_models_results_logistic %>%
-#   filter(country == "All") %>%
-#   filter(term != "noncoeth") %>%
-#   filter(age_variable != "coarsened_age_10") %>%
-#   filter(age_variable != "coarsened_age_35_originalscale")
-# 
-# results_tables_logistic <- lapply(unique(age_diff_models_results_logistic$group[!(age_diff_models_results_logistic$group == "youth_outcomes")]), function(x) {
-#   
-#   table <- age_diff_models_results_logistic %>%
-#     filter(group == x) %>%
-#     select(-outcome_variable, -age_variable, -group, -country) %>%
-#     datasummary_df(., paste0("tables/", x, "results_logistic.docx"))
-#   
-#   return(table) }) %>%
-#   "names<-"(unique(age_diff_models_results_logistic$group[!(age_diff_models_results_logistic$group == "youth_outcomes")]))
+saveRDS(results_tables_countryfe, "tables/results_tables_countryfe")
