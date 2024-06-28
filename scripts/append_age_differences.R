@@ -1,10 +1,15 @@
-# CREATING AGE DIFFERENCE VARIABLES IN THE AFROBAROMETER DATASET ----
-# This file incorporates age difference into the Adida et al Afrobarometer 
+# The same as append_age_differences.R, with the 30-yr cutoff included
+# Very minimal changes with this one - same output file name
+# so I don't have to mess with the other files
+
+# This file incorporates age difference into the Adida et al Afrobarometer
 # dataset (Rounds 3 and 4)
 
-library(tidyverse)
-library(haven)
-library(lubridate)
+library(groundhog)
+
+append_age_differences <- c("haven", "lubridate", "tidyverse")
+
+groundhog.library(append_age_differences, "2021-11-01")
 
 # "Not in" convenience operator
 '%!in%' <- function(x,y)!('%in%'(x,y))
@@ -21,17 +26,17 @@ afpr_ages <- afpr[ , c("age", "intage", "dateintr", "unique_identifier")]
 # Respondent birthdays
 afpr_ages <- afpr_ages %>%
   mutate(# Get maximum possible birthday based on age and interview date
-         # i.e. the date of the interview
-         maximum_bday = ifelse( (is.na(dateintr) | is.na(age)),
-                                as.character(NA),
-                                paste0(year(dateintr) - age, "-", 
-                                       format(dateintr, format="%m-%d"))),
-         # Get minimum possible birthday based on age and interview date
-         # i.e. exactly one year before the interview
-         minimum_bday = ifelse( (is.na(dateintr) | is.na(age)), 
-                                as.character(NA), 
-                                paste0(year(dateintr) - age - 1, "-", 
-                                       format(dateintr, format="%m-%d")))) %>%
+    # i.e. the date of the interview
+    maximum_bday = ifelse( (is.na(dateintr) | is.na(age)),
+                           as.character(NA),
+                           paste0(year(dateintr) - age, "-", 
+                                  format(dateintr, format="%m-%d"))),
+    # Get minimum possible birthday based on age and interview date
+    # i.e. exactly one year before the interview
+    minimum_bday = ifelse( (is.na(dateintr) | is.na(age)), 
+                           as.character(NA), 
+                           paste0(year(dateintr) - age - 1, "-", 
+                                  format(dateintr, format="%m-%d")))) %>%
   mutate(maximum_bday = as.Date(maximum_bday),
          minimum_bday = as.Date(minimum_bday)) %>%
   
@@ -49,17 +54,17 @@ afpr_ages <- afpr_ages %>%
 # Interviewer birthdays
 afpr_ages <- afpr_ages %>%
   mutate(# Get maximum possible birthday based on age and interview date
-         # i.e. the date of the interview
-         maximum_bday = ifelse( (is.na(dateintr) | is.na(intage)),
-                                as.character(NA),
-                                paste0(year(dateintr) - intage, "-", 
-                                       format(dateintr, format="%m-%d"))),
-         # Get minimum possible birthday based on age and interview date
-         # i.e. exactly one year before the interview
-         minimum_bday = ifelse( (is.na(dateintr) | is.na(intage)), 
-                                as.character(NA), 
-                                paste0(year(dateintr) - intage - 1, "-", 
-                                       format(dateintr, format="%m-%d")))
+    # i.e. the date of the interview
+    maximum_bday = ifelse( (is.na(dateintr) | is.na(intage)),
+                           as.character(NA),
+                           paste0(year(dateintr) - intage, "-", 
+                                  format(dateintr, format="%m-%d"))),
+    # Get minimum possible birthday based on age and interview date
+    # i.e. exactly one year before the interview
+    minimum_bday = ifelse( (is.na(dateintr) | is.na(intage)), 
+                           as.character(NA), 
+                           paste0(year(dateintr) - intage - 1, "-", 
+                                  format(dateintr, format="%m-%d")))
   ) %>%
   mutate(maximum_bday = as.Date(maximum_bday),
          minimum_bday = as.Date(minimum_bday)) %>%
@@ -86,6 +91,12 @@ afpr_ages <- afpr_ages %>%
                      age_difference > 10 ~ "Interviewer older (10 year)",
                      age_difference >= -10 | age_difference <= 10 ~ "Same age",
                      TRUE ~ NA_character_),
+         coarsened_age_30 = 
+           case_when(intage > 30 & age <= 30 ~ "Interviewer older (age 30 cutoff)",
+                     intage <= 30 & age > 30 ~ "Interviewer younger (age 30 cutoff)",
+                     intage <= 30 & age <= 30 ~ "Both younger (age 30 cutoff)",
+                     intage > 30 & age > 30 ~ "Both older (age 30 cutoff)",
+                     TRUE ~ NA_character_),
          coarsened_age_35 = 
            case_when(intage > 35 & age <= 35 ~ "Interviewer older (age 35 cutoff)",
                      intage <= 35 & age > 35 ~ "Interviewer younger (age 35 cutoff)",
@@ -105,7 +116,8 @@ afpr_ages <- afpr_ages %>%
                 resp_bday, 
                 int_bday, 
                 age_difference, 
-                coarsened_age_10, 
+                coarsened_age_10,
+                coarsened_age_30,
                 coarsened_age_35, 
                 coarsened_age_40) %>%
   left_join(afpr, by = "unique_identifier")
@@ -116,6 +128,11 @@ afpr_ages <- afpr_ages %>%
                                         "Same age", 
                                         "Interviewer older (10 year)",
                                         "Interviewer younger (10 year)"),
+         coarsened_age_30 = fct_relevel(coarsened_age_30,
+                                        "Both older (age 30 cutoff)", 
+                                        "Interviewer younger (age 30 cutoff)",
+                                        "Both younger (age 30 cutoff)",
+                                        "Interviewer older (age 30 cutoff)"),
          coarsened_age_35 = fct_relevel(coarsened_age_35,
                                         "Both older (age 35 cutoff)", 
                                         "Interviewer younger (age 35 cutoff)",
