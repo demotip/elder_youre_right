@@ -1,57 +1,669 @@
-\begin{table}[H]
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>table output</title>
+<script src="lib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<link href="lib/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
 
-\begin{threeparttable}
-\caption{ Covariate regressions on unweighted data \label{tab:gamcovar}}
-\centering
-\fontsize{7}{9}\selectfont
-\begin{tabular}[t]{l>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}ccccccccccc}
-\toprule
-\rotatebox{-90}{\multicolumn{1}{c}{\textbf{ }}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 1}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 2}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 3}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 4}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 5}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 6}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 7}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 8}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 9}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 10}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 11}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 12}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 13}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 14}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 15}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 16}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 17}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 18}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 19}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 20}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 21}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 22}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 23}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 24}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 25}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 26}}} & \rotatebox{-90}{\multicolumn{1}{c}{\textbf{Model 27}}}\\
-\midrule
-30 split, interviewer older & \num{0.086}** & \num{0.058}** & \num{0.097}*** & \num{0.033}+ & \num{0.101}*** & \num{0.105}*** & \num{-0.064}** & \num{0.130}*** & \num{0.024} &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & \\
- & (\num{0.032}) & (\num{0.018}) & (\num{0.021}) & (\num{0.020}) & (\num{0.021}) & (\num{0.022}) & (\num{0.022}) & (\num{0.020}) & (\num{0.021}) &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & \\
-35 split, interviewer older &  &  &  &  &  &  &  &  &  & \num{-0.058} & \num{0.013} & \num{0.040} & \num{0.072}** & \num{0.092}*** & \num{0.121}*** & \num{-0.091}*** & \num{0.087}*** & \num{0.037} &  &  &  &  &  &  &  &  & \\
- &  &  &  &  &  &  &  &  &  & (\num{0.040}) & (\num{0.022}) & (\num{0.026}) & (\num{0.024}) & (\num{0.026}) & (\num{0.026}) & (\num{0.027}) & (\num{0.025}) & (\num{0.026}) &  &  &  &  &  &  &  &  & \\
-40 split, interviewer older &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & \num{-0.070} & \num{-0.045}+ & \num{-0.065}* & \num{0.111}*** & \num{0.119}*** & \num{0.085}** & \num{-0.072}* & \num{0.013} & \num{0.016}\\
- &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & (\num{0.047}) & (\num{0.026}) & (\num{0.031}) & (\num{0.029}) & (\num{0.030}) & (\num{0.031}) & (\num{0.032}) & (\num{0.029}) & (\num{0.030})\\
-30 split, interviewer younger & \num{-0.034} & \num{-0.033}* & \num{-0.056}** & \num{0.038}* & \num{-0.047}* & \num{-0.068}*** & \num{0.071}*** & \num{-0.078}*** & \num{-0.042}* &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & \\
- & (\num{0.028}) & (\num{0.016}) & (\num{0.018}) & (\num{0.017}) & (\num{0.018}) & (\num{0.019}) & (\num{0.019}) & (\num{0.017}) & (\num{0.018}) &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & \\
-35 split, interviewer younger &  &  &  &  &  &  &  &  &  & \num{0.116}** & \num{0.003} & \num{-0.013} & \num{0.031} & \num{-0.043}+ & \num{-0.043}+ & \num{0.067}* & \num{-0.023} & \num{-0.073}** &  &  &  &  &  &  &  &  & \\
- &  &  &  &  &  &  &  &  &  & (\num{0.038}) & (\num{0.021}) & (\num{0.025}) & (\num{0.024}) & (\num{0.025}) & (\num{0.026}) & (\num{0.026}) & (\num{0.024}) & (\num{0.025}) &  &  &  &  &  &  &  &  & \\
-40 split, interviewer younger &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & \num{0.081} & \num{0.015} & \num{0.091}* & \num{0.037} & \num{-0.072}* & \num{-0.010} & \num{0.046} & \num{-0.002} & \num{-0.066}+\\
- &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & (\num{0.056}) & (\num{0.031}) & (\num{0.037}) & (\num{0.034}) & (\num{0.036}) & (\num{0.037}) & (\num{0.038}) & (\num{0.034}) & (\num{0.035})\\
-30 split, both younger & \num{-0.064}*** & \num{-0.083}*** & \num{-0.047}*** & \num{-0.110}*** & \num{-0.089}*** & \num{-0.091}*** & \num{0.060}*** & \num{-0.066}*** & \num{-0.182}*** &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & \\
- & (\num{0.018}) & (\num{0.010}) & (\num{0.012}) & (\num{0.011}) & (\num{0.012}) & (\num{0.012}) & (\num{0.012}) & (\num{0.011}) & (\num{0.012}) &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & \\
-35 split, both younger &  &  &  &  &  &  &  &  &  & \num{0.019} & \num{-0.035}** & \num{-0.014} & \num{-0.062}*** & \num{-0.070}*** & \num{-0.072}*** & \num{0.048}*** & \num{-0.035}** & \num{-0.045}*** &  &  &  &  &  &  &  &  & \\
- &  &  &  &  &  &  &  &  &  & (\num{0.021}) & (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.014}) & (\num{0.014}) & (\num{0.014}) & (\num{0.013}) & (\num{0.014}) &  &  &  &  &  &  &  &  & \\
-40 split, both younger &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & \num{0.060}* & \num{0.026}+ & \num{0.030}+ & \num{-0.021} & \num{-0.049}** & \num{-0.026} & \num{0.029}+ & \num{0.004} & \num{0.128}***\\
- &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & (\num{0.025}) & (\num{0.014}) & (\num{0.016}) & (\num{0.015}) & (\num{0.016}) & (\num{0.017}) & (\num{0.017}) & (\num{0.015}) & (\num{0.016})\\
-Non-coethnic & \num{0.004} & \num{-0.053}*** & \num{0.054}*** & \num{0.012} & \num{-0.004} & \num{0.039}* & \num{0.028}+ & \num{0.056}*** & \num{0.025}+ & \num{0.004} & \num{-0.051}*** & \num{0.055}*** & \num{0.016} & \num{-0.002} & \num{0.041}** & \num{0.027}+ & \num{0.058}*** & \num{0.030}* & \num{0.004} & \num{-0.051}*** & \num{0.055}*** & \num{0.014} & \num{-0.003} & \num{0.040}* & \num{0.028}+ & \num{0.057}*** & \num{0.028}+\\
- & (\num{0.025}) & (\num{0.013}) & (\num{0.015}) & (\num{0.014}) & (\num{0.015}) & (\num{0.016}) & (\num{0.016}) & (\num{0.015}) & (\num{0.015}) & (\num{0.025}) & (\num{0.013}) & (\num{0.015}) & (\num{0.014}) & (\num{0.015}) & (\num{0.016}) & (\num{0.016}) & (\num{0.015}) & (\num{0.015}) & (\num{0.025}) & (\num{0.013}) & (\num{0.015}) & (\num{0.014}) & (\num{0.015}) & (\num{0.016}) & (\num{0.016}) & (\num{0.015}) & (\num{0.015})\\
-Age & \num{-0.001} & \num{0.000} & \num{0.001}* & \num{0.004}*** & \num{0.001}+ & \num{0.000} & \num{0.001}+ & \num{0.002}*** & \num{0.011}*** & \num{-0.001} & \num{0.002}** & \num{0.002}** & \num{0.007}*** & \num{0.002}* & \num{0.001} & \num{0.000} & \num{0.002}** & \num{0.019}*** & \num{0.002} & \num{0.004}*** & \num{0.001}+ & \num{0.010}*** & \num{0.004}*** & \num{0.003}*** & \num{0.000} & \num{0.003}*** & \num{0.028}***\\
- & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001}) & (\num{0.001})\\
-Male & \num{0.085}*** & \num{0.190}*** & \num{0.010} & \num{0.178}*** & \num{0.266}*** & \num{0.095}*** & \num{-0.066}*** & \num{-0.020}+ & \num{0.064}*** & \num{0.085}*** & \num{0.190}*** & \num{0.010} & \num{0.179}*** & \num{0.266}*** & \num{0.094}*** & \num{-0.066}*** & \num{-0.020}* & \num{0.065}*** & \num{0.085}*** & \num{0.190}*** & \num{0.010} & \num{0.179}*** & \num{0.266}*** & \num{0.095}*** & \num{-0.066}*** & \num{-0.020}+ & \num{0.066}***\\
- & (\num{0.015}) & (\num{0.009}) & (\num{0.010}) & (\num{0.010}) & (\num{0.011}) & (\num{0.011}) & (\num{0.011}) & (\num{0.010}) & (\num{0.011}) & (\num{0.015}) & (\num{0.009}) & (\num{0.010}) & (\num{0.010}) & (\num{0.011}) & (\num{0.011}) & (\num{0.011}) & (\num{0.010}) & (\num{0.011}) & (\num{0.015}) & (\num{0.009}) & (\num{0.010}) & (\num{0.010}) & (\num{0.011}) & (\num{0.011}) & (\num{0.011}) & (\num{0.010}) & (\num{0.011})\\
-Education level & \num{0.023}*** & \num{0.065}*** & \num{0.000} & \num{0.036}*** & \num{0.077}*** & \num{0.031}*** & \num{0.007}+ & \num{-0.021}*** & \num{0.031}*** & \num{0.023}*** & \num{0.065}*** & \num{0.000} & \num{0.037}*** & \num{0.077}*** & \num{0.031}*** & \num{0.006}+ & \num{-0.021}*** & \num{0.033}*** & \num{0.023}*** & \num{0.065}*** & \num{0.000} & \num{0.037}*** & \num{0.077}*** & \num{0.031}*** & \num{0.006}+ & \num{-0.021}*** & \num{0.032}***\\
- & (\num{0.005}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.005}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.005}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003}) & (\num{0.003})\\
-Urban & \num{-0.006} & \num{-0.054}*** & \num{-0.007} & \num{-0.179}*** & \num{-0.012} & \num{0.001} & \num{0.005} & \num{-0.097}*** & \num{-0.058}*** & \num{-0.006} & \num{-0.055}*** & \num{-0.006} & \num{-0.182}*** & \num{-0.013} & \num{0.000} & \num{0.006} & \num{-0.096}*** & \num{-0.064}*** & \num{-0.007} & \num{-0.055}*** & \num{-0.005} & \num{-0.183}*** & \num{-0.013} & \num{0.001} & \num{0.006} & \num{-0.096}*** & \num{-0.062}***\\
- & (\num{0.019}) & (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.014}) & (\num{0.014}) & (\num{0.014}) & (\num{0.013}) & (\num{0.013}) & (\num{0.019}) & (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.014}) & (\num{0.014}) & (\num{0.014}) & (\num{0.013}) & (\num{0.013}) & (\num{0.019}) & (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.014}) & (\num{0.014}) & (\num{0.014}) & (\num{0.013}) & (\num{0.013})\\
-Ethnic minority & \num{-0.028} & \num{-0.106}*** & \num{-0.033}+ & \num{-0.049}** & \num{-0.009} & \num{-0.061}** & \num{-0.008} & \num{0.010} & \num{-0.037}+ & \num{-0.026} & \num{-0.105}*** & \num{-0.033}+ & \num{-0.048}** & \num{-0.008} & \num{-0.059}** & \num{-0.009} & \num{0.011} & \num{-0.033}+ & \num{-0.028} & \num{-0.105}*** & \num{-0.034}+ & \num{-0.046}* & \num{-0.006} & \num{-0.059}** & \num{-0.010} & \num{0.010} & \num{-0.032}+\\
- & (\num{0.029}) & (\num{0.017}) & (\num{0.019}) & (\num{0.018}) & (\num{0.019}) & (\num{0.020}) & (\num{0.020}) & (\num{0.019}) & (\num{0.019}) & (\num{0.029}) & (\num{0.017}) & (\num{0.019}) & (\num{0.018}) & (\num{0.019}) & (\num{0.020}) & (\num{0.020}) & (\num{0.019}) & (\num{0.019}) & (\num{0.029}) & (\num{0.017}) & (\num{0.019}) & (\num{0.018}) & (\num{0.019}) & (\num{0.020}) & (\num{0.020}) & (\num{0.019}) & (\num{0.019})\\
-Round 4 & \num{NaN} & \num{-0.006} & \num{-0.038}** & \num{-0.064}*** & \num{-0.142}*** & \num{0.057}*** & \num{-0.043}*** & \num{-0.116}*** & \num{-0.038}** & \num{NaN} & \num{-0.004} & \num{-0.037}** & \num{-0.063}*** & \num{-0.141}*** & \num{0.058}*** & \num{-0.044}*** & \num{-0.116}*** & \num{-0.034}** & \num{NaN} & \num{-0.003} & \num{-0.036}** & \num{-0.063}*** & \num{-0.142}*** & \num{0.058}*** & \num{-0.043}*** & \num{-0.115}*** & \num{-0.033}**\\
- &  & (\num{0.010}) & (\num{0.012}) & (\num{0.011}) & (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.012}) & (\num{0.012}) &  & (\num{0.010}) & (\num{0.012}) & (\num{0.011}) & (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.012}) & (\num{0.012}) &  & (\num{0.010}) & (\num{0.012}) & (\num{0.011}) & (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.012}) & (\num{0.012})\\
-In-home language & \num{0.003} & \num{-0.020}+ & \num{-0.016} & \num{0.045}*** & \num{-0.011} & \num{-0.023} & \num{-0.011} & \num{0.017} & \num{0.022} & \num{0.006} & \num{-0.019} & \num{-0.015} & \num{0.048}*** & \num{-0.009} & \num{-0.021} & \num{-0.012} & \num{0.019} & \num{0.024}+ & \num{0.003} & \num{-0.020} & \num{-0.016} & \num{0.047}*** & \num{-0.009} & \num{-0.020} & \num{-0.013} & \num{0.019} & \num{0.021}\\
- & (\num{0.020}) & (\num{0.012}) & (\num{0.014}) & (\num{0.013}) & (\num{0.014}) & (\num{0.014}) & (\num{0.015}) & (\num{0.013}) & (\num{0.014}) & (\num{0.020}) & (\num{0.012}) & (\num{0.014}) & (\num{0.013}) & (\num{0.014}) & (\num{0.014}) & (\num{0.015}) & (\num{0.013}) & (\num{0.014}) & (\num{0.020}) & (\num{0.012}) & (\num{0.014}) & (\num{0.013}) & (\num{0.014}) & (\num{0.014}) & (\num{0.015}) & (\num{0.013}) & (\num{0.014})\\
-\midrule
-Num.Obs. & \num{15370} & \num{32901} & \num{30850} & \num{32701} & \num{32638} & \num{30030} & \num{30443} & \num{31248} & \num{32739} & \num{15370} & \num{32901} & \num{30850} & \num{32701} & \num{32638} & \num{30030} & \num{30443} & \num{31248} & \num{32739} & \num{15370} & \num{32901} & \num{30850} & \num{32701} & \num{32638} & \num{30030} & \num{30443} & \num{31248} & \num{32739}\\
-R2 & \num{0.210} & \num{0.375} & \num{0.208} & \num{0.183} & \num{0.129} & \num{0.104} & \num{0.114} & \num{0.222} & \num{0.160} & \num{0.210} & \num{0.374} & \num{0.207} & \num{0.179} & \num{0.128} & \num{0.104} & \num{0.114} & \num{0.221} & \num{0.149} & \num{0.210} & \num{0.373} & \num{0.207} & \num{0.179} & \num{0.127} & \num{0.103} & \num{0.114} & \num{0.221} & \num{0.154}\\
-R2 Adj. & \num{0.188} & \num{0.364} & \num{0.194} & \num{0.169} & \num{0.114} & \num{0.088} & \num{0.098} & \num{0.208} & \num{0.146} & \num{0.188} & \num{0.363} & \num{0.193} & \num{0.165} & \num{0.113} & \num{0.087} & \num{0.098} & \num{0.207} & \num{0.134} & \num{0.187} & \num{0.363} & \num{0.193} & \num{0.165} & \num{0.113} & \num{0.087} & \num{0.098} & \num{0.207} & \num{0.140}\\
-\bottomrule
-\multicolumn{28}{l}{\rule{0pt}{1em}+ p $<$ 0.1, * p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
-\end{tabular}
-\begin{tablenotes}
-\small
-\item [] All models are OLS and use a gam model, where the age coefficient is allowed to be nonlinear.
-\end{tablenotes}
-\end{threeparttable}
-\end{table}
+</head>
+<body>
+<table class="table table" style="width: auto !important; margin-left: auto; margin-right: auto; font-size: 7px; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">pol_outcomes, adida fixed effects</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);">   </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 1 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 2 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 3 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 4 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 5 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 6 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 7 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 8 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 9 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 10 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 11 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 12 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 13 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 14 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 15 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 16 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 17 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 18 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 19 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 20 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 21 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 22 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 23 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 24 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 25 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 26 </th>
+   <th style="text-align:center;font-weight: bold;text-align: center;-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);"> Model 27 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 30 split, interviewer older </td>
+   <td style="text-align:center;width: 3em; "> 0.09 (0.03)** </td>
+   <td style="text-align:center;width: 3em; "> 0.06 (0.02)** </td>
+   <td style="text-align:center;width: 3em; "> 0.10 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.03 (0.02)+ </td>
+   <td style="text-align:center;width: 3em; "> 0.10 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.11 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.02)** </td>
+   <td style="text-align:center;width: 3em; "> 0.13 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.02 (0.02) </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 35 split, interviewer older </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.04) </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> 0.04 (0.03) </td>
+   <td style="text-align:center;width: 3em; "> 0.07 (0.02)** </td>
+   <td style="text-align:center;width: 3em; "> 0.09 (0.03)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.12 (0.03)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.09 (0.03)*** </td>
+   <td style="text-align:center;"> 0.09 (0.02)*** </td>
+   <td style="text-align:center;"> 0.04 (0.03) </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 40 split, interviewer older </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> -0.07 (0.05) </td>
+   <td style="text-align:center;"> -0.04 (0.03)+ </td>
+   <td style="text-align:center;"> -0.07 (0.03)* </td>
+   <td style="text-align:center;"> 0.11 (0.03)*** </td>
+   <td style="text-align:center;"> 0.12 (0.03)*** </td>
+   <td style="text-align:center;"> 0.08 (0.03)** </td>
+   <td style="text-align:center;"> -0.07 (0.03)* </td>
+   <td style="text-align:center;"> 0.01 (0.03) </td>
+   <td style="text-align:center;"> 0.02 (0.03) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 30 split, interviewer younger </td>
+   <td style="text-align:center;width: 3em; "> -0.03 (0.03) </td>
+   <td style="text-align:center;width: 3em; "> -0.03 (0.02)* </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.02)** </td>
+   <td style="text-align:center;width: 3em; "> 0.04 (0.02)* </td>
+   <td style="text-align:center;width: 3em; "> -0.05 (0.02)* </td>
+   <td style="text-align:center;width: 3em; "> -0.07 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.07 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.08 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.04 (0.02)* </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 35 split, interviewer younger </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; "> 0.12 (0.04)** </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.03) </td>
+   <td style="text-align:center;width: 3em; "> 0.03 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.04 (0.03)+ </td>
+   <td style="text-align:center;width: 3em; "> -0.04 (0.03)+ </td>
+   <td style="text-align:center;width: 3em; "> 0.07 (0.03)* </td>
+   <td style="text-align:center;"> -0.02 (0.02) </td>
+   <td style="text-align:center;"> -0.07 (0.02)** </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 40 split, interviewer younger </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.08 (0.06) </td>
+   <td style="text-align:center;"> 0.02 (0.03) </td>
+   <td style="text-align:center;"> 0.09 (0.04)* </td>
+   <td style="text-align:center;"> 0.04 (0.03) </td>
+   <td style="text-align:center;"> -0.07 (0.04)* </td>
+   <td style="text-align:center;"> -0.01 (0.04) </td>
+   <td style="text-align:center;"> 0.05 (0.04) </td>
+   <td style="text-align:center;"> 0.00 (0.03) </td>
+   <td style="text-align:center;"> -0.07 (0.04)+ </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 30 split, both younger </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.08 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.05 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.11 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.09 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.09 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.06 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.07 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.18 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 35 split, both younger </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; "> 0.02 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.03 (0.01)** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.07 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.07 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.05 (0.01)*** </td>
+   <td style="text-align:center;"> -0.03 (0.01)** </td>
+   <td style="text-align:center;"> -0.05 (0.01)*** </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 40 split, both younger </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.06 (0.02)* </td>
+   <td style="text-align:center;"> 0.03 (0.01)+ </td>
+   <td style="text-align:center;"> 0.03 (0.02)+ </td>
+   <td style="text-align:center;"> -0.02 (0.02) </td>
+   <td style="text-align:center;"> -0.05 (0.02)** </td>
+   <td style="text-align:center;"> -0.03 (0.02) </td>
+   <td style="text-align:center;"> 0.03 (0.02)+ </td>
+   <td style="text-align:center;"> 0.00 (0.02) </td>
+   <td style="text-align:center;"> 0.13 (0.02)*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Non-coethnic </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.05 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.05 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> 0.04 (0.02)* </td>
+   <td style="text-align:center;width: 3em; "> 0.03 (0.02)+ </td>
+   <td style="text-align:center;width: 3em; "> 0.06 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.03 (0.02)+ </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.05 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.05 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.02 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> 0.04 (0.02)** </td>
+   <td style="text-align:center;width: 3em; "> 0.03 (0.02)+ </td>
+   <td style="text-align:center;"> 0.06 (0.01)*** </td>
+   <td style="text-align:center;"> 0.03 (0.02)* </td>
+   <td style="text-align:center;"> 0.00 (0.02) </td>
+   <td style="text-align:center;"> -0.05 (0.01)*** </td>
+   <td style="text-align:center;"> 0.05 (0.02)*** </td>
+   <td style="text-align:center;"> 0.01 (0.01) </td>
+   <td style="text-align:center;"> 0.00 (0.02) </td>
+   <td style="text-align:center;"> 0.04 (0.02)* </td>
+   <td style="text-align:center;"> 0.03 (0.02)+ </td>
+   <td style="text-align:center;"> 0.06 (0.01)*** </td>
+   <td style="text-align:center;"> 0.03 (0.02)+ </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Age </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00) </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00) </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00)* </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00)+ </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00) </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00)+ </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00) </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00)** </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00)** </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00)* </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00) </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00) </td>
+   <td style="text-align:center;"> 0.00 (0.00)** </td>
+   <td style="text-align:center;"> 0.02 (0.00)*** </td>
+   <td style="text-align:center;"> 0.00 (0.00) </td>
+   <td style="text-align:center;"> 0.00 (0.00)*** </td>
+   <td style="text-align:center;"> 0.00 (0.00)+ </td>
+   <td style="text-align:center;"> 0.01 (0.00)*** </td>
+   <td style="text-align:center;"> 0.00 (0.00)*** </td>
+   <td style="text-align:center;"> 0.00 (0.00)*** </td>
+   <td style="text-align:center;"> 0.00 (0.00) </td>
+   <td style="text-align:center;"> 0.00 (0.00)*** </td>
+   <td style="text-align:center;"> 0.03 (0.00)*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:center;width: 3em; "> 0.08 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.19 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> 0.18 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.27 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.09 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.07 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.02 (0.01)+ </td>
+   <td style="text-align:center;width: 3em; "> 0.06 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.08 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.19 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> 0.18 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.27 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.09 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.07 (0.01)*** </td>
+   <td style="text-align:center;"> -0.02 (0.01)* </td>
+   <td style="text-align:center;"> 0.06 (0.01)*** </td>
+   <td style="text-align:center;"> 0.09 (0.02)*** </td>
+   <td style="text-align:center;"> 0.19 (0.01)*** </td>
+   <td style="text-align:center;"> 0.01 (0.01) </td>
+   <td style="text-align:center;"> 0.18 (0.01)*** </td>
+   <td style="text-align:center;"> 0.27 (0.01)*** </td>
+   <td style="text-align:center;"> 0.09 (0.01)*** </td>
+   <td style="text-align:center;"> -0.07 (0.01)*** </td>
+   <td style="text-align:center;"> -0.02 (0.01)+ </td>
+   <td style="text-align:center;"> 0.07 (0.01)*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Education level </td>
+   <td style="text-align:center;width: 3em; "> 0.02 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.06 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00) </td>
+   <td style="text-align:center;width: 3em; "> 0.04 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.08 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.03 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.00)+ </td>
+   <td style="text-align:center;width: 3em; "> -0.02 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.03 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.02 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.07 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.00) </td>
+   <td style="text-align:center;width: 3em; "> 0.04 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.08 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.03 (0.00)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.00)+ </td>
+   <td style="text-align:center;"> -0.02 (0.00)*** </td>
+   <td style="text-align:center;"> 0.03 (0.00)*** </td>
+   <td style="text-align:center;"> 0.02 (0.00)*** </td>
+   <td style="text-align:center;"> 0.07 (0.00)*** </td>
+   <td style="text-align:center;"> 0.00 (0.00) </td>
+   <td style="text-align:center;"> 0.04 (0.00)*** </td>
+   <td style="text-align:center;"> 0.08 (0.00)*** </td>
+   <td style="text-align:center;"> 0.03 (0.00)*** </td>
+   <td style="text-align:center;"> 0.01 (0.00)+ </td>
+   <td style="text-align:center;"> -0.02 (0.00)*** </td>
+   <td style="text-align:center;"> 0.03 (0.00)*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Urban </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.05 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> -0.18 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> -0.10 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.05 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> -0.18 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.01) </td>
+   <td style="text-align:center;"> -0.10 (0.01)*** </td>
+   <td style="text-align:center;"> -0.06 (0.01)*** </td>
+   <td style="text-align:center;"> -0.01 (0.02) </td>
+   <td style="text-align:center;"> -0.05 (0.01)*** </td>
+   <td style="text-align:center;"> -0.01 (0.01) </td>
+   <td style="text-align:center;"> -0.18 (0.01)*** </td>
+   <td style="text-align:center;"> -0.01 (0.01) </td>
+   <td style="text-align:center;"> 0.00 (0.01) </td>
+   <td style="text-align:center;"> 0.01 (0.01) </td>
+   <td style="text-align:center;"> -0.10 (0.01)*** </td>
+   <td style="text-align:center;"> -0.06 (0.01)*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Ethnic minority </td>
+   <td style="text-align:center;width: 3em; "> -0.03 (0.03) </td>
+   <td style="text-align:center;width: 3em; "> -0.11 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.03 (0.02)+ </td>
+   <td style="text-align:center;width: 3em; "> -0.05 (0.02)** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.02)** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> 0.01 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.04 (0.02)+ </td>
+   <td style="text-align:center;width: 3em; "> -0.03 (0.03) </td>
+   <td style="text-align:center;width: 3em; "> -0.11 (0.02)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.03 (0.02)+ </td>
+   <td style="text-align:center;width: 3em; "> -0.05 (0.02)** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.02) </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.02)** </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.02) </td>
+   <td style="text-align:center;"> 0.01 (0.02) </td>
+   <td style="text-align:center;"> -0.03 (0.02)+ </td>
+   <td style="text-align:center;"> -0.03 (0.03) </td>
+   <td style="text-align:center;"> -0.11 (0.02)*** </td>
+   <td style="text-align:center;"> -0.03 (0.02)+ </td>
+   <td style="text-align:center;"> -0.05 (0.02)* </td>
+   <td style="text-align:center;"> -0.01 (0.02) </td>
+   <td style="text-align:center;"> -0.06 (0.02)** </td>
+   <td style="text-align:center;"> -0.01 (0.02) </td>
+   <td style="text-align:center;"> 0.01 (0.02) </td>
+   <td style="text-align:center;"> -0.03 (0.02)+ </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Round 4 </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> -0.04 (0.01)** </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.14 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.06 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.04 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.12 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.04 (0.01)** </td>
+   <td style="text-align:center;width: 3em; ">  </td>
+   <td style="text-align:center;width: 3em; "> 0.00 (0.01) </td>
+   <td style="text-align:center;width: 3em; "> -0.04 (0.01)** </td>
+   <td style="text-align:center;width: 3em; "> -0.06 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.14 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> 0.06 (0.01)*** </td>
+   <td style="text-align:center;width: 3em; "> -0.04 (0.01)*** </td>
+   <td style="text-align:center;"> -0.12 (0.01)*** </td>
+   <td style="text-align:center;"> -0.03 (0.01)** </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.00 (0.01) </td>
+   <td style="text-align:center;"> -0.04 (0.01)** </td>
+   <td style="text-align:center;"> -0.06 (0.01)*** </td>
+   <td style="text-align:center;"> -0.14 (0.01)*** </td>
+   <td style="text-align:center;"> 0.06 (0.01)*** </td>
+   <td style="text-align:center;"> -0.04 (0.01)*** </td>
+   <td style="text-align:center;"> -0.11 (0.01)*** </td>
+   <td style="text-align:center;"> -0.03 (0.01)** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;box-shadow: 0px 1px"> In-home language </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> 0.00 (0.02) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.02 (0.01)+ </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> 0.05 (0.01)*** </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> 0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> 0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> 0.01 (0.02) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> 0.05 (0.01)*** </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxwidth: 3em; "> -0.01 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> 0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> 0.02 (0.01)+ </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> 0.00 (0.02) </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> -0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> -0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> 0.05 (0.01)*** </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> -0.01 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> -0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> -0.01 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> 0.02 (0.01) </td>
+   <td style="text-align:center;box-shadow: 0px 1px"> 0.02 (0.01) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Num.Obs. </td>
+   <td style="text-align:center;width: 3em; "> 15370 </td>
+   <td style="text-align:center;width: 3em; "> 32901 </td>
+   <td style="text-align:center;width: 3em; "> 30850 </td>
+   <td style="text-align:center;width: 3em; "> 32701 </td>
+   <td style="text-align:center;width: 3em; "> 32638 </td>
+   <td style="text-align:center;width: 3em; "> 30030 </td>
+   <td style="text-align:center;width: 3em; "> 30443 </td>
+   <td style="text-align:center;width: 3em; "> 31248 </td>
+   <td style="text-align:center;width: 3em; "> 32739 </td>
+   <td style="text-align:center;width: 3em; "> 15370 </td>
+   <td style="text-align:center;width: 3em; "> 32901 </td>
+   <td style="text-align:center;width: 3em; "> 30850 </td>
+   <td style="text-align:center;width: 3em; "> 32701 </td>
+   <td style="text-align:center;width: 3em; "> 32638 </td>
+   <td style="text-align:center;width: 3em; "> 30030 </td>
+   <td style="text-align:center;width: 3em; "> 30443 </td>
+   <td style="text-align:center;"> 31248 </td>
+   <td style="text-align:center;"> 32739 </td>
+   <td style="text-align:center;"> 15370 </td>
+   <td style="text-align:center;"> 32901 </td>
+   <td style="text-align:center;"> 30850 </td>
+   <td style="text-align:center;"> 32701 </td>
+   <td style="text-align:center;"> 32638 </td>
+   <td style="text-align:center;"> 30030 </td>
+   <td style="text-align:center;"> 30443 </td>
+   <td style="text-align:center;"> 31248 </td>
+   <td style="text-align:center;"> 32739 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:center;width: 3em; "> 0.210 </td>
+   <td style="text-align:center;width: 3em; "> 0.375 </td>
+   <td style="text-align:center;width: 3em; "> 0.208 </td>
+   <td style="text-align:center;width: 3em; "> 0.183 </td>
+   <td style="text-align:center;width: 3em; "> 0.129 </td>
+   <td style="text-align:center;width: 3em; "> 0.104 </td>
+   <td style="text-align:center;width: 3em; "> 0.114 </td>
+   <td style="text-align:center;width: 3em; "> 0.222 </td>
+   <td style="text-align:center;width: 3em; "> 0.160 </td>
+   <td style="text-align:center;width: 3em; "> 0.210 </td>
+   <td style="text-align:center;width: 3em; "> 0.374 </td>
+   <td style="text-align:center;width: 3em; "> 0.207 </td>
+   <td style="text-align:center;width: 3em; "> 0.179 </td>
+   <td style="text-align:center;width: 3em; "> 0.128 </td>
+   <td style="text-align:center;width: 3em; "> 0.104 </td>
+   <td style="text-align:center;width: 3em; "> 0.114 </td>
+   <td style="text-align:center;"> 0.221 </td>
+   <td style="text-align:center;"> 0.149 </td>
+   <td style="text-align:center;"> 0.210 </td>
+   <td style="text-align:center;"> 0.373 </td>
+   <td style="text-align:center;"> 0.207 </td>
+   <td style="text-align:center;"> 0.179 </td>
+   <td style="text-align:center;"> 0.127 </td>
+   <td style="text-align:center;"> 0.103 </td>
+   <td style="text-align:center;"> 0.114 </td>
+   <td style="text-align:center;"> 0.221 </td>
+   <td style="text-align:center;"> 0.154 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 Adj. </td>
+   <td style="text-align:center;width: 3em; "> 0.188 </td>
+   <td style="text-align:center;width: 3em; "> 0.364 </td>
+   <td style="text-align:center;width: 3em; "> 0.194 </td>
+   <td style="text-align:center;width: 3em; "> 0.169 </td>
+   <td style="text-align:center;width: 3em; "> 0.114 </td>
+   <td style="text-align:center;width: 3em; "> 0.088 </td>
+   <td style="text-align:center;width: 3em; "> 0.098 </td>
+   <td style="text-align:center;width: 3em; "> 0.208 </td>
+   <td style="text-align:center;width: 3em; "> 0.146 </td>
+   <td style="text-align:center;width: 3em; "> 0.188 </td>
+   <td style="text-align:center;width: 3em; "> 0.363 </td>
+   <td style="text-align:center;width: 3em; "> 0.193 </td>
+   <td style="text-align:center;width: 3em; "> 0.165 </td>
+   <td style="text-align:center;width: 3em; "> 0.113 </td>
+   <td style="text-align:center;width: 3em; "> 0.087 </td>
+   <td style="text-align:center;width: 3em; "> 0.098 </td>
+   <td style="text-align:center;"> 0.207 </td>
+   <td style="text-align:center;"> 0.134 </td>
+   <td style="text-align:center;"> 0.187 </td>
+   <td style="text-align:center;"> 0.363 </td>
+   <td style="text-align:center;"> 0.193 </td>
+   <td style="text-align:center;"> 0.165 </td>
+   <td style="text-align:center;"> 0.113 </td>
+   <td style="text-align:center;"> 0.087 </td>
+   <td style="text-align:center;"> 0.098 </td>
+   <td style="text-align:center;"> 0.207 </td>
+   <td style="text-align:center;"> 0.140 </td>
+  </tr>
+</tbody>
+<tfoot>
+<tr>
+<td style = 'padding: 0; border:0;' colspan='100%'><sup></sup> Add footnote here if needed.</td>
+</tr>
+</tfoot>
+</table>
+</body>
+</html>
