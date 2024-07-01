@@ -71,21 +71,7 @@ form_base_7  <- paste0("{outcome_variable} ~ {age_variable} + ",
                               "urban + minority +",
                               "round + inhomelang")
 
-# Test functions for the second function ----
-
-model_lin <- rms::ols(youth_employment ~ coarsened_age_10 + noncoeth +
-                        age + gender + edu + urban + minority + round + inhomelang + country, 
-                      data = 
-                        droplevels(afpr[afpr$round %in% 7 & 
-                                          complete.cases(afpr[ , c("youth_employment", "coarsened_age_10",
-                                                                   "noncoeth", "age", "gender", "edu", "urban", 
-                                                                   "minority", "round", "inhomelang", "country")]), ]),
-                      x = TRUE,  # need x and y to be TRUE for validate.ols to work
-                      y = TRUE)
-cv.error.1 <- rms::validate(model_lin, method = "crossvalidation", B = 10)
-cv.error.1
-
-levels(afpr$coarsened_age_30)
+# Playing with the rms contrasts function ----
 
 dd <- datadist(afpr)
 options(datadist = "dd")
@@ -220,146 +206,129 @@ cv_lin_log_3_4 <-
     
     return(cv.error)
   })
-  
 
-#       index.orig training   test optimism index.corrected  n
-# rho       0.1372   0.1374 0.1324   0.0050          0.1321 10
-# R2        0.0358   0.0360 0.0335   0.0025          0.0333 10
-# Slope     1.0000   1.0000 0.9614   0.0386          0.9614 10
-# g         0.5017   0.5028 0.4827   0.0201          0.4816 10
-# pdm       0.3843   0.3843 0.3842   0.0000          0.3842 10
+# cv_lin_log_7 <- 
+#   pmap_dfr(outcome_age_combos_7, function(outcome, age_variable, round) {
+#     
+#     if(round == "7") include_round <- 7 else include_round <- 3:4
+#     
+#     outcome_variable <- outcome # not standardizing variables
+#     
+#     print(outcome_variable)
+#     
+#     # Run model
+#     if(age_variable == "coarsened_age_10") {
+#       # Note: no contrasts for 10-year age difference model
+#       # because we only have one baseline of interest: same age.
+#       
+#       print(1)
+#       
+#       model_lin <- rms::ols(as.formula(glue(form_base_7)), data = 
+#                               droplevels(afpr[afpr$round %in% include_round & 
+#                                                 complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                          "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                          "minority", "round", "inhomelang", "country")]), ]),
+#                             x = TRUE,  # need x and y to be TRUE for validate.ols to work
+#                             y = TRUE)
+#       
+#       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
+#         
+#         print(2)
+#         
+#         model_log <- rms::lrm(as.formula(glue(form_base_factor_7)),
+#                               data = droplevels(afpr[afpr$round %in% include_round & 
+#                                                        complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                                 "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                                 "minority", "round", "inhomelang", "country")]), ]),
+#                               x = TRUE,
+#                               y = TRUE)
+#       } else {
+#         # Note: no contrasts for 10-year age difference model
+#         # because we only have one baseline of interest: same age.
+#         
+#         print(3)
+#         
+#         model_log <- rms::orm(as.formula(glue(form_base_factor_7)),
+#                               data = afpr[afpr$round %in% include_round & 
+#                                             complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                      "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                      "minority", "round", "inhomelang", "country")]), ],
+#                               x = TRUE,
+#                               y = TRUE ) }
+#       
+#     } else {
+#       
+#       contrasts_matrix_list <- list(x = contrasts_matrix)
+#       names(contrasts_matrix_list) <- age_variable
+#       
+#       print(4)
+#       
+#       model_lin <- rms::ols(as.formula(glue(form_base_7)), data =
+#                               droplevels(afpr[afpr$round %in% include_round & 
+#                                                 complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                          "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                          "minority", "round", "inhomelang", "country")]), ]),
+#                             x = TRUE,
+#                             y = TRUE) 
+#       
+#       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
+#         print(5)
+#         
+#         model_log <- rms::lrm(as.formula(glue(form_base_factor_7)),
+#                               droplevels(afpr[afpr$round %in% include_round & 
+#                                                 complete.cases(afpr[ , c({outcome_variable},{age_variable},
+#                                                                          "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                          "minority", "round", "inhomelang", "country")]), ]),
+#                               x = TRUE,
+#                               y = TRUE
+#                               # contrasts = contrasts_matrix_list
+#         )
+#       } else {
+#         
+#         print(6)
+#         
+#         model_log <- rms::orm(as.formula(glue(form_base_factor_7)),
+#                               data = afpr[afpr$round %in% include_round & 
+#                                             complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
+#                                                                      "noncoeth", "age", "gender", "edu", "urban", 
+#                                                                      "minority", "round", "inhomelang", "country")]), ],
+#                               x = TRUE,
+#                               y = TRUE
+#                               # contrasts = contrasts_matrix
+#         ) }
+#       
+#     }
+#     
+#     print(7)
+#     
+#     cv.error.1 <- rms::validate(model_lin, method = "crossvalidation", B = 10)
+#     cv.error.2 <- rms::validate(model_log, method = "crossvalidation", B = 10)
+#     
+#     cv.error.1 <- as.numeric(cv.error.1[3,3])
+#     # cv.error.1 <- exp(cv.error.1)/I(1 + exp(cv.error.1)) # Converting log-odds to probabilities: e^(g)/(1 + e^(g)) 
+#     
+#     # no need for an ifelse statement here bc there's no binary outcomes
+#     
+#     cv.error.2 <- as.numeric(cv.error.2[4,3])
+#     # cv.error.2 <- exp(cv.error.2)/I(1 + exp(cv.error.2))
+#     
+#     # cv.error <- c(cv.error.1, cv.error.2)
+#     
+#     winner <- ifelse(cv.error.1 > cv.error.2, 1.0, ifelse(cv.error.1 < cv.error.2, 2.0, NA))
+#     
+#     cv.error <- data.frame("linear" = cv.error.1, "log.ordered" = cv.error.2, "winner" = winner)
+#     
+#     return(cv.error)
+#   })
 
-#           index.orig training   test optimism index.corrected  n
-# Dxy           0.2700   0.2703 0.2655   0.0048          0.2653 10
-# R2            0.0596   0.0597 0.0579   0.0018          0.0578 10
-# Intercept     0.0000   0.0000 0.0215  -0.0215          0.0215 10
-# Slope         1.0000   1.0000 0.9815   0.0185          0.9815 10
-# Emax          0.0000   0.0000 0.0079   0.0079          0.0079 10
-# D             0.0405   0.0406 0.0391   0.0015          0.0390 10
-# U            -0.0001  -0.0001 0.0002  -0.0003          0.0002 10
-# Q             0.0406   0.0406 0.0389   0.0018          0.0388 10
-# B             0.1740   0.1739 0.1743  -0.0003          0.1743 10
-# g             0.5674   0.5679 0.5570   0.0109          0.5564 10
-# gp            0.0976   0.0977 0.0959   0.0019          0.0958 10
+# cv_lin_log_x <- rbind(cv_lin_log_3_4, cv_lin_log_7)
+# cv_lin_log_x <- cv_lin_log_x %>%
+#   na_if(., 'NaN')
 
-cv_lin_log_7 <- 
-  pmap_dfr(outcome_age_combos_7, function(outcome, age_variable, round) {
-    
-    if(round == "7") include_round <- 7 else include_round <- 3:4
-    
-    outcome_variable <- outcome # not standardizing variables
-    
-    print(outcome_variable)
-    
-    # Run model
-    if(age_variable == "coarsened_age_10") {
-      # Note: no contrasts for 10-year age difference model
-      # because we only have one baseline of interest: same age.
-      
-      print(1)
-      
-      model_lin <- rms::ols(as.formula(glue(form_base_7)), data = 
-                              droplevels(afpr[afpr$round %in% include_round & 
-                                                complete.cases(afpr[ , c({outcome_variable},{age_variable},
-                                                                         "noncoeth", "age", "gender", "edu", "urban", 
-                                                                         "minority", "round", "inhomelang", "country")]), ]),
-                            x = TRUE,  # need x and y to be TRUE for validate.ols to work
-                            y = TRUE)
-      
-      if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-        
-        print(2)
-        
-        model_log <- rms::lrm(as.formula(glue(form_base_factor_7)),
-                              data = droplevels(afpr[afpr$round %in% include_round & 
-                                                       complete.cases(afpr[ , c({outcome_variable},{age_variable},
-                                                                                "noncoeth", "age", "gender", "edu", "urban", 
-                                                                                "minority", "round", "inhomelang", "country")]), ]),
-                              x = TRUE,
-                              y = TRUE)
-      } else {
-        # Note: no contrasts for 10-year age difference model
-        # because we only have one baseline of interest: same age.
-        
-        print(3)
-        
-        model_log <- rms::orm(as.formula(glue(form_base_factor_7)),
-                              data = afpr[afpr$round %in% include_round & 
-                                            complete.cases(afpr[ , c({outcome_variable},{age_variable},
-                                                                     "noncoeth", "age", "gender", "edu", "urban", 
-                                                                     "minority", "round", "inhomelang", "country")]), ],
-                              x = TRUE,
-                              y = TRUE ) }
-      
-    } else {
-      
-      contrasts_matrix_list <- list(x = contrasts_matrix)
-      names(contrasts_matrix_list) <- age_variable
-      
-      print(4)
-      
-      model_lin <- rms::ols(as.formula(glue(form_base_7)), data =
-                              droplevels(afpr[afpr$round %in% include_round & 
-                                                complete.cases(afpr[ , c({outcome_variable},{age_variable},
-                                                                         "noncoeth", "age", "gender", "edu", "urban", 
-                                                                         "minority", "round", "inhomelang", "country")]), ]),
-                            x = TRUE,
-                            y = TRUE) 
-      
-      if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-        print(5)
-        
-        model_log <- rms::lrm(as.formula(glue(form_base_factor_7)),
-                              droplevels(afpr[afpr$round %in% include_round & 
-                                                complete.cases(afpr[ , c({outcome_variable},{age_variable},
-                                                                         "noncoeth", "age", "gender", "edu", "urban", 
-                                                                         "minority", "round", "inhomelang", "country")]), ]),
-                              x = TRUE,
-                              y = TRUE
-                              # contrasts = contrasts_matrix_list
-        )
-      } else {
-        
-        print(6)
-        
-        model_log <- rms::orm(as.formula(glue(form_base_factor_7)),
-                              data = afpr[afpr$round %in% include_round & 
-                                            complete.cases(afpr[ , c({outcome_variable},{age_variable}, 
-                                                                     "noncoeth", "age", "gender", "edu", "urban", 
-                                                                     "minority", "round", "inhomelang", "country")]), ],
-                              x = TRUE,
-                              y = TRUE
-                              # contrasts = contrasts_matrix
-        ) }
-      
-    }
-    
-    print(7)
-    
-    cv.error.1 <- rms::validate(model_lin, method = "crossvalidation", B = 10)
-    cv.error.2 <- rms::validate(model_log, method = "crossvalidation", B = 10)
-    
-    cv.error.1 <- as.numeric(cv.error.1[3,3])
-    # cv.error.1 <- exp(cv.error.1)/I(1 + exp(cv.error.1)) # Converting log-odds to probabilities: e^(g)/(1 + e^(g)) 
-    
-    # no need for an ifelse statement here bc there's no binary outcomes
-    
-    cv.error.2 <- as.numeric(cv.error.2[4,3])
-    # cv.error.2 <- exp(cv.error.2)/I(1 + exp(cv.error.2))
-    
-    # cv.error <- c(cv.error.1, cv.error.2)
-    
-    winner <- ifelse(cv.error.1 > cv.error.2, 1.0, ifelse(cv.error.1 < cv.error.2, 2.0, NA))
-    
-    cv.error <- data.frame("linear" = cv.error.1, "log.ordered" = cv.error.2, "winner" = winner)
-    
-    return(cv.error)
-  })
+# x <- colMeans(cv_lin_log_x, na.rm = TRUE) 
+# 
+# cv_lin_log <- rbind(cv_lin_log_x, x) #appending it to the end of the df seems like a bad idea
 
-cv_lin_log_x <- rbind(cv_lin_log_3_4, cv_lin_log_7)
-cv_lin_log_x <- cv_lin_log_x %>%
-  na_if(., 'NaN')
+cv_lin_log <- cv_lin_log_3_4
 
-x <- colMeans(cv_lin_log_x, na.rm = TRUE) 
-
-cv_lin_log <- rbind(cv_lin_log_x, x) #appending it to the end of the df seems like a bad idea
+saveRDS(cv_lin_log, "tables/cross_validation_group_3_4")

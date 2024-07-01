@@ -9,6 +9,7 @@ font_add_google("Roboto", "Roboto")
 showtext_auto()
 
 source("scripts/variable_labels.R")
+
 age_diff_models_og <- readRDS("data_clean/age_diff_models.rds")
 
 # Clean up coefficient estimates df ----
@@ -196,7 +197,6 @@ map2(names(plot30yr_align), c(5, 8, 5, 5, 5), function(x, y) {
             base_height = y)
 })
 
-
 # 35 year age difference plots ----
 
 plot35yr <- lapply(unique(age_diff_models$group), function(x) {
@@ -251,7 +251,6 @@ map2(names(plot35yr_align), c(5, 8, 5, 5, 5), function(x, y) {
 })
 
 # 40 year age difference plots ----
-
 plot40yr <- lapply(unique(age_diff_models$group), function(x) {
   plot <- age_diff_models %>%
     filter(age_variable == "coarsened_age_40") %>%
@@ -307,8 +306,6 @@ map2(names(plot40yr_align), c(5, 8, 5, 3.5, 5), function(x, y) {
             base_height = y)
 })
 
-
-
 # 35 year age difference results (original scale) table ----
 
 age_diff_models %>%
@@ -353,8 +350,8 @@ age_diff_models_fe <- age_diff_models_cfe %>%
   #                                                lower.coarsened_age_35*lower.coarsened_age_40 < 0 , 1,
   #                                              ifelse(p_value.coarsened_age_30 < 0.05 &
   #                                                       lower.coarsened_age_35*lower.coarsened_age_30 < 0 , 1, 0)), 0), 0)) 
-  mutate(label = factor(label)) %>% #changed from as.factor
-  mutate(label = fct_relevel(fct_reorder(label, estimate.coarsened_age_35, .fun = min),
+  mutate(label = as.factor(label)) %>% 
+  mutate(label = fct_relevel(fct_reorder(label, p_value.coarsened_age_35, .fun = min),
                              "Knows MP's name", "Exposure to vote buying"))
 
 plotfun_wide_fe <- function(data) {

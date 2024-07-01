@@ -71,7 +71,6 @@ if(!is.factor(afpr$coarsened_age_10) |
 not_relevant <- c(0 , 0, 1,  0)
 younger_int <- c( -1,   1,  0,    0 )
 older_int <- c( 0,   0,   -1,   1 )
-# l <- rbind(constant=1/4, not_relevant, younger_int, older_int)
 
 # Get inverse of contrast matrix and remove constant
 contrasts_matrix <- solve(rbind(constant=1/4, not_relevant, younger_int, older_int))[ , -1]
