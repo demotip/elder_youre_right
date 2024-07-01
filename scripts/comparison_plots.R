@@ -23,6 +23,8 @@ binary_var_names_plus <- c("coarsened_age_10",
                            "region", "tribe", 
                            "enumeth", "country", binary_var_names)
 
+# CHANGE THESE LATER - CONSISTENT NAMING SCHEMES FOR FORM_BASE PLEASE
+
 form_base  <- paste0("{outcome_variable} ~ {age_variable} + ",
                      "noncoeth +", 
                      "age + gender + edu + ",
