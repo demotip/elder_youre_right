@@ -27,6 +27,19 @@ glance_custom.felm <- function(x, ...) {
   return(out)
 }
 
+glance_custom.polr <- function(x, ...) {
+  
+  if (x[["terms"]][[3]][[3]] == "as.factor(country)") {
+    out <- data.frame("Country fixed effects" = "Yes")
+  } else {
+    out <- data.frame("Country fixed effects" = "No")
+  }
+  
+  return(out)
+}
+
+glance_custom.glm <- glance_custom.polr
+
 ### Defining model names, map of variable names ----
 cm <- c("(Intercept)" = "Constant",
         "coarsened_age_30older_int" = "30 split, interviewer older",
@@ -278,171 +291,130 @@ regression_tables_countryfe |>
         self_contained = FALSE)
 
 # #### REGRESSION TABLES FOR LOGISTIC/ORDERED LOGISTIC FIXED EFFECTS ----
-# 
-# form_base_factor  <- paste0("as.factor({outcome_variable}) ~ {age_variable} + ",
-#                             "noncoeth +", 
-#                             "age + gender + edu + ",
-#                             "urban + minority +",
-#                             "round + inhomelang + country") #same as in cross_validated.R - defined again here for convenience
-# 
-# form_base_factor_round7  <- paste0("as.factor({outcome_variable}) ~ {age_variable} + ",
-#                             "noncoeth +", 
-#                             "age + gender + edu + ",
-#                             "urban + minority +",
-#                             "round + inhomelang") #round 7 outcomes will run without country fe
-# 
-# # splitting outcome_age_combos by round because the youth_outcomes can't run with country fixed effects
-# # (Ask if I should exclude the round 7 question that was asked in all countries? addressing needs of youth?)
-# 
-# outcome_age_combos_grouped_3_4 <- outcome_age_combos_grouped %>%
-#   filter(round == "3 and 4")
-# 
-# outcome_age_combos_grouped_7 <- outcome_age_combos_grouped %>%
-#   filter(round == "7")
-# 
-# # This is the function for rounds 3 and 4
-# model_function_logistic <- function(data_frame) { 
-#   pmap(data_frame, function(outcome, age_variable, round) {
-#   
-#   if(round == "7") include_round <- 7 else include_round <- 3:4
-#   
-#   outcome_variable <- outcome # not standardizing variables
-#   
-#   print(outcome_variable)
-#   
-#   # Run model
-#   if(age_variable == "coarsened_age_10") {
-#     # Note: no contrasts for 10-year age difference model
-#     # because we only have one baseline of interest: same age.
-#     
-#     if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-#       
-#       print(2)
-#       
-#       model <- glm(as.formula(glue(form_base_factor)),
-#                    data = afpr[afpr$round %in% include_round, ],
-#                    family = "binomial")
-#       
-#     } else {
-#       # Note: no contrasts for 10-year age difference model
-#       # because we only have one baseline of interest: same age.
-#       
-#       print(3)
-#       
-#       model <- MASS::polr(as.formula(glue(form_base_factor)),
-#                           method = "logistic",
-#                           data = afpr[afpr$round %in% include_round, ],
-#                           Hess = T)
-#       }
-#     
-#   } else {
-#     
-#     contrasts_matrix_list <- list(x = contrasts_matrix)
-#     names(contrasts_matrix_list) <- age_variable
-#     
-#     if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-#       print(5)
-#       
-#       model <- glm(as.formula(glue(form_base_factor)),
-#                    data = afpr[afpr$round %in% include_round, ],
-#                    # contrasts = contrasts_matrix_list
-#                    family = "binomial")
-#       
-#     } else {
-#       
-#       print(6)
-#       
-#       model <- MASS::polr(as.formula(glue(form_base_factor)),
-#                           method = "logistic",
-#                           data = afpr[afpr$round %in% include_round, ],
-#                           # contrasts = contrasts_matrix_list
-#                           Hess = T)
-#       
-#       }
-#     
-#   }
-#   
-#   return(model)
-# }) }
-# 
-# # This is the function for round 7
-# model_function_logistic_7 <- function(data_frame) { 
-#   pmap(data_frame, function(outcome, age_variable, round) {
-#     
-#     if(round == "7") include_round <- 7 else include_round <- 3:4
-#     
-#     outcome_variable <- outcome # not standardizing variables
-#     
-#     print(outcome_variable)
-#     
-#     # Run model
-#     if(age_variable == "coarsened_age_10") {
-#       # Note: no contrasts for 10-year age difference model
-#       # because we only have one baseline of interest: same age.
-#       
-#       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-#         
-#         print(2)
-#         
-#         model <- glm(as.formula(glue(form_base_factor_round7)),
-#                      data = afpr[afpr$round %in% include_round, ],
-#                      family = "binomial")
-#         
-#       } else {
-#         # Note: no contrasts for 10-year age difference model
-#         # because we only have one baseline of interest: same age.
-#         
-#         print(3)
-#         
-#         model <- MASS::polr(as.formula(glue(form_base_factor_round7)),
-#                             method = "logistic",
-#                             data = afpr[afpr$round %in% include_round, ],
-#                             Hess = T)
-#       }
-#       
-#     } else {
-#       
-#       contrasts_matrix_list <- list(x = contrasts_matrix)
-#       names(contrasts_matrix_list) <- age_variable
-#       
-#       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-#         print(5)
-#         
-#         model <- glm(as.formula(glue(form_base_factor_round7)),
-#                      data = afpr[afpr$round %in% include_round, ],
-#                      # contrasts = contrasts_matrix_list
-#                      family = "binomial")
-#         
-#       } else {
-#         
-#         print(6)
-#         
-#         model <- MASS::polr(as.formula(glue(form_base_factor_round7)),
-#                             method = "logistic",
-#                             data = afpr[afpr$round %in% include_round, ],
-#                             # contrasts = contrasts_matrix_list
-#                             Hess = T)
-#         
-#       }
-#       
-#     }
-#     
-#     return(model)
-#   }) }
-# 
-# regression_tables_logistic_3_4 <- lapply(unique(outcome_age_combos_grouped_3_4$group), function(x) {
-#   table <- outcome_age_combos_grouped_3_4 %>%
-#     filter(group == x) %>%
-#     select(-group, -label) %>%
-#     model_function_logistic() %>%
-#     modelsummary()
-# }) 
-# 
-# # you don't need the lapply here
-# regression_tables_logistic_7 <- lapply(unique(outcome_age_combos_grouped_7$group), function(x) {
-#   table <- outcome_age_combos_grouped_7 %>%
-#     filter(group == x) %>%
-#     select(-group, -label) %>%
-#     model_function_logistic_7() %>%
-#     modelsummary()
-# })
+
+form_base_factor  <- paste0("as.factor({outcome_variable}) ~ {age_variable} + ",
+                            "noncoeth +",
+                            "age + gender + edu + ",
+                            "urban + minority +",
+                            "round + inhomelang + country") #same as in cross_validated.R - defined again here for convenience
+
+# Defining contrasts outside of the function bc that's the only way it works with polr()
+contrasts_matrix_polr <- matrix(c(
+  -1, -0.5, -0.5,
+  -1,  0.5, -0.5,
+  1,  0.0,  0.0,
+  1,  0.0,  1.0
+), ncol = 3, byrow = TRUE)
+colnames(contrasts_matrix_polr) <- c("not_relevant", "younger_int", "older_int")
+rownames(contrasts_matrix_polr) <- c("younger_int", "older_int", "not_relevant", "younger_int")
+
+contrasts(afpr$coarsened_age_30) <- contrasts_matrix_polr
+contrasts(afpr$coarsened_age_35) <- contrasts_matrix_polr
+contrasts(afpr$coarsened_age_40) <- contrasts_matrix_polr
+
+model_function_logistic <- function(data_frame) {
+  pmap(data_frame, function(outcome, age_variable, round) {
+
+  if(round == "7") include_round <- 7 else include_round <- 3:4
+
+  outcome_variable <- outcome # not standardizing variables
+
+  print(outcome_variable)
+
+    contrasts_matrix_list <- list(x = contrasts_matrix)
+    names(contrasts_matrix_list) <- age_variable
+
+    if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
+      print(5)
+
+      model <- glm(as.formula(glue(form_base_factor)),
+                   data = afpr[afpr$round %in% include_round, ],
+                   contrasts = contrasts_matrix_list,
+                   family = "binomial")
+
+    } else {
+
+      print(6)
+
+      model <- MASS::polr(as.formula(glue(form_base_factor)),
+                          method = "logistic",
+                          data = afpr[afpr$round %in% include_round, ],
+                          # contrasts = list("{age_variable}" = contrasts_matrix_polr),
+                          Hess = T)
+
+      }
+
+  return(model)
+  }) }
+
+regression_output_stat_logistic <- outcome_age_combos_grouped %>%
+  filter(group == "stat_outcomes") %>%
+  dplyr::select(-group, -label) %>%
+  model_function_logistic() %>%
+  "names<-"(names_stat_split) %>%
+  saveRDS(., file = "data_clean/regression_output_stat_logistic") 
+
+regression_output_pol_logistic <- outcome_age_combos_grouped %>%
+  filter(group == "pol_outcomes") %>%
+  dplyr::select(-group, -label) %>%
+  model_function_logistic() %>%
+  "names<-"(names_pol_split) %>%
+  saveRDS(., file = "data_clean/regression_output_pol_logistic")
+
+regression_output_pro_logistic <- outcome_age_combos_grouped %>%
+  filter(group == "pro_outcomes") %>%
+  dplyr::select(-group, -label) %>%
+  model_function_logistic() %>%
+  "names<-"(names_pro_split) %>%
+  saveRDS(., file = "data_clean/regression_output_pro_logistic")
+
+regression_output_eth_logistic <- outcome_age_combos_grouped %>%
+  filter(group == "eth_outcomes") %>%
+  dplyr::select(-group, -label) %>%
+  model_function_logistic() %>%
+  "names<-"(names_eth_split) %>%
+  saveRDS(., file = "data_clean/regression_output_eth_logistic")
+
+### Plotting logistic ----
+
+regression_output_logistic <- list()
+
+regression_output_logistic$stat <- readRDS(file = "data_clean/regression_output_stat_logistic")
+regression_output_logistic$pol <- readRDS(file = "data_clean/regression_output_pol_logistic")
+regression_output_logistic$pro <- readRDS(file = "data_clean/regression_output_pro_logistic")
+regression_output_logistic$eth <- readRDS(file = "data_clean/regression_output_eth_logistic")
+
+modelsummary_function_logistic <- function(data_frame) {
+  modelsummary(data_frame, coef_omit = "enumeth|region|tribe",
+               coef_map = cm,
+               estimate = c("{estimate} ({std.error})"),
+               fmt = 2,
+               statistic = NULL,
+               output = "latex",  #undocumented but need to specify here to output as latex
+               caption = paste0("Logistic and ordinal regressions"),
+               booktabs = TRUE,
+               linesep = "", 
+               escape = TRUE) |>
+    kable_styling(
+      font_size = 7,
+      full_width = FALSE,
+      latex_options = c("HOLD_position")
+    ) |>
+    row_spec(0, bold = TRUE, angle = -90, align = "c") |>
+    column_spec(2:17, width ="3em") |>
+    add_footnote("Add footnote here if needed.",
+                 threeparttable = TRUE, 
+                 escape = FALSE,
+                 notation = "none") 
+}
+
+regression_tables_logistic <- lapply(regression_output_logistic, modelsummary_function_logistic)
+
+regression_tables_logistic
+
+regression_tables_logistic |>
+  save_kable(
+    file.path(paste0("tables/regression_tables_logistic.tex")),
+    keep_tex = FALSE,
+    self_contained = FALSE)
+
