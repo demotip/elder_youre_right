@@ -1,3 +1,4 @@
+source(variable_labels.R)
 
 library(groundhog)
 
@@ -143,7 +144,7 @@ regression_output_pro <- outcome_age_combos_grouped %>%
 regression_output_eth <- outcome_age_combos_grouped %>%
   filter(group == "eth_outcomes") %>%
   dplyr::select(-group, -label) %>%
-  model_function()  %>% # Error: cannot allocate vector of size 49.6 Mb
+  model_function()  %>% 
   "names<-"(names_eth_split) %>%
   saveRDS(., file = "data_clean/regression_output_eth")
 

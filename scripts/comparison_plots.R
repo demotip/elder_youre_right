@@ -1,7 +1,5 @@
 # COMPARISON PLOTS
 
-# How to filter for all binary outcomes? 
-
 is_binary <- function(x) {
   length(unique(x))==3 #length == 3 because NA is counted in length
 }
@@ -101,11 +99,11 @@ saveRDS(age_diff_models_binary, "data_clean/age_diff_models_binary")
 coarsened_age_35 <- levels(afpr$coarsened_age_35)
 allcombos <- expand.grid(coarsened_age_35 = coarsened_age_35)
 allcombos <- allcombos %>%
-  mutate(noncoeth = 0, #valid to set this to 0? Ask AE?
-         age = mean(afpr$age, na.rm = TRUE), #what to do with age here? Is this fine?
+  mutate(noncoeth = 0, 
+         age = mean(afpr$age, na.rm = TRUE), 
          edu = mean(afpr$edu, na.rm = TRUE),
-         country = "Kenya", #I don't fucking know
-         gender = 0, #hmmm le deuxième sexe
+         country = "Kenya", 
+         gender = 0, 
          urban = mean(afpr$urban, na.rm = TRUE),
          minority = mean(afpr$minority, na.rm = TRUE),
          inhomelang = mean(afpr$inhomelang, na.rm = TRUE),
@@ -197,11 +195,11 @@ predictions_df_35 %>%
 coarsened_age_30 <- levels(afpr$coarsened_age_30)
 allcombos_30 <- expand.grid(coarsened_age_30 = coarsened_age_30)
 allcombos_30 <- allcombos_30 %>%
-  mutate(noncoeth = 0, #valid to set this to 0? Ask AE?
-         age = mean(afpr$age, na.rm = TRUE), #what to do with age here? Is this fine?
+  mutate(noncoeth = 0, 
+         age = mean(afpr$age, na.rm = TRUE), 
          edu = mean(afpr$edu, na.rm = TRUE),
-         country = "Kenya", #I don't fucking know
-         gender = 0, #hmmm le deuxième sexe
+         country = "Kenya",
+         gender = 0, 
          urban = mean(afpr$urban, na.rm = TRUE),
          minority = mean(afpr$minority, na.rm = TRUE),
          inhomelang = mean(afpr$inhomelang, na.rm = TRUE),
@@ -295,11 +293,11 @@ predictions_df_40 %>%
 coarsened_age_40 <- levels(afpr$coarsened_age_40)
 allcombos_40 <- expand.grid(coarsened_age_40 = coarsened_age_40)
 allcombos_40 <- allcombos_40 %>%
-  mutate(noncoeth = 0, #valid to set this to 0? Ask AE?
-         age = mean(afpr$age, na.rm = TRUE), #what to do with age here? Is this fine?
+  mutate(noncoeth = 0, 
+         age = mean(afpr$age, na.rm = TRUE),
          edu = mean(afpr$edu, na.rm = TRUE),
-         country = "Kenya", #I don't fucking know
-         gender = 0, #hmmm le deuxième sexe
+         country = "Kenya", 
+         gender = 0, 
          urban = mean(afpr$urban, na.rm = TRUE),
          minority = mean(afpr$minority, na.rm = TRUE),
          inhomelang = mean(afpr$inhomelang, na.rm = TRUE),
