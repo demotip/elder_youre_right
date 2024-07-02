@@ -2,8 +2,8 @@ source(variable_labels.R)
 
 library(groundhog)
 
-contrasts <- c("glue", "lfe", "tidyverse", "lmtest", "sandwich", "modelsummary", "janitor", "kableExtra")
-groundhog.library(contrasts, "2021-11-01")
+reg_tables <- c("glue", "lfe", "tidyverse", "lmtest", "sandwich", "modelsummary", "janitor", "kableExtra")
+groundhog.library(reg_tables, "2021-11-01")
 
 glance_custom.lm <- function(x, ...) {
   if (x[["terms"]][[3]][[3]][[2]] == "country") {
