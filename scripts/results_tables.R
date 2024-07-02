@@ -1,7 +1,6 @@
 # Using modelsummary to make tables for the results of the regressions,
 # separated by group. 
-# Also included tables for the results of the regressions w/ country fixed effects - 
-# can include results for the logistic/ordered logistic regressions later
+
 library(groundhog)
 plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts", "modelsummary", "flextable", "gt")
 groundhog.library(plot_30_yr, "2021-11-01")
@@ -32,7 +31,7 @@ results_tables <- lapply(unique(age_diff_models_results$group[!(age_diff_models_
             -p.value, -statistic, -n_obs, -upper, -lower) %>%
       pivot_wider(names_from = c(age, term),
     values_from = c(estimate, std.error),
-    names_sep = ".") %>%
+    names_sep = ".")
     # gt() %>%
     # tab_spanner(., label = "Young int. on old resp.", columns = contains("Younger interviewer")) %>%
     # tab_spanner(., label = "Old int. on young resp.", columns = contains("Older interviewer")) %>%
