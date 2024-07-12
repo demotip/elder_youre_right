@@ -1,0 +1,16 @@
+round,country,Both older (age 35 cutoff),Interviewer younger (age 35 cutoff),Both younger (age 35 cutoff),Interviewer older (age 35 cutoff),total_n,n_used
+4,Benin,18,478,670,26,1200,1025
+4,Burkina Faso,37,446,638,25,1200,1010
+4,Ghana,51,533,560,38,1200,910
+4,Kenya,119,324,513,144,1104,1064
+4,Malawi,78,370,579,114,1200,1133
+4,Mali,205,456,398,158,1232,1052
+4,Mozambique,0,308,839,0,1200,585
+4,Namibia,32,445,681,42,1200,1158
+4,Nigeria,0,626,1690,0,2324,1769
+4,Senegal,159,477,434,116,1200,1163
+4,South Africa,529,660,757,429,2400,2051
+4,Uganda,0,846,1575,0,2431,2340
+4,Zambia,3,448,731,9,1200,1152
+4,Zimbabwe,23,466,669,31,1200,978
+4,Total,1254,6883,10734,1132,20291,17390

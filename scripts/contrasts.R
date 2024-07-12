@@ -228,7 +228,6 @@ age_diff_models_mauritius <-
                                  paste0("z_", variable_labels$var),
                                  variable_labels$group))
 
-
 age_diff_models_mauritius <- age_diff_models_mauritius %>%
   mutate(country = "Mauritius")
 
@@ -240,6 +239,9 @@ age_diff_models_original_scale <- outcome_age_combos %>%
   pmap_dfr(function(outcome, age_variable, round) {
     
     if(round == "7") include_round <- 7 else include_round <- 3:4
+    
+    if(round == "7") afpr <- subset(afpr, country != "Uganda") 
+    
     outcome_variable <- outcome
     
     # Run model
@@ -467,3 +469,11 @@ rbind(age_diff_models_countryfe, age_diff_models_original_scale_countryfe) %>%
   mutate(country = "All") %>%
   bind_rows(age_diff_models_mauritius_countryfe) %>%
   saveRDS(., "data_clean/age_diff_models_countryfe.rds")
+
+age_diff_models_countryfe <- readRDS("data_clean/age_diff_models_countryfe.rds")
+
+countryfe_estimates <- age_diff_models_countryfe %>%
+  filter(age_variable == "coarsened_age_35") %>%
+  dplyr::select(outcome_variable, term, estimate, std.error, p.value, group, label) %>%
+  write.csv(file = "tables/all_country_coefficients.csv")
+

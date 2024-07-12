@@ -1,7 +1,9 @@
 "","variable","Younger than 35","Older than 35","difference","min","max"
-"1","Own present living conditions bad",1.75,1.558,"0.192*",0,4
-"2","Has gone without enough food",1.07,1.2,"-0.13*",0,4
-"3","Has gone without clean water",1.099,1.148,"-0.049*",0,4
-"4","Has gone without cash income",2.01,2.132,"-0.121*",0,4
-"5","Has feared crime in own home",0.772,0.767,"0.005",0,4
-"6","Knows someone who died of AIDS",0.42,0.407,"0.013*",0,1
+"1","Own present living conditions good",2.239,2.436,"-0.198*",0,4
+"2","Has always had enough food",2.932,2.811,"0.121*",0,4
+"3","Has always had cash income",2.002,1.894,"0.109*",0,4
+"4","Has always had clean water",2.904,2.86,"0.045*",0,4
+"5","Has not feared crime in own home",3.225,3.234,"-0.009",0,4
+"6","Does not know someone who died of AIDS",0.588,0.598,"-0.01",0,1
+"7","Government's handling of the economy",1.324,1.384,"-0.06*",0,3
+"8","Country's economic conditions",1.592,1.516,"0.076*",0,4

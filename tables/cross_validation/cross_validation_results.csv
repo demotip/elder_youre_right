@@ -1,0 +1,113 @@
+linear,log.ordered,label,term,larger
+0.0533289005503916,0.486857074746269,Respondent was hostile,Age 10 split,Logistic/ordered
+0.0691132140267325,0.539473510832441,Respondent was uncooperative,Age 10 split,Logistic/ordered
+0.0819736083166825,0.479527196541741,Respondent was impatient,Age 10 split,Logistic/ordered
+0.106076165405187,0.536970143631692,Respondent was suspicious,Age 10 split,Logistic/ordered
+0.284281248507642,1.04397155142089,Exposure to vote buying,Age 10 split,Logistic/ordered
+0.325033215288802,1.98469062881006,Knows MP's name,Age 10 split,Logistic/ordered
+0.174047367543934,0.862107931759146,Approval of president's performance,Age 10 split,Logistic/ordered
+0.476811454665338,0.726733414985181,Attendance at community meetings,Age 10 split,Logistic/ordered
+0.289054487503098,0.528091151844305,Interest in public affairs,Age 10 split,Logistic/ordered
+0.095316768877491,0.559722048502046,Preference for democracy,Age 10 split,Logistic/ordered
+0.255480300513106,0.441796134426243,Distrust in opposition parties,Age 10 split,Logistic/ordered
+0.45433412144128,0.781445848648957,Trust in ruling party,Age 10 split,Logistic/ordered
+0.172881258411104,1.1383126417265,Voted in last national election,Age 10 split,Logistic/ordered
+0.395143917030976,0.614171674818739,Own present living conditions good,Age 10 split,Logistic/ordered
+0.461705732740845,0.74903570407308,Has always had enough food,Age 10 split,Logistic/ordered
+0.697834402818671,1.02799028323591,Has always had cash income,Age 10 split,Logistic/ordered
+0.371171939715553,0.551388565186939,Has always had clean water,Age 10 split,Logistic/ordered
+0.291840822401615,0.542197622597572,Has not feared crime in own home,Age 10 split,Logistic/ordered
+0.326128959101597,1.73504272135005,Does not know someone who died of AIDS,Age 10 split,Logistic/ordered
+0.378531769766323,0.749941576324611,Government's handling of the economy,Age 10 split,Logistic/ordered
+0.440620961379969,0.647076222414347,Country's economic conditions,Age 10 split,Logistic/ordered
+0.351500276083986,0.559010980864031,Ethnic vs. national identification,Age 10 split,Logistic/ordered
+0.0904271766352566,0.441790074618254,Leaders should help home community,Age 10 split,Logistic/ordered
+0.404930828824513,0.822434501286672,Trust for coethnics,Age 10 split,Logistic/ordered
+0.343062339969799,0.667496121096853,Distrust for non-coethnics,Age 10 split,Logistic/ordered
+0.278298697472665,0.531095219068179,Ethnic group's economic conditions,Age 10 split,Logistic/ordered
+0.273508589067976,0.490923388037126,Ethnic group's political influence,Age 10 split,Logistic/ordered
+0.362371731447933,0.800103416251788,Ethnic group is treated unfairly,Age 10 split,Logistic/ordered
+0.05409059917651,0.490477944358512,Respondent was hostile,Age 30 split,Logistic/ordered
+0.0704117332316624,0.541481317402279,Respondent was uncooperative,Age 30 split,Logistic/ordered
+0.083963544545066,0.484047525185275,Respondent was impatient,Age 30 split,Logistic/ordered
+0.107140009035523,0.546322105062197,Respondent was suspicious,Age 30 split,Logistic/ordered
+0.282398127187513,1.02892809234535,Exposure to vote buying,Age 30 split,Logistic/ordered
+0.326499835465068,2.00123774530975,Knows MP's name,Age 30 split,Logistic/ordered
+0.174416488722729,0.8654448313706,Approval of president's performance,Age 30 split,Logistic/ordered
+0.488788088917827,0.742644712350481,Attendance at community meetings,Age 30 split,Logistic/ordered
+0.29351466579899,0.531465318159885,Interest in public affairs,Age 30 split,Logistic/ordered
+0.0970203420129273,0.567541728099199,Preference for democracy,Age 30 split,Logistic/ordered
+0.259525271645255,0.45082121094771,Distrust in opposition parties,Age 30 split,Logistic/ordered
+0.456160031746089,0.783962285684398,Trust in ruling party,Age 30 split,Logistic/ordered
+0.179478469156078,1.09991065592858,Voted in last national election,Age 30 split,Logistic/ordered
+0.400850696073762,0.622981841898312,Own present living conditions good,Age 30 split,Logistic/ordered
+0.462473515814472,0.752129409488992,Has always had enough food,Age 30 split,Logistic/ordered
+0.698990613723123,1.02861911204859,Has always had cash income,Age 30 split,Logistic/ordered
+0.371181613174413,0.55282864161073,Has always had clean water,Age 30 split,Logistic/ordered
+0.291297658524256,0.541976298490121,Has not feared crime in own home,Age 30 split,Logistic/ordered
+0.327441324465785,1.75256080696476,Does not know someone who died of AIDS,Age 30 split,Logistic/ordered
+0.379512820000661,0.752195167847047,Government's handling of the economy,Age 30 split,Logistic/ordered
+0.44272835085521,0.64977800978628,Country's economic conditions,Age 30 split,Logistic/ordered
+0.354952288765645,0.566041240890922,Ethnic vs. national identification,Age 30 split,Logistic/ordered
+0.0899744080814871,0.439951120572662,Leaders should help home community,Age 30 split,Logistic/ordered
+0.406150840343749,0.821874764492173,Trust for coethnics,Age 30 split,Logistic/ordered
+0.344289992936191,0.666027046131942,Distrust for non-coethnics,Age 30 split,Logistic/ordered
+0.281558513114078,0.537230093215841,Ethnic group's economic conditions,Age 30 split,Logistic/ordered
+0.275048958948792,0.491332708350642,Ethnic group's political influence,Age 30 split,Logistic/ordered
+0.362932395714382,0.800938087106225,Ethnic group is treated unfairly,Age 30 split,Logistic/ordered
+0.0530347955645264,0.477292330234107,Respondent was hostile,Age 35 split,Logistic/ordered
+0.0690082384203233,0.527278646974992,Respondent was uncooperative,Age 35 split,Logistic/ordered
+0.0831077729641349,0.484808125682372,Respondent was impatient,Age 35 split,Logistic/ordered
+0.107570796759371,0.5484386159904,Respondent was suspicious,Age 35 split,Logistic/ordered
+0.28475612134038,1.05631513505457,Exposure to vote buying,Age 35 split,Logistic/ordered
+0.32548657402073,1.99070423737234,Knows MP's name,Age 35 split,Logistic/ordered
+0.173584389665268,0.859607781603888,Approval of president's performance,Age 35 split,Logistic/ordered
+0.478853985909442,0.728937964710148,Attendance at community meetings,Age 35 split,Logistic/ordered
+0.291063450538879,0.530234443875401,Interest in public affairs,Age 35 split,Logistic/ordered
+0.0963592528758929,0.56463729146304,Preference for democracy,Age 35 split,Logistic/ordered
+0.257278344879609,0.446285732481982,Distrust in opposition parties,Age 35 split,Logistic/ordered
+0.453844458403196,0.781648865063044,Trust in ruling party,Age 35 split,Logistic/ordered
+0.166461640163019,1.14056126790659,Voted in last national election,Age 35 split,Logistic/ordered
+0.396350184830371,0.615820520171468,Own present living conditions good,Age 35 split,Logistic/ordered
+0.461153466187531,0.748664941423714,Has always had enough food,Age 35 split,Logistic/ordered
+0.697975183328385,1.02759030597936,Has always had cash income,Age 35 split,Logistic/ordered
+0.371633943097724,0.55249767959469,Has always had clean water,Age 35 split,Logistic/ordered
+0.294776559234134,0.544085237521268,Has not feared crime in own home,Age 35 split,Logistic/ordered
+0.326291677726359,1.7352784522927,Does not know someone who died of AIDS,Age 35 split,Logistic/ordered
+0.380107586774979,0.752152024041655,Government's handling of the economy,Age 35 split,Logistic/ordered
+0.44210735034154,0.648738409981868,Country's economic conditions,Age 35 split,Logistic/ordered
+0.352552196493853,0.561680509440184,Ethnic vs. national identification,Age 35 split,Logistic/ordered
+0.0904643405827198,0.446608897205869,Leaders should help home community,Age 35 split,Logistic/ordered
+0.406240749802327,0.822574238891876,Trust for coethnics,Age 35 split,Logistic/ordered
+0.343666559846312,0.668155905861134,Distrust for non-coethnics,Age 35 split,Logistic/ordered
+0.278022870126472,0.531742103454687,Ethnic group's economic conditions,Age 35 split,Logistic/ordered
+0.273024425388463,0.489756242211272,Ethnic group's political influence,Age 35 split,Logistic/ordered
+0.363248050299787,0.799927847080252,Ethnic group is treated unfairly,Age 35 split,Logistic/ordered
+0.0526542927062375,0.47417378655067,Respondent was hostile,Age 40 split,Logistic/ordered
+0.0681497546848786,0.524716369070565,Respondent was uncooperative,Age 40 split,Logistic/ordered
+0.0817754810345605,0.47510620377075,Respondent was impatient,Age 40 split,Logistic/ordered
+0.106947681074044,0.540450312580307,Respondent was suspicious,Age 40 split,Logistic/ordered
+0.284480131714966,1.04343128304293,Exposure to vote buying,Age 40 split,Logistic/ordered
+0.325133706324002,1.98659394431032,Knows MP's name,Age 40 split,Logistic/ordered
+0.173440661889348,0.858959565995428,Approval of president's performance,Age 40 split,Logistic/ordered
+0.476667069329645,0.725990801535843,Attendance at community meetings,Age 40 split,Logistic/ordered
+0.289262595147201,0.528525805022343,Interest in public affairs,Age 40 split,Logistic/ordered
+0.0962859710457195,0.562557971728561,Preference for democracy,Age 40 split,Logistic/ordered
+0.25580159553536,0.443064374970491,Distrust in opposition parties,Age 40 split,Logistic/ordered
+0.454081065071965,0.781945341796773,Trust in ruling party,Age 40 split,Logistic/ordered
+0.168778011010684,1.17177787786892,Voted in last national election,Age 40 split,Logistic/ordered
+0.396151748223695,0.617350286754226,Own present living conditions good,Age 40 split,Logistic/ordered
+0.461945941860657,0.748618149436491,Has always had enough food,Age 40 split,Logistic/ordered
+0.69789851539416,1.02703722901177,Has always had cash income,Age 40 split,Logistic/ordered
+0.370703398301487,0.553751953503187,Has always had clean water,Age 40 split,Logistic/ordered
+0.296724540410214,0.545933728047308,Has not feared crime in own home,Age 40 split,Logistic/ordered
+0.326003687999356,1.73407710816728,Does not know someone who died of AIDS,Age 40 split,Logistic/ordered
+0.379952932838193,0.752936113674982,Government's handling of the economy,Age 40 split,Logistic/ordered
+0.443257443622041,0.650073865172804,Country's economic conditions,Age 40 split,Logistic/ordered
+0.35286010984907,0.560303826181684,Ethnic vs. national identification,Age 40 split,Logistic/ordered
+0.0899064968495261,0.438951331482861,Leaders should help home community,Age 40 split,Logistic/ordered
+0.4052198670366,0.822963188470239,Trust for coethnics,Age 40 split,Logistic/ordered
+0.342745624843307,0.665639504994607,Distrust for non-coethnics,Age 40 split,Logistic/ordered
+0.279787394310134,0.536160959546592,Ethnic group's economic conditions,Age 40 split,Logistic/ordered
+0.272765896993461,0.488850656567236,Ethnic group's political influence,Age 40 split,Logistic/ordered
+0.362807278581867,0.801363678624749,Ethnic group is treated unfairly,Age 40 split,Logistic/ordered

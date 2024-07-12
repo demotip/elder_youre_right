@@ -1,15 +1,29 @@
 # DESCRIPTIVE STATISTICS ----
 
-# Load packages
-library(kableExtra)
-library(tidyverse)
-library(showtext)
-library(sysfonts)
-library(ggtext)
+library(groundhog)
+
+desc_stats <- c("kableExtra", "tidyverse", "showtext", "sysfonts", "ggtext")
+groundhog.library(desc_stats, "2021-11-01")
 
 # Load data  
 afpr <- readRDS("data_clean/afpr_ages.rds")
 source("scripts/variable_labels.R")
+
+# # STAT OUTCOMES
+
+afpr$ec_conditions_self <- as.vector((afpr$ec_conditions_self - 5 ) * -1)
+afpr$notenoughfood <- as.vector((afpr$notenoughfood - 4 ) * -1)
+afpr$noincome <- as.vector((afpr$noincome - 4) * -1)
+afpr$nocleanwater <- as.vector((afpr$nocleanwater - 4) * -1)
+afpr$crime <- as.vector((afpr$crime - 4) * -1)
+afpr$aids <- as.vector((afpr$aids - 1) * -1)
+
+# ETH OUTCOMES
+afpr$idrank <- as.vector((afpr$idrank - 4) * -1)
+afpr$netrust <- as.vector((afpr$netrust - 3) * -1)
+
+# POL OUTCOMES
+afpr$trust_opposition <- as.vector((afpr$trust_opposition - 3) * -1)
 
 # Function to convert Stata labelled variables to character
 l2f <- function(x) as.character(haven::as_factor(x))
@@ -193,7 +207,7 @@ afpr <- afpr %>%
             conditional_rescale)
 
 # Determine whether variables are binary or ordinal
-variable_type_3_4 <- afpr[ , c(pro_outcomes, pol_outcomes, stat_outcomes, eth_outcomes)] %>%
+variable_type_3_4 <- afpr[ , c(stat_outcomes, pol_outcomes, pro_outcomes, eth_outcomes)] %>%
   sapply(function(x) length(na.omit(unique(x))))
 
 variable_type_3_4 <- ifelse(variable_type_3_4 == 2, "binary", "ordinal")
@@ -245,30 +259,48 @@ older_younger_desc_3_4 <- map(names(variable_type_3_4), function(x) {
   dplyr::select(-pval)
 
 # Make ordering of variables correct
-older_younger_desc_3_4$variable <- fct_rev(factor(older_younger_desc_3_4$variable, variable_labels$label))
+older_younger_desc_3_4$variable <- factor(older_younger_desc_3_4$variable, variable_labels$label)
 
-older_younger_desc_3_4 <- older_younger_desc_3_4 %>%
-  arrange(variable)
+# older_younger_desc_3_4 <- older_younger_desc_3_4 %>%
+#   arrange(variable) 
+
+View(older_younger_desc_3_4)
 
 map(c("stat_outcomes","pol_outcomes","eth_outcomes","pro_outcomes"), function(x) {
   older_younger_desc_3_4 %>%
     filter(group == x) %>%
     dplyr::select(-group) %>%
-    write.csv(., file = paste0("tables/older_younger_means_3_4", x, ".csv"))
+    write.csv(., file = paste0("tables/older_younger_means_3_4", x, ".csv")) 
 })
+
+older_younger_desc_3_4 %>%
+  dplyr::select(-group) %>%
+  knitr::kable(., format = "latex", digits = 2, row.names = TRUE) %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+                            full_width = F,
+                            font_size = 15,
+                            position = "left") %>%
+  row_spec(8, hline_after = T) %>%
+  row_spec(17, hline_after = T) %>%
+  row_spec(21, hline_after = T) %>%
+  save_kable(file = "tables/descriptive_stats/older_younger_all_3_4.tex")
 
 # Tables XX: Mean differences between younger and older respondents (All round 7) ----
 # It is just "youth_needs" that is in all Round 7
 
-
-pval <- do(afpr[afpr$round %in% 7, ], 
+# afpr_round_7 <- afpr %>%
+#   filter(round %in% 7) 
+# # %>%
+# #   filter(country != "Uganda")
+  
+pval <- do(afpr, 
                broom::tidy(t.test(youth_needs ~ younger_older, data = .)))$p.value
 
 older_younger_p_7 <- data.frame(variable = "youth_needs", pval = pval)
 
 # Construct table 
 older_younger_desc_7 <- 
-  means <- afpr[afpr$round %in% 7, ] %>%
+  means <- afpr %>%
   dplyr::select(younger_older, youth_needs) %>%
   na.omit() %>%
   group_by(younger_older) %>%
@@ -276,7 +308,7 @@ older_younger_desc_7 <-
   spread(younger_older, means) %>%
   mutate(difference = `Younger than 35` - `Older than 35`) %>%
   mutate(variable = "youth_needs") %>%
-  select(variable, everything())
+  dplyr::select(variable, everything())
   
 older_younger_desc_7$min <- range(afpr[["youth_needs"]], na.rm = TRUE)[1]
 older_younger_desc_7$max <- range(afpr[["youth_needs"]], na.rm = TRUE)[2]
@@ -292,11 +324,30 @@ older_younger_desc_7 <- older_younger_desc_7 %>%
   mutate_if(is.numeric, list(~round(., 3))) %>%
   # Append a star * to the difference if it's significant
   mutate(difference = ifelse(pval < 0.05, paste0(difference, "*"), difference)) %>%
+  mutate(group = "youth_outcomes") %>%
   # Remove p-value column
   dplyr::select(-pval)
 
 older_younger_desc_7 %>%
   write.csv(., file = paste0("tables/older_younger_means_7_youth_outcomes.csv"))
+
+older_younger_desc_7 %>%
+  dplyr::select(-group) %>%
+  knitr::kable(., format = "latex", digits = 2, row.names = TRUE) %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+                            full_width = F,
+                            font_size = 15,
+                            position = "left") %>%
+  save_kable(file = "tables/descriptive_stats/older_younger_all_7.tex")
+
+# rbind(older_younger_desc_3_4, older_younger_desc_7) %>%
+#   dplyr::select(-group) %>%
+#   knitr::kable(., format = "latex", digits = 2, row.names = TRUE) %>%
+#   kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+#                             full_width = F,
+#                             font_size = 15,
+#                             position = "left") %>%
+#   save_kable(file = "tables/descriptive_stats/older_younger_all.tex")
 
 
 # Tables XX: Mean differences between younger and older respondents (Mauritius only) ----
@@ -327,7 +378,7 @@ mauritius_descriptives <- map_dfr(youth_outcomes, function(outcome) {
   
   means %>%
     mutate(country = "Mauritius") %>%
-    select(country, variable, everything()) %>%
+    dplyr::select(country, variable, everything()) %>%
     left_join(pval, by = "variable") 
 }) %>%
   mutate(variable = plyr::mapvalues(variable, variable_labels$var, 
@@ -339,17 +390,53 @@ mauritius_descriptives <- map_dfr(youth_outcomes, function(outcome) {
   # Append a star * to the difference if it's significant
   mutate(difference = ifelse(pval < 0.05, paste0(difference, "*"), difference)) %>%
   # Remove p-value column
-  dplyr::select(-pval)
+  dplyr::select(-pval, -country)
 
 
 # Make ordering of variables correct
-mauritius_descriptives$variable <- fct_rev(factor(mauritius_descriptives$variable, variable_labels$label))
+mauritius_descriptives$variable <- factor(mauritius_descriptives$variable, variable_labels$label)
 
 mauritius_descriptives <- mauritius_descriptives %>%
-  arrange(variable)
+  arrange(variable) %>%
+  slice(2:7) # Removing youth_needs
 
-uganda_mauritius_descriptives %>%
-    write.csv(., file = paste0("tables/older_younger_means_7_youth_outcomes_maurituis.csv"))
+View(mauritius_descriptives)
+  
+# changed from uganda_mauritius_descriptives
+mauritius_descriptives %>%
+    write.csv(., file = paste0("tables/descriptive_stats/older_younger_means_7_youth_outcomes_mauritius.csv"))
+
+
+mauritius_descriptives %>%
+  dplyr::select(-group) %>%
+  knitr::kable(., format = "latex", digits = 2, row.names = TRUE) %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+                            full_width = F,
+                            font_size = 15,
+                            position = "left")  %>%
+  save_kable(file = "tables/descriptive_stats/older_younger_mauritius_7.tex")
+
+rbind(older_younger_desc_7, mauritius_descriptives) %>%
+  dplyr::select(-group) %>%
+  knitr::kable(., format = "latex", digits = 2, row.names = TRUE) %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+                            full_width = F,
+                            font_size = 15,
+                            position = "left")  %>%
+  save_kable(file = "tables/descriptive_stats/older_younger_youth.tex")
+
+rbind(older_younger_desc_3_4, older_younger_desc_7, mauritius_descriptives) %>%
+  dplyr::select(-group) %>%
+  knitr::kable(., format = "latex", digits = 2, row.names = TRUE) %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+                            full_width = F,
+                            font_size = 15,
+                            position = "left") %>%
+  row_spec(8, hline_after = T) %>%
+  row_spec(17, hline_after = T) %>%
+  row_spec(21, hline_after = T) %>%
+  row_spec(28, hline_after = T) %>%
+  save_kable(file = "tables/descriptive_stats/older_younger_all.tex")
 
 # Distribution of interviewer-respondent dyads by country and wave ----
 
@@ -410,6 +497,79 @@ age_differnce_count %>%
     })
 
 
+### Descriptive statistics tables, unpooled ----
+
+pacman::p_load(haven, tidyverse, MASS, ggplot2, janitor, psych,
+               survey, magrittr, plyr) 
+
+sumstats_3_4 <- afpr %>%
+  filter(round != 7) %>%
+  dplyr::select(all_of(c(stat_outcomes, pol_outcomes, pro_outcomes, eth_outcomes))) %>%
+  describe(na.rm = TRUE,
+           skew = FALSE,
+           range = TRUE)
+
+sumstatssimple_3_4 <- sumstats_3_4 %>%
+  dplyr::select(-vars, -se, -median, -range)%>%
+  rename(c("n" = "No. Obs.", "sd" = "S.D.", "mean" = "Mean", "min" = "Min.", "max" = "Max."))
+
+label3_4 <- plyr::mapvalues(c(stat_outcomes, pol_outcomes, pro_outcomes, eth_outcomes),
+                        as.character(variable_labels$var),
+                        as.character(variable_labels$label)) 
+
+rownames(sumstatssimple_3_4) <- label3_4
+
+knitr::kable(sumstatssimple_3_4, 
+             format = "latex", 
+             digits = 2, 
+             row.names = TRUE,
+             # caption = "* p <.05. For ordinal variables, a t-test is used for statistical significance. All other variables are binary (0-1), and significance is tested with a Wilcoxon rank-sum test.",
+             label = "Mean differences between younger and older respondents on responses from 2005-2009 | 14 countries ") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+                            full_width = F,
+                            font_size = 15,
+                            position = "left") %>%
+  row_spec(8, hline_after = T) %>%
+  row_spec(17, hline_after = T) %>%
+  row_spec(21, hline_after = T) %>%
+  save_kable(file = "tables/descriptive_stats/descriptive_stats_3_4.tex")  
 
 
+### Doing the same thing for round 7 ----
+
+sumstats_7_mauritius <- afpr %>%
+  filter(round == 7) %>%
+  filter(country != "Uganda") %>%
+  dplyr::select(all_of(youth_outcomes), -youth_needs) %>%
+  describe(na.rm = TRUE,
+           skew = FALSE,
+           range = TRUE)
+
+sumstats_7_all <- afpr %>%
+  filter(round == 7) %>%
+  dplyr::select(youth_needs, youth_employment) %>%
+  describe(na.rm = TRUE,
+           skew = FALSE,
+           range = TRUE) %>%
+  slice(1:1)
   
+sumstats_7 <- rbind(sumstats_7_all, sumstats_7_mauritius)
+
+sumstatssimple_7 <- sumstats_7 %>%
+  dplyr::select(-vars, -se, -median, -range)%>%
+  rename(c("n" = "No. Obs.", "sd" = "S.D.", "mean" = "Mean", "min" = "Min.", "max" = "Max."))
+
+rownames(sumstatssimple_7) <- variable_labels$label[29:35]
+
+knitr::kable(sumstatssimple_7, 
+             format = "latex", 
+             digits = 2, 
+             row.names = TRUE,
+             # caption = "* p <.05. For ordinal variables, a t-test is used for statistical significance. All other variables are binary (0-1), and significance is tested with a Wilcoxon rank-sum test.",
+             label = "Mean differences between younger and older respondents on responses from 2005-2009 | 14 countries ") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+                            full_width = F,
+                            font_size = 15,
+                            position = "left") %>%
+  save_kable(file = "tables/descriptive_stats/descriptive_stats_7.tex")
+

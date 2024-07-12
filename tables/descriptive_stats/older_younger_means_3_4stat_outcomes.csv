@@ -1,0 +1,9 @@
+"","variable","Younger than 35","Older than 35","difference","min","max"
+"1","Country's economic conditions",1.592,1.516,"0.076*",0,4
+"2","Government's handling of the economy",1.324,1.384,"-0.06*",0,3
+"3","Own present living conditions good",1.761,1.564,"0.198*",0,4
+"4","Has always had enough food",2.932,2.811,"0.121*",0,4
+"5","Has always had clean water",2.904,2.86,"0.045*",0,4
+"6","Has always had cash income",2.002,1.894,"0.109*",0,4
+"7","Has not feared crime in own home",3.225,3.234,"-0.009",0,4
+"8","Does not know someone who died of AIDS",0.588,0.598,"-0.01",0,1

@@ -2,7 +2,7 @@
 
 library(groundhog)
 
-plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts")
+plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts", "forcats")
 groundhog.library(plot_30_yr, "2021-11-01")
 
 font_add_google("Roboto", "Roboto")
@@ -93,7 +93,7 @@ plot10yr <- lapply(unique(age_diff_models$group), function(x) {
     plot <- plot +
       scale_y_continuous(breaks = seq(-0.4, 0.4, 0.1),
                          limits = c(-0.4, 0.4)) +
-      geom_vline(xintercept = 2.5, size = 0.3) 
+      geom_vline(xintercept = 1.5, size = 0.3) 
     # +
     #   geom_vline(xintercept = 4.5, size = 0.3)
   } else if (x == "stat_outcomes") {
@@ -154,7 +154,7 @@ plot30yr <- lapply(unique(age_diff_models$group), function(x) {
   
   if(x == "pol_outcomes") {
     plot <- plot +
-      geom_vline(xintercept = 2.5, size = 0.3) 
+      geom_vline(xintercept = 1.5, size = 0.3) 
     # +
     #   geom_vline(xintercept = 4.5, size = 0.3)
   } else if (x == "stat_outcomes") {
@@ -208,7 +208,7 @@ plot35yr <- lapply(unique(age_diff_models$group), function(x) {
   
   if(x == "pol_outcomes") {
     plot <- plot +
-      geom_vline(xintercept = 2.5, size = 0.3)
+      geom_vline(xintercept = 1.5, size = 0.3)
       # geom_vline(xintercept = 4.5, size = 0.3)
   } else if (x == "stat_outcomes") {
     plot <- plot +
@@ -259,7 +259,7 @@ plot40yr <- lapply(unique(age_diff_models$group), function(x) {
   
   if(x == "pol_outcomes") {
     plot <- plot +
-      geom_vline(xintercept = 2.5, size = 0.3) +
+      geom_vline(xintercept = 1.5, size = 0.3) +
       scale_y_continuous(breaks = seq(-0.4, 0.4, 0.1)) 
     # +
     #   geom_vline(xintercept = 4.5, size = 0.3)
@@ -329,12 +329,13 @@ age_diff_models_fe <- age_diff_models_cfe %>%
                      TRUE ~ term)) %>%
   mutate(age_label =
            case_when(grepl("old", ignore.case = T, age) ~
-                       "Effect of old interviewer on young respondents",
+                       "Old interviewer on young respondent",
                      grepl("young", ignore.case = T, age) ~
-                       "Effect of young interviewer on old respondents",
+                       "Young interviewer on old respondent",
                      grepl("noncoeth", ignore.case = T, age) ~
                        "Non-coethnic interviewer",
                      TRUE ~ age)) %>%
+  mutate(age_label = factor(age_label, levels = c("Old interviewer on young respondent","Young interviewer on old respondent", "Non-coethnic interviewer"))) %>%
   rename(p_value = p.value) %>%
   select(-term, -std.error, -statistic, -n_obs) %>%
   pivot_wider(names_from = c(age_variable), 
@@ -351,8 +352,10 @@ age_diff_models_fe <- age_diff_models_cfe %>%
   #                                              ifelse(p_value.coarsened_age_30 < 0.05 &
   #                                                       lower.coarsened_age_35*lower.coarsened_age_30 < 0 , 1, 0)), 0), 0)) 
   mutate(label = as.factor(label)) %>% 
-  mutate(label = fct_relevel(fct_reorder(label, p_value.coarsened_age_35, .fun = min),
-                             "Knows MP's name", "Exposure to vote buying"))
+  filter(!is.na(estimate.coarsened_age_35)) %>%
+  mutate(age = as.factor(age)) %>%
+  mutate(label = fct_reorder2(label, age, estimate.coarsened_age_35, .desc = FALSE)) %>%
+  mutate(label = fct_relevel(label, "Does not know someone who died of AIDS", "Exposure to vote buying", after = 0))
 
 plotfun_wide_fe <- function(data) {
   data %>%
@@ -378,6 +381,7 @@ plotfun_wide_fe <- function(data) {
     scale_y_continuous(breaks = seq(-0.2, 0.2, 0.05),
                        limits = c(-0.2, 0.2)) +
     theme(axis.title.y = element_blank(),
+          axis.title.x = element_blank(), # ADDED THIS LINE
           legend.title = element_blank(),
           legend.position = "bottom",
           legend.text = element_text(size = 7),
@@ -394,8 +398,10 @@ plotfun_wide_fe <- function(data) {
            shape = guide_legend(reverse = TRUE,
                                 ncol = 1),
            size = "none"
-    ) +
-    ylab("\nEstimated effect (in SDs) of non-coethnic interviewer \nand age difference, with 95% confidence intervals: \n Fixed effects by country only") }
+    ) 
+  # +
+  #   ylab("\nEstimated effect (in SDs) of non-coethnic interviewer \nand age difference, with 95% confidence intervals: \n Fixed effects by country only")
+  }
 
 plot35yr_countryfe <- lapply(unique(age_diff_models_fe$group), function(x) {
   plot <- age_diff_models_fe %>%
@@ -404,7 +410,7 @@ plot35yr_countryfe <- lapply(unique(age_diff_models_fe$group), function(x) {
   
   if(x == "pol_outcomes") {
     plot <- plot +
-      geom_vline(xintercept = 2.5, size = 0.3)
+      geom_vline(xintercept = 1.5, size = 0.3)
     # geom_vline(xintercept = 4.5, size = 0.3)
   } else if (x == "stat_outcomes") {
     plot <- plot +
@@ -439,14 +445,14 @@ plot35yr_countryfe_align <- align_plots(plotlist = plot35yr_countryfe,
                                         axis = "tblr") %>%
   lapply(ggdraw)
 
-map2(names(plot35yr_countryfe_align), c(5, 8, 5, 5, 5), function(x, y) {
+map2(names(plot35yr_countryfe_align), c(3, 5, 5, 4.5, 4.5), function(x, y) {
   save_plot(paste0("figs/", x, "35yr_countryfe.pdf"),
             plot35yr_countryfe_align[[x]],
             base_width = 7,
             base_height = y)
 })
 
-# For the paper: 35 year age difference plots, standard fixed effects ----
+# For the paper: 35 year age difference plots, adida fixed effects ----
 
 age_diff_models_wide <- age_diff_models_int %>%
   mutate(age =
@@ -457,12 +463,13 @@ age_diff_models_wide <- age_diff_models_int %>%
                      TRUE ~ term)) %>%
   mutate(age_label =
            case_when(grepl("old", ignore.case = T, age) ~
-                       "Effect of old interviewer on young respondents",
+                       "Old interviewer on young respondent",
                      grepl("young", ignore.case = T, age) ~
-                       "Effect of young interviewer on old respondents",
+                       "Young interviewer on old respondent",
                      grepl("noncoeth", ignore.case = T, age) ~
                        "Non-coethnic interviewer",
                      TRUE ~ age)) %>%
+  mutate(age_label = factor(age_label, levels = c("Old interviewer on young respondent","Young interviewer on old respondent", "Non-coethnic interviewer"))) %>%
   rename(p_value = p.value) %>%
   select(-term, -std.error, -statistic, -n_obs, -country) %>%
   filter(age_variable != "coarsened_age_10") %>%
@@ -497,6 +504,7 @@ plotfun_wide <- function(data) {
     scale_y_continuous(breaks = seq(-0.2, 0.2, 0.05),
                        limits = c(-0.2, 0.2)) +
     theme(axis.title.y = element_blank(),
+          axis.title.x = element_blank(), # ADDED THIS LINE
           legend.title = element_blank(),
           legend.position = "bottom",
           legend.text = element_text(size = 7),
@@ -513,8 +521,9 @@ plotfun_wide <- function(data) {
            shape = guide_legend(reverse = TRUE,
                                 ncol = 1),
            size = "none"
-    ) +
-    ylab("\nEstimated effect (in SDs) of non-coethnic interviewer \nand age difference, with 95% confidence intervals")
+    ) 
+  # +
+  #   ylab("\nEstimated effect (in SDs) of non-coethnic interviewer \nand age difference, with 95% confidence intervals")
 }
 
 plot35yr_paper <- lapply(unique(age_diff_models_wide$group), function(x) {
@@ -524,7 +533,7 @@ plot35yr_paper <- lapply(unique(age_diff_models_wide$group), function(x) {
   
   if(x == "pol_outcomes") {
     plot <- plot +
-      geom_vline(xintercept = 2.5, size = 0.3)
+      geom_vline(xintercept = 1.5, size = 0.3)
     # geom_vline(xintercept = 4.5, size = 0.3)
   } else if (x == "stat_outcomes") {
     plot <- plot +
@@ -563,7 +572,10 @@ plot35yr_paper_align <- align_plots(plotlist = plot35yr_paper,
                                     axis = "tblr") %>%
   lapply(ggdraw)
 
-map2(names(plot35yr_paper_align), c(5, 8, 5, 5, 5), function(x, y) {
+names(plot35yr_paper_align)
+
+
+map2(names(plot35yr_paper_align), c(3, 5, 5, 4.5, 4.5), function(x, y) {
   save_plot(paste0("figs/", x, "paper.pdf"),
             plot35yr_paper_align[[x]],
             base_width = 7,
@@ -594,6 +606,7 @@ plotfun_integrated <- function(data) {
     #                    limits = c(-0.2, 0.2)) +
     theme(legend.position = "bottom",
           axis.title.y = element_blank(),
+          axis.title.x = element_blank(), # ADDED THIS LINE
           legend.title = element_blank(),
           legend.text = element_text(size = 7),
           legend.key.width= unit(3,"line"), 
@@ -606,8 +619,9 @@ plotfun_integrated <- function(data) {
            linetype = guide_legend(reverse = TRUE,
                                    ncol = 1),
            shape = guide_legend(reverse = TRUE,
-                                ncol = 1)) +
-    ylab("\nEstimated effect (in SDs) of age difference, with 95% confidence intervals")
+                                ncol = 1)) 
+  # +
+  #   ylab("\nEstimated effect (in SDs) of age difference, with 95% confidence intervals")
 }
 
 # Age plots w/ all cutoffs, adida fe ----
@@ -620,11 +634,13 @@ age_diff_models_int <- age_diff_models_og %>%
   # Clean up coefficient estimate names
   mutate(age =
            case_when(grepl("old", ignore.case = T, term) ~
-                       "Effect of old interviewer on young respondents",
+                       "Old interviewer on young respondent",
                      grepl("young", ignore.case = T, term) ~
-                       "Effect of young interviewer on old respondents",
+                       "Young interviewer on old respondent",
                      TRUE ~ term)) %>%
-  mutate(., label = factor(label, levels = levels(age_diff_models_wide$label)))
+  mutate(age = factor(age, levels = c("Old interviewer on young respondent","Young interviewer on old respondent", "Non-coethnic interviewer"))) %>%
+  mutate(label = as.factor(label)) %>%
+  mutate(., label = factor(label, levels = levels(age_diff_models_fe$label)))
   
   names <- c(coarsened_age_30 = "30 cutoff",
              coarsened_age_35 = "35 cutoff",
@@ -640,9 +656,15 @@ plots_integrated <- lapply(unique(age_diff_models_int$group), function(x) {
     filter(term != "noncoeth") %>%
     plotfun_integrated()
   
+  if(x == "stat_outcomes") {
+    plot <- plot +
+      geom_vline(xintercept = 1.5, size = 0.3)
+    # geom_vline(xintercept = 4.5, size = 0.3)
+  }
+  
   if(x == "pol_outcomes") {
     plot <- plot +
-      geom_vline(xintercept = 2.5, size = 0.3)
+      geom_vline(xintercept = 1.5, size = 0.3)
     # geom_vline(xintercept = 4.5, size = 0.3)
   }
   
@@ -666,7 +688,7 @@ plots_integrated_align <- align_plots(plotlist = plots_integrated,
                                       axis = "tblr") %>%
   lapply(ggdraw)
 
-map2(names(plots_integrated_align), c(5, 8, 5, 3.5, 5), function(x, y) {
+map2(names(plots_integrated_align), c(3, 5, 5, 4.5, 4.5), function(x, y) {
   save_plot(paste0("figs/", x, "integrated.pdf"),
             plots_integrated_align[[x]],
             base_width = 10,
@@ -689,11 +711,13 @@ age_diff_models_fe_long <- age_diff_models_cfe %>%
   # Clean up coefficient estimate names
   mutate(age =
            case_when(grepl("old", ignore.case = T, term) ~
-                       "Effect of old interviewer on young respondents",
+                       "Old interviewer on young respondent",
                      grepl("young", ignore.case = T, term) ~
-                       "Effect of young interviewer on old respondents",
+                       "Young interviewer on old respondent",
                      TRUE ~ term)) %>%
-  mutate(., label = factor(label, levels = levels(age_diff_models_wide$label)))
+  mutate(age = factor(age, levels = c("Old interviewer on young respondent","Young interviewer on old respondent", "Non-coethnic interviewer"))) %>%
+  mutate(label = as.factor(label)) %>%
+  mutate(., label = factor(label, levels = levels(age_diff_models_fe$label)))
 
 names <- c(coarsened_age_30 = "30 cutoff",
            coarsened_age_35 = "35 cutoff",
@@ -709,9 +733,15 @@ plots_integrated_country <- lapply(unique(age_diff_models_fe_long$group), functi
     filter(term != "noncoeth") %>%
     plotfun_integrated()
   
+  if(x == "stat_outcomes") {
+    plot <- plot +
+      geom_vline(xintercept = 1.5, size = 0.3)
+    # geom_vline(xintercept = 4.5, size = 0.3)
+  }
+  
   if(x == "pol_outcomes") {
     plot <- plot +
-      geom_vline(xintercept = 2.5, size = 0.3)
+      geom_vline(xintercept = 1.5, size = 0.3)
     # geom_vline(xintercept = 4.5, size = 0.3)
   }
   
@@ -735,7 +765,7 @@ plots_integrated_country_align <- align_plots(plotlist = plots_integrated_countr
                                       axis = "tblr") %>%
   lapply(ggdraw)
 
-map2(names(plots_integrated_country_align), c(5, 8, 5, 3.5, 5), function(x, y) {
+map2(names(plots_integrated_country_align), c(3, 5, 5, 4.5, 4.5), function(x, y) {
   save_plot(paste0("figs/", x, "integrated_country.pdf"),
             plots_integrated_country_align[[x]],
             base_width = 10,
@@ -822,7 +852,7 @@ plot10yr_cfe <- lapply(unique(age_diff_models_cfe_clean$group), function(x) {
     plot <- plot +
       scale_y_continuous(breaks = seq(-0.4, 0.4, 0.1),
                          limits = c(-0.4, 0.4)) +
-      geom_vline(xintercept = 2.5, size = 0.3) 
+      geom_vline(xintercept = 1.5, size = 0.3) 
     # +
     #   geom_vline(xintercept = 4.5, size = 0.3)
   } else if (x == "stat_outcomes") {
@@ -885,9 +915,9 @@ map2(names(plot10yr_cfe_align), c(5, 8, 5, 3.5, 5), function(x, y) {
 #                      TRUE ~ term)) %>%
 #   mutate(age_label =
 #            case_when(grepl("old", ignore.case = T, age) ~
-#                        "Effect of old interviewer on young respondents",
+#                        "Effect of old interviewer on young respondent",
 #                      grepl("young", ignore.case = T, age) ~
-#                        "Effect of young interviewer on old respondents",
+#                        "Effect of young interviewer on old respondent",
 #                      grepl("noncoeth", ignore.case = T, age) ~
 #                        "Non-coethnic interviewer",
 #                      TRUE ~ age)) %>%
@@ -958,7 +988,7 @@ map2(names(plot10yr_cfe_align), c(5, 8, 5, 3.5, 5), function(x, y) {
 # 
 #   if(x == "pol_outcomes") {
 #     plot <- plot +
-#       geom_vline(xintercept = 2.5, size = 0.3)
+#       geom_vline(xintercept = 1.5, size = 0.3)
 #     # geom_vline(xintercept = 4.5, size = 0.3)
 #   } else if (x == "stat_outcomes") {
 #     plot <- plot +
