@@ -9,7 +9,7 @@ groundhog.library(desc_stats, "2021-11-01")
 afpr <- readRDS("data_clean/afpr_ages.rds")
 source("scripts/variable_labels.R")
 
-# # STAT OUTCOMES
+# STAT OUTCOMES
 
 afpr$ec_conditions_self <- as.vector((afpr$ec_conditions_self - 5 ) * -1)
 afpr$notenoughfood <- as.vector((afpr$notenoughfood - 4 ) * -1)

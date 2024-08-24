@@ -1,3 +1,6 @@
+# This is a script that produces tables of the significance and direction of
+# the age variable in all regressions.
+
 library(groundhog)
 
 plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts")
@@ -21,9 +24,7 @@ age_diff_models_table_grouped <- age_diff_models_table %>%
                        "Interviewer younger (relative to older)",
                      TRUE ~ term))
 
-unique(age_diff_models$group[!(age_diff_models$group == "youth_outcomes")])
-
-sig_tables <- lapply(unique(age_diff_models$group[!(age_diff_models$group == "youth_outcomes")]), function(x) {
+sig_tables <- lapply(unique(age_diff_models_table$group[!(age_diff_models_table$group == "youth_outcomes")]), function(x) {
   
   table <- age_diff_models_table %>%
     filter(group == x) %>%
@@ -32,18 +33,16 @@ sig_tables <- lapply(unique(age_diff_models$group[!(age_diff_models$group == "yo
     filter(age_variable != "coarsened_age_35_originalscale") %>%
     mutate(sig_pos = ifelse(p.value < 0.05, ifelse(upper < 0, "-", "+"), "null")) %>% 
     pivot_wider(names_from = term,
-                values_from = sig_pos, outcome_variable) 
+                values_from = sig_pos, label) 
   
   table$no_pos <- rowSums(table == "+")
   table$no_neg <- rowSums(table == "-")
   table$no_sig <- table$no_pos + table$no_neg
   
   return(table) }) %>%
-  "names<-"(unique(age_diff_models$group[!(age_diff_models$group == "youth_outcomes")]))
+  "names<-"(unique(age_diff_models_table$group[!(age_diff_models_table$group == "youth_outcomes")]))
 
-sig_tables
-
-## Youth outcomes needs to be done separately bc it's weird
+## Youth outcomes need to be done separately 
 
 youth_mauritius <- age_diff_models_table %>%
   filter(group == "youth_outcomes") %>%
@@ -55,15 +54,21 @@ youth_mauritius <- age_diff_models_table %>%
 
 youth_mauritius_wider <- youth_mauritius %>%
   pivot_wider(names_from = term,
-              values_from = sig_pos, outcome_variable,
+              values_from = sig_pos, label,
               values_fn = list) %>%
-  rename(younger_30_m = coarsened_age_30younger_int,
+  dplyr::rename(., younger_30_m = coarsened_age_30younger_int,
          younger_35_m = coarsened_age_35younger_int,
          younger_40_m = coarsened_age_40younger_int,
          older_30_m = coarsened_age_30older_int,
          older_35_m = coarsened_age_35older_int,
          older_40_m = coarsened_age_40older_int) %>%
-  select(-outcome_variable)
+  mutate(younger_30_m = as.character(younger_30_m),
+         younger_35_m = as.character(younger_35_m),
+         younger_40_m = as.character(younger_40_m),
+         older_30_m = as.character(older_30_m),
+         older_35_m = as.character(older_35_m),
+         older_40_m = as.character(older_40_m)) %>%
+  dplyr::select(-label)
 
 youth_all <- age_diff_models_table %>%
   filter(group == "youth_outcomes") %>%
@@ -75,8 +80,14 @@ youth_all <- age_diff_models_table %>%
 
 youth_all_wider <- youth_all %>%
   pivot_wider(names_from = term,
-              values_from = sig_pos, outcome_variable,
-              values_fn = list)
+              values_from = sig_pos, label,
+              values_fn = list) %>%
+  mutate(coarsened_age_30younger_int = as.character(coarsened_age_30younger_int),
+         coarsened_age_35younger_int = as.character(coarsened_age_35younger_int),
+         coarsened_age_40younger_int = as.character(coarsened_age_40younger_int),
+         coarsened_age_30older_int = as.character(coarsened_age_30older_int),
+         coarsened_age_35older_int = as.character(coarsened_age_35older_int),
+         coarsened_age_40older_int = as.character(coarsened_age_40older_int)) 
 
 youth_all_wider$no_pos_all <- rowSums(youth_all_wider == "+")
 youth_all_wider$no_neg_all <- rowSums(youth_all_wider == "-")
@@ -86,16 +97,14 @@ youth_mauritius_wider$no_pos_m <- rowSums(youth_mauritius_wider == "+")
 youth_mauritius_wider$no_neg_m <- rowSums(youth_mauritius_wider == "-")
 youth_mauritius_wider$no_sig_m <- youth_mauritius_wider$no_neg_m + youth_mauritius_wider$no_pos_m
 
-youth_age_diff <- cbind(youth_all_wider, youth_mauritius_wider)
+youth_age_diff <- as_tibble(cbind(youth_all_wider, youth_mauritius_wider))
 
 sig_tables$youth_outcomes <- youth_age_diff
 
-sig_tables$youth_outcomes
+## Exporting these as .docx
 
-## Exporting these as docx (need to figure out how to functionalize)
-
-datasummary_df(sig_tables$pro_outcomes, output = "tables/sig_table_pro.docx")
-datasummary_df(sig_tables$pol_outcomes, output = "tables/sig_table_pol.docx")
-datasummary_df(sig_tables$stat_outcomes, output = "tables/sig_table_stat.docx")
-datasummary_df(sig_tables$eth_outcomes, output = "tables/sig_table_eth.docx")
-# datasummary_df(sig_tables$youth_outcomes, output = "tables/sig_table_youth.docx") #not working - debug later 
+datasummary_df(sig_tables$pro_outcomes, output = "tables/significance_tables/sig_table_pro.docx")
+datasummary_df(sig_tables$pol_outcomes, output = "tables/significance_tables/sig_table_pol.docx")
+datasummary_df(sig_tables$stat_outcomes, output = "tables/significance_tables/sig_table_stat.docx")
+datasummary_df(sig_tables$eth_outcomes, output = "tables/significance_tables/sig_table_eth.docx")
+datasummary_df(sig_tables$youth_outcomes, output = "tables/significance_tables/sig_table_youth.docx") 

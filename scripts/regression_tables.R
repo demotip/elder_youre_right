@@ -1,3 +1,5 @@
+# MAKING FULL REGRESSION TABLES FOR BOTH LINEAR AND LOGISTIC/ORDERED REGRESSIONS
+
 source("scripts/descriptive_statistics.R")
 source("scripts/variable_labels.R")
 
@@ -8,6 +10,8 @@ groundhog.library(reg_tables, "2021-11-01")
 
 country_levels <- levels(as.factor(afpr$country))
 country_levels_formatted <- paste0("country",country_levels)
+
+# The glance function is a way to customize the output of model.summary function later
 
 glance_custom.felm <- function(x, ...) {
   if (names(x[["fe"]][1]) == "country") {
@@ -33,6 +37,7 @@ glance_custom.felm <- function(x, ...) {
 # glance_custom.glm <- glance_custom.polr
 
 ### Defining model names, map of variable names ----
+
 cm <- c("coarsened_age_30older_int" = "30 split, interviewer older",
         "coarsened_age_35older_int" = "35 split, interviewer older",
         "coarsened_age_40older_int" = "40 split, interviewer older",
@@ -74,6 +79,12 @@ splits_youth <- rep(s, each = 7)
 names_youth_split <- paste(names_youth, splits_youth, sep = "-")
 
 ### REGRESSION TABLES FOR ADIDA FIXED EFFECTS ----
+# Contrasts.R forms a data frame of estimates as the output of the regressions
+# To make a full regression table we need these same regressions in a list output
+# It's then necessary to split the regression lists by group due to memory usage restrictions
+
+# First, defining the combinations of outcome var and age split, 
+# then grouping the combinations by outcome group
 
 form_base_adida  <- paste0("{outcome_variable} ~ {age_variable} + ",
                      "noncoeth +", 
@@ -93,22 +104,6 @@ outcome_age_combos_grouped <- outcome_age_combos %>%
                                  variable_labels$group)) %>% #need the group specification here for the next function
   filter(age_variable!="coarsened_age_10") #removing 10-year age splits from the data
 
-model_function <- function(data_frame) { pmap(data_frame, function(outcome, age_variable, round) {
-    
-    if(round == "7") include_round <- 7 else include_round <- 3:4
-    
-    outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
-    
-    print(outcome_variable)
-      
-      contrasts_matrix_list <- list(x = contrasts_matrix)
-      names(contrasts_matrix_list) <- age_variable
-      model <- felm(as.formula(glue(form_base_adida)), data = afpr[afpr$round %in% include_round, ], 
-                    contrasts = contrasts_matrix_list)
-    
-    return(model)
-}) } 
-
 outcome_age_combos_mauritius <-
   expand.grid(outcome = youth_outcomes,
               age_variable = c("coarsened_age_30",
@@ -116,13 +111,25 @@ outcome_age_combos_mauritius <-
                                "coarsened_age_40"),
               stringsAsFactors = FALSE)
 
-model_function_mauritius <-
-  function(data_frame) { pmap(data_frame, function(outcome, age_variable) {
+# Defining the model function for youth outcomes and everybody else
+
+model_function <- function(data_frame) { pmap(data_frame, function(outcome, age_variable, round) {
+    
+    if(round == "7") include_round <- 7 else include_round <- 3:4
     
     outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
+      
+    contrasts_matrix_list <- list(x = contrasts_matrix)
+    names(contrasts_matrix_list) <- age_variable
+    model <- felm(as.formula(glue(form_base_adida)), data = afpr[afpr$round %in% include_round, ], 
+                    contrasts = contrasts_matrix_list)
     
-    print(outcome_variable)
-    print(age_variable)
+    return(model)
+}) } 
+
+model_function_mauritius <- function(data_frame) { pmap(data_frame, function(outcome, age_variable) {
+    
+    outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
       
     contrasts_matrix_list <- list(x = contrasts_matrix)
     names(contrasts_matrix_list) <- age_variable
@@ -156,51 +163,62 @@ model_function_mauritius <-
 
 # Running the regression output functions for Adida fe ----
 
-regression_output_stat <- outcome_age_combos_grouped %>%
-    filter(group == "stat_outcomes") %>%
-    dplyr::select(-group, -label) %>%
-    model_function() %>%
-   "names<-"(names_stat_split) %>%
-  saveRDS(., file = "data_clean/regression_output_stat")
+names_all <- list("stat_outcomes" = list("stat_outcomes", names_stat_split),
+                  "pol_outcomes" = list("pol_outcomes", names_pol_split),
+                  "pro_outcomes" = list("pro_outcomes", names_pro_split),
+                  "eth_outcomes" = list("eth_outcomes", names_eth_split))
 
-regression_output_pol <- outcome_age_combos_grouped %>%
-  filter(group == "pol_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function() %>%
-  "names<-"(names_pol_split) %>%
-  saveRDS(., file = "data_clean/regression_output_pol")
+regression_output <- lapply(names_all, function(x){outcome_age_combos_grouped %>%
+                                          filter(group == x[1]) %>%
+                                          dplyr::select(-group, -label) %>%
+                                          model_function() %>%
+                                          "names<-"(x) %>%
+                            saveRDS(., file = glue("data_clean/regression_output_",as.character(x[1]))) })
 
-regression_output_pro <- outcome_age_combos_grouped %>%
-  filter(group == "pro_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function()  %>%
-  "names<-"(names_pro_split) %>%
-  saveRDS(., file = "data_clean/regression_output_pro")
+# regression_output_stat <- outcome_age_combos_grouped %>%
+#     filter(group == "stat_outcomes") %>%
+#     dplyr::select(-group, -label) %>%
+#     model_function() %>%
+#    "names<-"(names_stat_split) %>%
+#   saveRDS(., file = "data_clean/regression_output_stat")
+# 
+# regression_output_pol <- outcome_age_combos_grouped %>%
+#   filter(group == "pol_outcomes") %>%
+#   dplyr::select(-group, -label) %>%
+#   model_function() %>%
+#   "names<-"(names_pol_split) %>%
+#   saveRDS(., file = "data_clean/regression_output_pol")
+# 
+# regression_output_pro <- outcome_age_combos_grouped %>%
+#   filter(group == "pro_outcomes") %>%
+#   dplyr::select(-group, -label) %>%
+#   model_function()  %>%
+#   "names<-"(names_pro_split) %>%
+#   saveRDS(., file = "data_clean/regression_output_pro")
+# 
+# regression_output_eth <- outcome_age_combos_grouped %>%
+#   filter(group == "eth_outcomes") %>%
+#   dplyr::select(-group, -label) %>%
+#   model_function()  %>% 
+#   "names<-"(names_eth_split) %>%
+#   saveRDS(., file = "data_clean/regression_output_eth")
 
-regression_output_eth <- outcome_age_combos_grouped %>%
-  filter(group == "eth_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function()  %>% 
-  "names<-"(names_eth_split) %>%
-  saveRDS(., file = "data_clean/regression_output_eth")
-
-regression_output_youth <- outcome_age_combos_mauritius %>%
+regression_output$youth_outcomes <- outcome_age_combos_mauritius %>%
   # dplyr::select(-group, -label) %>%
   model_function_mauritius() %>%
   "names<-"(names_youth_split) %>%
-  saveRDS(., file = "data_clean/regression_output_youth")
-
-names_youth_split
+  saveRDS(., file = "data_clean/regression_output_youth_outcomes")
 
 ### Plotting adida fe ----
+### First, reading in the RDS files (can skip this part if the previous)
 
 regression_output_adidafe <- list()
 
-regression_output_adidafe$stat <- readRDS(file = "data_clean/regression_output_stat")
-regression_output_adidafe$pol <- readRDS(file = "data_clean/regression_output_pol")
-regression_output_adidafe$pro <- readRDS(file = "data_clean/regression_output_pro")
-regression_output_adidafe$eth <- readRDS(file = "data_clean/regression_output_eth")
-regression_output_adidafe$youth <- readRDS(file = "data_clean/regression_output_youth")
+regression_output_adidafe$stat <- readRDS(file = "data_clean/regression_output_stat_outcomes")
+regression_output_adidafe$pol <- readRDS(file = "data_clean/regression_output_pol_outcomes")
+regression_output_adidafe$pro <- readRDS(file = "data_clean/regression_output_pro_outcomes")
+regression_output_adidafe$eth <- readRDS(file = "data_clean/regression_output_eth_outcomes")
+regression_output_adidafe$youth <- readRDS(file = "data_clean/regression_output_youth_outcomes")
 
 regression_output_adidafe$stat <- regression_output_adidafe$stat[order(names(regression_output_adidafe$stat))]
 regression_output_adidafe$pol <- regression_output_adidafe$pol[order(names(regression_output_adidafe$pol))]
@@ -223,27 +241,26 @@ modelsummary_function_adida <- function(data_frame) {
                notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
                output = paste0("tables/reg_table_",data_frame,".docx")
                 ) 
-  #   kable_styling(
-  #     font_size = 7,
-  #     full_width = FALSE,
-  #     latex_options = c("HOLD_position")
-  #   ) |>
-    # row_spec(0, bold = TRUE, angle = -90, align = "c") |>
-    # column_spec(2:17, width ="3em") |>
-#     add_footnote("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05",
-#                  threeparttable = TRUE,
-#                  escape = FALSE,
-#                  notation = "none")
 }
 
 
 regression_tables_adidafe <- lapply(regression_output_adidafe, modelsummary_function_adida)
+
+# Figure out what the fuck this all is for
+#
+#
+#
+#
+#
+#
 # regression_tables_adidafe$stat <- regression_tables_adidafe$stat[order(names(regression_tables_adidafe$stat))]
 
 # for(x in names(regression_tables_adidafe)) {save_kable(regression_tables_adidafe$x,
 #                                                        paste0("figs/reg_", x, "_adidafe.png"),
 #                                                        # keep_tex = FALSE,
 #                                                        self_contained = TRUE)}
+
+# For display - splitting the tables so they have a maximum of 15 outcome vars each
 
 regression_output_adidafe$stat_1 <- regression_output_adidafe$stat[1:15]
 regression_output_adidafe$stat_2 <- regression_output_adidafe$stat[16:24]
@@ -254,188 +271,41 @@ regression_output_adidafe$eth_2 <- regression_output_adidafe$eth[16:21]
 regression_output_adidafe$youth_1 <- regression_output_adidafe$youth[1:15]
 regression_output_adidafe$youth_2 <- regression_output_adidafe$youth[16:21]
 
-modelsummary(regression_output_adidafe$stat_1, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # output = "latex",  #undocumented but need to specify here to output as latex
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_stat_adida_1.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_adidafe$stat_2, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # output = "latex",  #undocumented but need to specify here to output as latex
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_stat_adida_2.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-
-modelsummary(regression_output_adidafe$pol_1, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_pol_adida_1.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_adidafe$pol_2, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_pol_adida_2.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_adidafe$pro, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_pro_adida.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_adidafe$eth_1, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_eth_adida_1.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_adidafe$eth_2, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_eth_adida_2.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_adidafe$youth_1, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_youth_adida_1.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
+reg_tables_adidafe <- lapply(unique(regression_output_adidafe)[6:13], function(x) {
+  
+  plot <- modelsummary(x, coef_omit = "enumeth|region|tribe|round",
+               coef_map = cm,
+               estimate = c("{estimate} ({std.error}){stars}"),
+               fmt = 2,
+               statistic = NULL,
+               output = "latex",  # undocumented but need to specify here to output as latex
+               # caption = paste0(""),
+               booktabs = TRUE,
+               linesep = "", 
+               escape = TRUE, 
+               notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
+               # output = paste0("tables/regression_tables/reg_table_`x`_adida_1.tex")
   ) |>
-  row_spec(0, bold = TRUE, angle = -90, align = "c") |>
-  column_spec(2:17, width ="3em")
-
-modelsummary(regression_output_adidafe$youth_2, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_youth_adida_2.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) |>
-  row_spec(0, bold = TRUE, angle = -90, align = "c") |>
-  column_spec(2:17, width ="3em")
+    kable_styling(
+      font_size = 7,
+      full_width = FALSE,
+      latex_options = c("HOLD_position")
+    ) 
+  
+  return(plot)
+  
+})
 
 # Running the country fe models ----
-
-# form_base_country  <- paste0("{outcome_variable} ~ {age_variable} + ",
-#                      "noncoeth +", 
-#                      "age + gender + edu + ",
-#                      "urban + minority +",
-#                      "round + inhomelang + as.factor(country)")
+# Same exact process here: need a list output for the regressions with country fixed effects
 
 form_base_country  <- paste0("{outcome_variable} ~ {age_variable} + ",
                              "noncoeth +", 
                              "age + gender + edu + ",
                              "urban + minority +",
                              "round + inhomelang | country")
+
+# Defining model functions to iterate across variable groups
 
 model_function_countryfe <- function(data_frame) { pmap(data_frame, function(outcome, age_variable, round) {
   
@@ -444,8 +314,6 @@ model_function_countryfe <- function(data_frame) { pmap(data_frame, function(out
   if(round == "7") afpr <- subset(afpr, country != "Uganda") 
   
   outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
-  
-  print(outcome_variable)
   
   contrasts_matrix_list <- list(x = contrasts_matrix)
   names(contrasts_matrix_list) <- age_variable
@@ -460,9 +328,6 @@ model_function_mauritius_countryfe <-
   function(data_frame) { pmap(data_frame, function(outcome, age_variable) {
     
     outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
-    
-    print(outcome_variable)
-    print(age_variable)
     
     contrasts_matrix_list <- list(x = contrasts_matrix)
     names(contrasts_matrix_list) <- age_variable
@@ -494,77 +359,30 @@ model_function_mauritius_countryfe <-
     return(model)
   }) }
 
-# model_function_mauritius_countryfe <-
-#   function(data_frame) { pmap(data_frame, function(outcome, age_variable) {
-#     
-#     outcome_variable <- paste0("z_", outcome) # "z_" is standardized variables
-#     
-#     print(outcome_variable)
-#     
-#     contrasts_matrix_list <- list(x = contrasts_matrix)
-#     names(contrasts_matrix_list) <- age_variable
-#     
-#     if(outcome_variable == "z_youth_needs") {
-#       
-#       model <- felm(as.formula(glue(form_base_country)), data = afpr[afpr$round == 7, ]
-#                     # contrasts = contrasts_matrix_list
-#       )
-#       
-#     } else {
-#       
-#       model <- felm(as.formula(glue(form_base_country)), data = afpr[afpr$round == 7 & afpr$country %in% "Mauritius", ]
-#                     # contrasts = contrasts_matrix_list
-#       )
-#       
-#     }
-#     
-#     return(model)
-#   }) }
+regression_output_countryfe <- lapply(names_all, 
+     function(x){outcome_age_combos_grouped %>%
+         filter(group == x[1]) %>%
+         dplyr::select(-group, -label) %>%
+         model_function_countryfe() %>%
+         "names<-"(x) %>%
+         saveRDS(., file = glue("data_clean/regression_countryfe_",as.character(x[1]))) })
 
-regression_output_stat_countryfe <- outcome_age_combos_grouped %>%
-  filter(group == "stat_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function_countryfe() %>%
-  "names<-"(names_stat_split) %>%
-  saveRDS(., file = "data_clean/regression_output_stat_countryfe") 
-
-regression_output_pol_countryfe <- outcome_age_combos_grouped %>%
-  filter(group == "pol_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function_countryfe() %>%
-  "names<-"(names_pol_split) %>%
-  saveRDS(., file = "data_clean/regression_output_pol_countryfe")
-
-regression_output_pro_countryfe <- outcome_age_combos_grouped %>%
-  filter(group == "pro_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function_countryfe() %>%
-  "names<-"(names_pro_split) %>%
-  saveRDS(., file = "data_clean/regression_output_pro_countryfe")
-
-regression_output_eth_countryfe <- outcome_age_combos_grouped %>%
-  filter(group == "eth_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function_countryfe() %>%
-  "names<-"(names_eth_split) %>%
-  saveRDS(., file = "data_clean/regression_output_eth_countryfe")
-
-regression_output_youth_countryfe <- outcome_age_combos_mauritius %>%
+regression_output_countryfe$youth_outcomes <- outcome_age_combos_mauritius %>%
   # filter(group == "youth_outcomes") %>%
   # dplyr::select(-group, -label) %>%
   model_function_mauritius_countryfe() %>%
   "names<-"(names_youth_split) %>%
-  saveRDS(., file = "data_clean/regression_output_youth_countryfe")
+  saveRDS(., file = "data_clean/regression_countryfe_youth_outcomes")
 
 # Plotting the country fe models ----
 
 regression_output_countryfe <- list()
 
-regression_output_countryfe$stat <- readRDS(file = "data_clean/regression_output_stat_countryfe")
-regression_output_countryfe$pol <- readRDS(file = "data_clean/regression_output_pol_countryfe")
-regression_output_countryfe$pro <- readRDS(file = "data_clean/regression_output_pro_countryfe")
-regression_output_countryfe$eth <- readRDS(file = "data_clean/regression_output_eth_countryfe")
-regression_output_countryfe$youth <- readRDS(file = "data_clean/regression_output_youth_countryfe")
+regression_output_countryfe$stat <- readRDS(file = "data_clean/regression_countryfe_stat_outcomes")
+regression_output_countryfe$pol <- readRDS(file = "data_clean/regression_countryfe_pol_outcomes")
+regression_output_countryfe$pro <- readRDS(file = "data_clean/regression_countryfe_pro_outcomes")
+regression_output_countryfe$eth <- readRDS(file = "data_clean/regression_countryfe_eth_outcomes")
+regression_output_countryfe$youth <- readRDS(file = "data_clean/regression_countryfe_youth_outcomes")
 
 regression_output_countryfe$stat <- regression_output_countryfe$stat[order(names(regression_output_countryfe$stat))]
 regression_output_countryfe$pol <- regression_output_countryfe$pol[order(names(regression_output_countryfe$pol))]
@@ -572,37 +390,39 @@ regression_output_countryfe$pro <- regression_output_countryfe$pro[order(names(r
 regression_output_countryfe$eth <- regression_output_countryfe$eth[order(names(regression_output_countryfe$eth))]
 regression_output_countryfe$youth <- regression_output_countryfe$youth[order(names(regression_output_countryfe$youth))]
 
-modelsummary_function <- function(data_frame) {
-  modelsummary(data_frame, coef_omit = "enumeth|region|tribe|country",
-               coef_map = cm,
-               estimate = c("{estimate} ({std.error}){stars}"),
-               fmt = 2,
-               statistic = NULL,
-               # output = "latex",  #undocumented but need to specify here to output as latex
-               # caption = paste0("country fixed effects"),
-               booktabs = TRUE,
-               linesep = "", 
-               escape = TRUE) |>
-  # kable_styling(
-  #   font_size = 7,
-  #   full_width = FALSE,
-  #   latex_options = c("HOLD_position")
-  # ) |>
-  # row_spec(0, bold = TRUE, angle = -90, align = "c") |>
-  # column_spec(2:17, width ="3em") |>
-  add_footnote("Add footnote here if needed.",
-               threeparttable = TRUE, 
-               escape = FALSE,
-               notation = "none") 
-  }
+# modelsummary_function <- function(data_frame) {
+#   modelsummary(data_frame, coef_omit = "enumeth|region|tribe|country",
+#                coef_map = cm,
+#                estimate = c("{estimate} ({std.error}){stars}"),
+#                fmt = 2,
+#                statistic = NULL,
+#                # output = "latex",  #undocumented but need to specify here to output as latex
+#                # caption = paste0("country fixed effects"),
+#                booktabs = TRUE,
+#                linesep = "", 
+#                escape = TRUE) |>
+#   # kable_styling(
+#   #   font_size = 7,
+#   #   full_width = FALSE,
+#   #   latex_options = c("HOLD_position")
+#   # ) |>
+#   # row_spec(0, bold = TRUE, angle = -90, align = "c") |>
+#   # column_spec(2:17, width ="3em") |>
+#   add_footnote("Add footnote here if needed.",
+#                threeparttable = TRUE, 
+#                escape = FALSE,
+#                notation = "none") 
+#   }
 
-regression_tables_countryfe <- lapply(regression_output_countryfe, modelsummary_function)
-regression_tables_countryfe
-# regression_tables_countryfe |>
-#   save_kable(
-#         file.path(paste0("tables/regression_tables_countryfe.tex")),
-#         keep_tex = FALSE,
-#         self_contained = FALSE)
+# regression_tables_countryfe <- lapply(regression_output_countryfe, modelsummary_function)
+# regression_tables_countryfe
+# # regression_tables_countryfe |>
+# #   save_kable(
+# #         file.path(paste0("tables/regression_tables_countryfe.tex")),
+# #         keep_tex = FALSE,
+# #         self_contained = FALSE)
+
+# Again, splitting up the regression output 
 
 regression_output_countryfe$stat_1 <- regression_output_countryfe$stat[1:15]
 regression_output_countryfe$stat_2 <- regression_output_countryfe$stat[16:24]
@@ -613,169 +433,33 @@ regression_output_countryfe$eth_2 <- regression_output_countryfe$eth[16:21]
 regression_output_countryfe$youth_1 <- regression_output_countryfe$youth[1:15]
 regression_output_countryfe$youth_2 <- regression_output_countryfe$youth[16:21]
 
-modelsummary(regression_output_countryfe$stat_1, coef_omit = "country|round|(Intercept)",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_stat_country_1.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  )
+reg_tables_countryfe <- lapply(regression_output_countryfe[6:13], function(x) {
+  
+  plot <- modelsummary(x, coef_omit = "country|round|(Intercept)",
+               coef_map = cm,
+               estimate = c("{estimate} ({std.error}){stars}"),
+               fmt = 2,
+               statistic = NULL,
+               output = "latex",
+               # caption = paste0(""),
+               booktabs = TRUE,
+               linesep = "", 
+               escape = TRUE, 
+               notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
+               # output = paste0("tables/regression_tables/reg_table_stat_country_1.tex")
+  ) |>
+    
+    kable_styling(
+      font_size = 7,
+      full_width = FALSE,
+      latex_options = c("HOLD_position")
+    )
+  
+  return(plot)
+  
+})
 
-modelsummary(regression_output_countryfe$stat_2, coef_omit = "country|round|(Intercept)",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_stat_country_2.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  )
-
-modelsummary(regression_output_countryfe$pol_1, coef_omit = "country|round|(Intercept)",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_pol_country_1.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  )
-
-modelsummary(regression_output_countryfe$pol_2, coef_omit = "country|round|(Intercept)",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_pol_country_2.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  )
-
-modelsummary(regression_output_countryfe$pro, coef_omit = "country|round|(Intercept)",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             output = paste0("tables/regression_tables/reg_table_pro_country.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_countryfe$eth_1, coef_omit = "country|round|(Intercept)",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"), 
-             output = paste0("tables/regression_tables/reg_table_eth_country_1.tex")
-)|>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_countryfe$eth_2, coef_omit = "country|round|(Intercept)",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"), 
-             output = paste0("tables/regression_tables/reg_table_eth_country_2.tex")
-)|>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_countryfe$youth_1, coef_omit = "country|round|(Intercept)",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"), 
-             output = paste0("tables/regression_tables/reg_table_youth_country_1.tex")
-)|>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-modelsummary(regression_output_countryfe$youth_2, coef_omit = "country|round|(Intercept)",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"), 
-             output = paste0("tables/regression_tables/reg_table_youth_country_2.tex")
-)|>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
-
-# #### REGRESSION TABLES FOR LOGISTIC/ORDERED LOGISTIC FIXED EFFECTS ----
+# REGRESSION TABLES FOR LOGISTIC/ORDERED LOGISTIC FIXED EFFECTS ----
 
 form_base_factor  <- paste0("as.factor({outcome_variable}) ~ {age_variable} + ",
                             "noncoeth +",
@@ -810,13 +494,10 @@ model_function_logistic <- function(data_frame) {
 
   outcome_variable <- outcome # not standardizing variables
 
-  print(outcome_variable)
-
     # contrasts_matrix_list <- list(x = contrasts_matrix)
     # names(contrasts_matrix_list) <- age_variable
 
     if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-      print(5)
 
       model <- glm(as.formula(glue(form_base_factor)),
                    data = afpr[afpr$round %in% include_round, ],
@@ -824,9 +505,6 @@ model_function_logistic <- function(data_frame) {
                    family = "binomial")
 
     } else {
-
-      print(6)
-      print(unique(afpr[,{outcome_variable}]))
 
       model <- MASS::polr(as.formula(glue(form_base_factor)),
                           method = "logistic",
@@ -845,10 +523,8 @@ model_function_mauritius_logistic <-
 
     outcome_variable <- outcome # not standardized variables
 
-    print(outcome_variable)
-
-    contrasts_matrix_list <- list(x = contrasts_matrix)
-    names(contrasts_matrix_list) <- age_variable
+    # contrasts_matrix_list <- list(x = contrasts_matrix)
+    # names(contrasts_matrix_list) <- age_variable
 
     if(outcome_variable == "youth_needs") {
       
@@ -860,16 +536,12 @@ model_function_mauritius_logistic <-
     } else {
       
       if(lengths(unique(afpr[,{outcome_variable}]), use.names = FALSE)==3) {
-        print(5)
         
         model <- glm(as.formula(glue(form_base_factor_nocount)),
                      data = afpr[afpr$round == 7 & afpr$country %in% "Mauritius", ],
                      family = "binomial")
         
       } else {
-        
-        print(6)
-        print(unique(afpr[,{outcome_variable}]))
         
         model <- MASS::polr(as.formula(glue(form_base_factor_nocount)),
                             method = "logistic",
@@ -883,54 +555,32 @@ model_function_mauritius_logistic <-
     return(model)
   }) }
 
-outcome_age_combos_grouped %>%
-  filter(group == "stat_outcomes") %>%
-  dplyr::select(outcome)
-
-regression_output_stat_logistic <- outcome_age_combos_grouped %>%
-  filter(group == "stat_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function_logistic() %>%
-  "names<-"(names_stat_split) %>%
-  saveRDS(., file = "data_clean/regression_output_stat_logistic") 
-
-regression_output_pol_logistic <- outcome_age_combos_grouped %>%
-  filter(group == "pol_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function_logistic() %>%
-  "names<-"(names_pol_split) %>%
-  saveRDS(., file = "data_clean/regression_output_pol_logistic")
-
-regression_output_pro_logistic <- outcome_age_combos_grouped %>%
-  filter(group == "pro_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function_logistic() %>%
-  "names<-"(names_pro_split) %>%
-  saveRDS(., file = "data_clean/regression_output_pro_logistic")
-
-regression_output_eth_logistic <- outcome_age_combos_grouped %>%
-  filter(group == "eth_outcomes") %>%
-  dplyr::select(-group, -label) %>%
-  model_function_logistic() %>%
-  "names<-"(names_eth_split) %>%
-  saveRDS(., file = "data_clean/regression_output_eth_logistic")
+regression_output_logistic <- lapply(names_all, 
+function(x){
+  
+  outcome_age_combos_grouped %>%
+    filter(group == x[1]) %>%
+    dplyr::select(-group, -label) %>%
+    model_function_logistic() %>%
+    "names<-"(x) %>%
+    saveRDS(., file = glue("data_clean/regression_logistic_",as.character(x[1])))
+  
+})
 
 regression_output_youth_logistic <- outcome_age_combos_mauritius %>%
   # filter(group == "youth_outcomes") %>%
   # dplyr::select(-group, -label) %>%
   model_function_mauritius_logistic() %>%
   "names<-"(names_youth_split) %>%
-  saveRDS(., file = "data_clean/regression_output_youth_logistic")
-
-### Plotting logistic ----
+  saveRDS(., file = "data_clean/regression_logistic_youth_outcomes")
 
 regression_output_logistic <- list()
 
-regression_output_logistic$stat <- readRDS(file = "data_clean/regression_output_stat_logistic")
-regression_output_logistic$pol <- readRDS(file = "data_clean/regression_output_pol_logistic")
-regression_output_logistic$pro <- readRDS(file = "data_clean/regression_output_pro_logistic")
-regression_output_logistic$eth <- readRDS(file = "data_clean/regression_output_eth_logistic")
-regression_output_logistic$youth <- readRDS(file = "data_clean/regression_output_youth_logistic")
+regression_output_logistic$stat <- readRDS(file = "data_clean/regression_logistic_stat_outcomes")
+regression_output_logistic$pol <- readRDS(file = "data_clean/regression_logistic_pol_outcomes")
+regression_output_logistic$pro <- readRDS(file = "data_clean/regression_logistic_pro_outcomes")
+regression_output_logistic$eth <- readRDS(file = "data_clean/regression_logistic_eth_outcomes")
+regression_output_logistic$youth <- readRDS(file = "data_clean/regression_logistic_youth_outcomes")
 
 regression_output_logistic$stat <- regression_output_logistic$stat[order(names(regression_output_logistic$stat))]
 regression_output_logistic$pol <- regression_output_logistic$pol[order(names(regression_output_logistic$pol))]
@@ -938,40 +588,7 @@ regression_output_logistic$pro <- regression_output_logistic$pro[order(names(reg
 regression_output_logistic$eth <- regression_output_logistic$eth[order(names(regression_output_logistic$eth))]
 regression_output_logistic$youth <- regression_output_logistic$youth[order(names(regression_output_logistic$youth))]
 
-# modelsummary(data_frame, coef_omit = "enumeth|region|tribe",
-#                             coef_map = cm,
-#                             estimate = c("{estimate} ({std.error})"),
-#                             fmt = 2,
-#                             statistic = NULL,
-#                             output = "latex",  #undocumented but need to specify here to output as latex
-#                             caption = paste0("Logistic and ordinal regressions"),
-#                             booktabs = TRUE,
-#                             linesep = "",
-#                             escape = TRUE) |>
-#                  kable_styling(
-#                    font_size = 7,
-#                    full_width = FALSE,
-#                    latex_options = c("HOLD_position")
-#                  ) |>
-#                  row_spec(0, bold = TRUE, angle = -90, align = "c") |>
-#                  column_spec(2:17, width ="3em") |>
-#                  add_footnote("Add footnote here if needed.",
-#                               threeparttable = TRUE,
-#                               escape = FALSE,
-#                               notation = "none")
-
-# regression_tables_logistic <- lapply(regression_output_logistic, modelsummary_function_logistic)
-# 
-# regression_tables_logistic
-
-# regression_tables_logistic |>
-#   save_kable(
-#     file.path(paste0("tables/regression_tables_logistic.tex")),
-#     keep_tex = FALSE,
-#     self_contained = FALSE)
-
-
-### Plotting logistic again ----
+# Plotting the logistic models ----
 
 cm_log <- list("(Intercept)" = "Constant",
             "0|1" = "0|1",
@@ -1005,18 +622,8 @@ regression_output_logistic$eth_2 <- regression_output_logistic$eth[16:21]
 regression_output_logistic$youth_1 <- regression_output_logistic$youth[1:15]
 regression_output_logistic$youth_2 <- regression_output_logistic$youth[16:21]
 
-modelsummary(regression_output_logistic$stat_1, coef_omit = "enumeth|region|tribe",
-             # coef_map = cm_log,
-             estimate = c("{estimate} ({std.error})"),
-             fmt = 2,
-             statistic = NULL,
-             # output = "html",  #undocumented but need to specify here to output as latex
-             caption = paste0("Logistic and ordinal regressions"),
-             booktabs = TRUE,
-             linesep = "",
-             escape = TRUE,
-             output = paste0("tables/regression_tables/log_table_test.html"))
-
+# Saving these tables one at a time is easiest for now because the different
+# specifications for custom.gof.row don't follow a particular pattern
 
 texreg::texreg(regression_output_logistic$stat_1,
                # single.row = TRUE,

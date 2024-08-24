@@ -1,5 +1,5 @@
 # Using modelsummary to make tables for the results of the regressions,
-# separated by group. 
+# separated by group and using the data frame format calculated in contrasts.R.
 
 library(groundhog)
 plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts", "modelsummary", "flextable", "gt")
