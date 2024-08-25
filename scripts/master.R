@@ -61,12 +61,9 @@ source("scripts/cross_validation.R")
 # and significance of the results. Same dependencies as plots.R. 
 source("scripts/presentable_table.R")
 
-# contrasts_logistic.R runs the logistic and ordered logistic regressions 
-# and outputs a list of models. Same dependencies as contrasts.R. 
-# No outputs - could be irrelevant. 
-source("scripts/contrasts_logistic.R")
-
 # regression_table.R creates full regression tables to go into the appendix. 
+# Also runs the full logistic and ordered logistic models,
+# Organized by outcome group. 
 # Same dependencies as contrasts.R. 
 source("scripts/regression_table.R")
 

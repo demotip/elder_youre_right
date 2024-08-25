@@ -37,6 +37,10 @@ outcome_age_combos_binary <- outcome_age_combos %>%
   filter(outcome %in% binary_var_names) %>%
   dplyr::select(!starts_with("z_")) 
 
+
+# NOTE: avg_comparisons only works with newer versions of marginaleffects.
+# It's necessary to run this part of the script with a newer version of R.
+
 comparisons_binary <- 
   pmap_dfr(outcome_age_combos_binary, function(outcome, age_variable, round) {
     
@@ -76,14 +80,14 @@ comparisons_binary <-
     list_1 <- list("pairwise")
     names(list_1) = {age_variable}
     
-    comparisons <- avg_comparisons(
+    comparisons <- marginaleffects::avg_comparisons(
       model,
       variables = list_1 #extract the name of the variable from the model object
       ) %>%
       mutate(outcome = {outcome_variable},
              logistic = "Linear-based estimate")
     
-    comparisons_2 <- avg_comparisons(
+    comparisons_2 <- marginaleffects::avg_comparisons(
       model_logistic,
       variables = list_1) %>%
       mutate(outcome = {outcome_variable}, 

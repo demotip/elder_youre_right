@@ -23,19 +23,6 @@ glance_custom.felm <- function(x, ...) {
   return(out)
 }
 
-# glance_custom.polr <- function(x, ...) {
-#   
-#   if (x[["terms"]][[3]][[3]] == "as.factor(country)") {
-#     out <- data.frame("Adida et al. (2016) fixed effects" = "Yes")
-#   } else {
-#     out <- data.frame("Country and survey round fixed effects" = "Yes")
-#   }
-#   
-#   return(out)
-# }
-# 
-# glance_custom.glm <- glance_custom.polr
-
 ### Defining model names, map of variable names ----
 
 cm <- c("coarsened_age_30older_int" = "30 split, interviewer older",
@@ -175,34 +162,6 @@ regression_output <- lapply(names_all, function(x){outcome_age_combos_grouped %>
                                           "names<-"(x) %>%
                             saveRDS(., file = glue("data_clean/regression_output_",as.character(x[1]))) })
 
-# regression_output_stat <- outcome_age_combos_grouped %>%
-#     filter(group == "stat_outcomes") %>%
-#     dplyr::select(-group, -label) %>%
-#     model_function() %>%
-#    "names<-"(names_stat_split) %>%
-#   saveRDS(., file = "data_clean/regression_output_stat")
-# 
-# regression_output_pol <- outcome_age_combos_grouped %>%
-#   filter(group == "pol_outcomes") %>%
-#   dplyr::select(-group, -label) %>%
-#   model_function() %>%
-#   "names<-"(names_pol_split) %>%
-#   saveRDS(., file = "data_clean/regression_output_pol")
-# 
-# regression_output_pro <- outcome_age_combos_grouped %>%
-#   filter(group == "pro_outcomes") %>%
-#   dplyr::select(-group, -label) %>%
-#   model_function()  %>%
-#   "names<-"(names_pro_split) %>%
-#   saveRDS(., file = "data_clean/regression_output_pro")
-# 
-# regression_output_eth <- outcome_age_combos_grouped %>%
-#   filter(group == "eth_outcomes") %>%
-#   dplyr::select(-group, -label) %>%
-#   model_function()  %>% 
-#   "names<-"(names_eth_split) %>%
-#   saveRDS(., file = "data_clean/regression_output_eth")
-
 regression_output$youth_outcomes <- outcome_age_combos_mauritius %>%
   # dplyr::select(-group, -label) %>%
   model_function_mauritius() %>%
@@ -210,7 +169,7 @@ regression_output$youth_outcomes <- outcome_age_combos_mauritius %>%
   saveRDS(., file = "data_clean/regression_output_youth_outcomes")
 
 ### Plotting adida fe ----
-### First, reading in the RDS files (can skip this part if the previous)
+### First, reading in the RDS files (can skip this part)
 
 regression_output_adidafe <- list()
 
@@ -243,23 +202,6 @@ modelsummary_function_adida <- function(data_frame) {
                 ) 
 }
 
-
-regression_tables_adidafe <- lapply(regression_output_adidafe, modelsummary_function_adida)
-
-# Figure out what the fuck this all is for
-#
-#
-#
-#
-#
-#
-# regression_tables_adidafe$stat <- regression_tables_adidafe$stat[order(names(regression_tables_adidafe$stat))]
-
-# for(x in names(regression_tables_adidafe)) {save_kable(regression_tables_adidafe$x,
-#                                                        paste0("figs/reg_", x, "_adidafe.png"),
-#                                                        # keep_tex = FALSE,
-#                                                        self_contained = TRUE)}
-
 # For display - splitting the tables so they have a maximum of 15 outcome vars each
 
 regression_output_adidafe$stat_1 <- regression_output_adidafe$stat[1:15]
@@ -271,8 +213,33 @@ regression_output_adidafe$eth_2 <- regression_output_adidafe$eth[16:21]
 regression_output_adidafe$youth_1 <- regression_output_adidafe$youth[1:15]
 regression_output_adidafe$youth_2 <- regression_output_adidafe$youth[16:21]
 
-reg_tables_adidafe <- lapply(unique(regression_output_adidafe)[6:13], function(x) {
-  
+# ERROR MESSAGE:
+# Error in `[.data.frame`(est, , unique(c("part", names(est)))) : 
+#   undefined columns selected
+# Not sure why this is popping up right now but this error is produced
+# both by the single table functions and by the lapply() functionalization
+# I suspect this is some kind of bug?
+
+table_test <- modelsummary(regression_output_adidafe$stat_1, coef_omit = "enumeth|region|tribe|round",
+             coef_map = cm,
+             estimate = c("{estimate} ({std.error}){stars}"),
+             fmt = 2,
+             statistic = NULL,
+             # output = "latex",  #undocumented but need to specify here to output as latex
+             # caption = paste0(""),
+             booktabs = TRUE,
+             linesep = "", 
+             escape = TRUE, 
+             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
+             # output = paste0("tables/regression_tables/reg_table_stat_adida_1.tex")
+) |>
+  kable_styling(
+    font_size = 7,
+    full_width = FALSE,
+    latex_options = c("HOLD_position")
+  ) 
+
+reg_tables_adidafe <- lapply(regression_output_adidafe[6:13], function(x) {
   plot <- modelsummary(x, coef_omit = "enumeth|region|tribe|round",
                coef_map = cm,
                estimate = c("{estimate} ({std.error}){stars}"),
@@ -284,7 +251,7 @@ reg_tables_adidafe <- lapply(unique(regression_output_adidafe)[6:13], function(x
                linesep = "", 
                escape = TRUE, 
                notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-               # output = paste0("tables/regression_tables/reg_table_`x`_adida_1.tex")
+               # output = paste0("tables/regression_tables/reg_table_",names(x),"_adida_1.tex")
   ) |>
     kable_styling(
       font_size = 7,
@@ -295,6 +262,7 @@ reg_tables_adidafe <- lapply(unique(regression_output_adidafe)[6:13], function(x
   return(plot)
   
 })
+
 
 # Running the country fe models ----
 # Same exact process here: need a list output for the regressions with country fixed effects
@@ -390,38 +358,6 @@ regression_output_countryfe$pro <- regression_output_countryfe$pro[order(names(r
 regression_output_countryfe$eth <- regression_output_countryfe$eth[order(names(regression_output_countryfe$eth))]
 regression_output_countryfe$youth <- regression_output_countryfe$youth[order(names(regression_output_countryfe$youth))]
 
-# modelsummary_function <- function(data_frame) {
-#   modelsummary(data_frame, coef_omit = "enumeth|region|tribe|country",
-#                coef_map = cm,
-#                estimate = c("{estimate} ({std.error}){stars}"),
-#                fmt = 2,
-#                statistic = NULL,
-#                # output = "latex",  #undocumented but need to specify here to output as latex
-#                # caption = paste0("country fixed effects"),
-#                booktabs = TRUE,
-#                linesep = "", 
-#                escape = TRUE) |>
-#   # kable_styling(
-#   #   font_size = 7,
-#   #   full_width = FALSE,
-#   #   latex_options = c("HOLD_position")
-#   # ) |>
-#   # row_spec(0, bold = TRUE, angle = -90, align = "c") |>
-#   # column_spec(2:17, width ="3em") |>
-#   add_footnote("Add footnote here if needed.",
-#                threeparttable = TRUE, 
-#                escape = FALSE,
-#                notation = "none") 
-#   }
-
-# regression_tables_countryfe <- lapply(regression_output_countryfe, modelsummary_function)
-# regression_tables_countryfe
-# # regression_tables_countryfe |>
-# #   save_kable(
-# #         file.path(paste0("tables/regression_tables_countryfe.tex")),
-# #         keep_tex = FALSE,
-# #         self_contained = FALSE)
-
 # Again, splitting up the regression output 
 
 regression_output_countryfe$stat_1 <- regression_output_countryfe$stat[1:15]
@@ -446,7 +382,7 @@ reg_tables_countryfe <- lapply(regression_output_countryfe[6:13], function(x) {
                linesep = "", 
                escape = TRUE, 
                notes = list("Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-               # output = paste0("tables/regression_tables/reg_table_stat_country_1.tex")
+               # output = paste0("tables/regression_tables/reg_table_",names(x),"_country.tex")
   ) |>
     
     kable_styling(
