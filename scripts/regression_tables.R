@@ -186,21 +186,21 @@ regression_output_adidafe$eth <- regression_output_adidafe$eth[order(names(regre
 regression_output_adidafe$youth <- regression_output_adidafe$youth[order(names(regression_output_adidafe$youth))]
 
 
-modelsummary_function_adida <- function(data_frame) {
-  modelsummary(data_frame, coef_omit = "enumeth|region|tribe|round",
-               coef_map = cm,
-               estimate = c("{estimate} ({std.error}){stars}"),
-               fmt = 2,
-               statistic = NULL,
-               output = "latex",  #undocumented but need to specify here to output as latex
-               caption = paste0(""),
-               booktabs = TRUE,
-               linesep = "", 
-               escape = TRUE, 
-               notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-               output = paste0("tables/reg_table_",data_frame,".docx")
-                ) 
-}
+# modelsummary_function_adida <- function(data_frame) {
+#   modelsummary(data_frame, coef_omit = "enumeth|region|tribe|round",
+#                coef_map = cm,
+#                estimate = c("{estimate} ({std.error}){stars}"),
+#                fmt = 2,
+#                statistic = NULL,
+#                output = "latex",  #undocumented but need to specify here to output as latex
+#                caption = paste0(""),
+#                booktabs = TRUE,
+#                linesep = "", 
+#                escape = TRUE, 
+#                notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
+#                output = paste0("tables/reg_table_",data_frame,".docx")
+#                 ) 
+# }
 
 # For display - splitting the tables so they have a maximum of 15 outcome vars each
 
@@ -212,32 +212,6 @@ regression_output_adidafe$eth_1 <- regression_output_adidafe$eth[1:15]
 regression_output_adidafe$eth_2 <- regression_output_adidafe$eth[16:21]
 regression_output_adidafe$youth_1 <- regression_output_adidafe$youth[1:15]
 regression_output_adidafe$youth_2 <- regression_output_adidafe$youth[16:21]
-
-# ERROR MESSAGE:
-# Error in `[.data.frame`(est, , unique(c("part", names(est)))) : 
-#   undefined columns selected
-# Not sure why this is popping up right now but this error is produced
-# both by the single table functions and by the lapply() functionalization
-# I suspect this is some kind of bug?
-
-table_test <- modelsummary(regression_output_adidafe$stat_1, coef_omit = "enumeth|region|tribe|round",
-             coef_map = cm,
-             estimate = c("{estimate} ({std.error}){stars}"),
-             fmt = 2,
-             statistic = NULL,
-             # output = "latex",  #undocumented but need to specify here to output as latex
-             # caption = paste0(""),
-             booktabs = TRUE,
-             linesep = "", 
-             escape = TRUE, 
-             notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-             # output = paste0("tables/regression_tables/reg_table_stat_adida_1.tex")
-) |>
-  kable_styling(
-    font_size = 7,
-    full_width = FALSE,
-    latex_options = c("HOLD_position")
-  ) 
 
 reg_tables_adidafe <- lapply(regression_output_adidafe[6:13], function(x) {
   plot <- modelsummary(x, coef_omit = "enumeth|region|tribe|round",
@@ -251,7 +225,7 @@ reg_tables_adidafe <- lapply(regression_output_adidafe[6:13], function(x) {
                linesep = "", 
                escape = TRUE, 
                notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-               # output = paste0("tables/regression_tables/reg_table_",names(x),"_adida_1.tex")
+               # output = paste0("tables/regression_tables/reg_table_",as.character(names(x)),"_adida.tex")
   ) |>
     kable_styling(
       font_size = 7,
@@ -261,6 +235,20 @@ reg_tables_adidafe <- lapply(regression_output_adidafe[6:13], function(x) {
   
   return(plot)
   
+})
+
+# EXPORTING THESE TABLES ----
+
+output_dir <- "tables/regression_tables"
+
+# Exporting each LaTeX table to a .tex file
+lapply(names(reg_tables_adidafe), function(name) {
+  
+  table_latex <- reg_tables_adidafe[[name]]
+  file_path <- file.path(output_dir, paste0("reg_table_", name, "_adida.tex"))
+ 
+  writeLines(as.character(table_latex), con = file_path)
+
 })
 
 
@@ -392,6 +380,18 @@ reg_tables_countryfe <- lapply(regression_output_countryfe[6:13], function(x) {
     )
   
   return(plot)
+  
+})
+
+# EXPORTING THESE AS WELL ----
+
+# Exporting each LaTeX table to a .tex file
+lapply(names(reg_tables_countryfe), function(name) {
+  
+  table_latex <- reg_tables_countryfe[[name]]
+  file_path <- file.path(output_dir, paste0("reg_table_", name, "_country.tex"))
+  
+  writeLines(as.character(table_latex), con = file_path)
   
 })
 

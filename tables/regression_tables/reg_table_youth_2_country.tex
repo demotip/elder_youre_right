@@ -1,0 +1,32 @@
+\begin{table}[H]
+\centering
+\fontsize{7}{9}\selectfont
+\begin{tabular}[t]{lcccccc}
+\toprule
+  & youth\_pregnancy-30\_split & youth\_pregnancy-35\_split & youth\_pregnancy-40\_split & youth\_smoking-30\_split & youth\_smoking-35\_split & youth\_smoking-40\_split\\
+\midrule
+30 split, interviewer older & \num{0.29} (\num{0.16})+ &  &  & \num{0.11} (\num{0.15}) &  & \\
+35 split, interviewer older &  & \num{0.17} (\num{0.12}) &  &  & \num{0.00} (\num{0.11}) & \\
+40 split, interviewer older &  &  & \num{0.14} (\num{0.10}) &  &  & \num{0.01} (\num{0.09})\\
+30 split, interviewer younger & \num{-0.16} (\num{0.08})* &  &  & \num{-0.06} (\num{0.07}) &  & \\
+35 split, interviewer younger &  & \num{-0.21} (\num{0.08})** &  &  & \num{-0.14} (\num{0.07})* & \\
+40 split, interviewer younger &  &  & \num{-0.24} (\num{0.08})** &  &  & \num{-0.17} (\num{0.08})*\\
+30 split, both younger & \num{-0.17} (\num{0.12}) &  &  & \num{-0.13} (\num{0.11}) &  & \\
+35 split, both younger &  & \num{-0.07} (\num{0.08}) &  &  & \num{0.00} (\num{0.08}) & \\
+40 split, both younger &  &  & \num{-0.09} (\num{0.07}) &  &  & \num{0.03} (\num{0.07})\\
+Non-coethnic & \num{-0.17} (\num{0.07})* & \num{-0.15} (\num{0.07})* & \num{-0.16} (\num{0.07})* & \num{-0.24} (\num{0.07})*** & \num{-0.23} (\num{0.07})*** & \num{-0.24} (\num{0.07})***\\
+Age & \num{0.01} (\num{0.00})* & \num{0.01} (\num{0.00})* & \num{0.01} (\num{0.00}) & \num{0.01} (\num{0.00})* & \num{0.01} (\num{0.00})* & \num{0.01} (\num{0.00})**\\
+Male & \num{-0.03} (\num{0.06}) & \num{-0.03} (\num{0.06}) & \num{-0.03} (\num{0.06}) & \num{-0.04} (\num{0.06}) & \num{-0.04} (\num{0.06}) & \num{-0.04} (\num{0.06})\\
+Education level & \num{0.04} (\num{0.03}) & \num{0.04} (\num{0.03}) & \num{0.03} (\num{0.03}) & \num{0.03} (\num{0.02}) & \num{0.03} (\num{0.02}) & \num{0.03} (\num{0.02})\\
+Urban & \num{-0.39} (\num{0.07})*** & \num{-0.38} (\num{0.07})*** & \num{-0.42} (\num{0.07})*** & \num{-0.45} (\num{0.07})*** & \num{-0.44} (\num{0.07})*** & \num{-0.47} (\num{0.07})***\\
+Ethnic minority & \num{-0.22} (\num{0.07})** & \num{-0.23} (\num{0.07})** & \num{-0.23} (\num{0.07})** & \num{-0.30} (\num{0.07})*** & \num{-0.30} (\num{0.07})*** & \num{-0.30} (\num{0.07})***\\
+In-home language & \num{0.22} (\num{0.19}) & \num{0.17} (\num{0.19}) & \num{0.18} (\num{0.19}) & \num{0.06} (\num{0.17}) & \num{0.05} (\num{0.17}) & \num{0.05} (\num{0.17})\\
+\midrule
+Num.Obs. & \num{932} & \num{932} & \num{932} & \num{1050} & \num{1050} & \num{1050}\\
+R2 & \num{0.103} & \num{0.105} & \num{0.106} & \num{0.139} & \num{0.140} & \num{0.141}\\
+R2 Adj. & \num{0.093} & \num{0.095} & \num{0.096} & \num{0.130} & \num{0.132} & \num{0.133}\\
+Country.and.survey.round.fixed.effects & Yes & Yes & Yes & Yes & Yes & Yes\\
+\bottomrule
+\multicolumn{7}{l}{\rule{0pt}{1em}Regression models for the estimates that include only country and survey round fixed effects. Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05}\\
+\end{tabular}
+\end{table}
