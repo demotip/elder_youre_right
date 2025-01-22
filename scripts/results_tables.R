@@ -27,7 +27,7 @@ results_tables <- lapply(unique(age_diff_models_results$group), function(x) {
   
   table <- age_diff_models_results %>%
     filter(group == x) %>%
-    select(-outcome_variable, -group, -country, -age_variable,
+    dplyr::select(-outcome_variable, -group, -country, -age_variable,
            -statistic, -n_obs, -upper, -lower) %>%
     pivot_wider(names_from = c(age, term),
                 values_from = c(estimate, std.error, p.value),
@@ -68,7 +68,7 @@ results_tables_countryfe <- lapply(unique(age_diff_models_results_countryfe$grou
   
   table <- age_diff_models_results_countryfe %>%
     filter(group == x) %>%
-    select(-outcome_variable, -group, -country, -age_variable,
+    dplyr::select(-outcome_variable, -group, -country, -age_variable,
             -statistic, -n_obs, -upper, -lower) %>%
     pivot_wider(names_from = c(age, term),
                 values_from = c(estimate, std.error, p.value),
@@ -90,5 +90,5 @@ results_tables_countryfe <- lapply(unique(age_diff_models_results_countryfe$grou
 # Saving a csv of the country coefficients ----
 
 countrycoefs <- age_diff_models_results_countryfe %>%
-  select(label, estimate, age_variable, age) %>%
+  dplyr::select(label, estimate, age_variable, age) %>%
   write.csv(., "tables/country_coefs.csv")

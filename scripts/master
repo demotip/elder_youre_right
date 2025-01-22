@@ -13,14 +13,10 @@ plots.R creates plots of our main findings (Figures 2 to 5) and the plots found 
 
 comparison_plots is the code for the predicted probabilities plots - to be edited. Same dependencies as contrasts.R. 
 
-contrasts_logistic.R runs the logistic and ordered logistic regressions and outputs a list of models. Same dependencies as contrasts.R. No outputs - could be irrelevant. 
-
 cross_validation.R conducts cross-validations between logistic/ordered and linear regressions. Same dependencies as contrasts.R. 
 
 presentable_table.R makes tables for the main paper which only show the direction and significance of the results. Same dependencies as plots.R. 
 
-regression_table.R creates full regression tables to go into the appendix. Same dependencies as contrasts.R. 
+regression_tables.R creates full regression tables to go into the appendix. Same dependencies as contrasts.R. 
 
 results_tables.R creates tables with the estimate and standard error. Same dependencies as plots.R. 
-
-flipped_plot_test.R and marginal_effects.R were not relevant and so were removed. 

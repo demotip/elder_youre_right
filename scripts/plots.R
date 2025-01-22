@@ -336,8 +336,8 @@ age_diff_models_fe <- age_diff_models_cfe %>%
                        "Non-coethnic interviewer",
                      TRUE ~ age)) %>%
   mutate(age_label = factor(age_label, levels = c("Old interviewer on young respondent","Young interviewer on old respondent", "Non-coethnic interviewer"))) %>%
-  rename(p_value = p.value) %>%
-  select(-term, -std.error, -statistic, -n_obs) %>%
+  dplyr::rename(p_value = p.value) %>%
+  dplyr::select(-term, -std.error, -statistic, -n_obs) %>%
   pivot_wider(names_from = c(age_variable), 
               values_from = c(estimate, p_value, upper, lower),
               names_sep = ".") %>%
@@ -454,6 +454,22 @@ map2(names(plot35yr_countryfe_align), c(3, 5, 5, 4.5, 4.5), function(x, y) {
 
 # For the paper: 35 year age difference plots, adida fixed effects ----
 
+# First, making necessary changes to the age_diff_models df
+
+age_diff_models_int <- age_diff_models_og %>%
+  filter(country == "All") %>%
+  filter(!(term %in% c("coarsened_age_30", "coarsened_age_35", "coarsened_age_40"))) %>%
+  # Clean up coefficient estimate names
+  mutate(age =
+           case_when(grepl("old", ignore.case = T, term) ~
+                       "Old interviewer on young respondent",
+                     grepl("young", ignore.case = T, term) ~
+                       "Young interviewer on old respondent",
+                     TRUE ~ term)) %>%
+  mutate(age = factor(age, levels = c("Old interviewer on young respondent","Young interviewer on old respondent", "Non-coethnic interviewer"))) %>%
+  mutate(label = as.factor(label)) %>%
+  mutate(., label = factor(label, levels = levels(age_diff_models_fe$label)))
+
 age_diff_models_wide <- age_diff_models_int %>%
   mutate(age =
            case_when(grepl("old", ignore.case = T, term) ~
@@ -470,8 +486,8 @@ age_diff_models_wide <- age_diff_models_int %>%
                        "Non-coethnic interviewer",
                      TRUE ~ age)) %>%
   mutate(age_label = factor(age_label, levels = c("Old interviewer on young respondent","Young interviewer on old respondent", "Non-coethnic interviewer"))) %>%
-  rename(p_value = p.value) %>%
-  select(-term, -std.error, -statistic, -n_obs, -country) %>%
+  dplyr::rename(p_value = p.value) %>%
+  dplyr::select(-term, -std.error, -statistic, -n_obs, -country) %>%
   filter(age_variable != "coarsened_age_10") %>%
   filter(age_variable != "coarsened_age_35_originalscale") %>%
   pivot_wider(names_from = c(age_variable),
@@ -625,22 +641,6 @@ plotfun_integrated <- function(data) {
 }
 
 # Age plots w/ all cutoffs, adida fe ----
-
-# First, making necessary changes to the age_diff_models df
-
-age_diff_models_int <- age_diff_models_og %>%
-  filter(country == "All") %>%
-  filter(!(term %in% c("coarsened_age_30", "coarsened_age_35", "coarsened_age_40"))) %>%
-  # Clean up coefficient estimate names
-  mutate(age =
-           case_when(grepl("old", ignore.case = T, term) ~
-                       "Old interviewer on young respondent",
-                     grepl("young", ignore.case = T, term) ~
-                       "Young interviewer on old respondent",
-                     TRUE ~ term)) %>%
-  mutate(age = factor(age, levels = c("Old interviewer on young respondent","Young interviewer on old respondent", "Non-coethnic interviewer"))) %>%
-  mutate(label = as.factor(label)) %>%
-  mutate(., label = factor(label, levels = levels(age_diff_models_fe$label)))
   
   names <- c(coarsened_age_30 = "30 cutoff",
              coarsened_age_35 = "35 cutoff",

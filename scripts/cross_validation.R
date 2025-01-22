@@ -134,7 +134,7 @@ cv_lin_log_3_4 <-
   mutate(label = plyr::mapvalues(name, 
                                  paste0(variable_labels$var),
                                  as.character(variable_labels$label))) %>%
-  select(-name)
+  dplyr::select(-name)
   
 
 cv_lin_log_final <- cv_lin_log_3_4 %>%
@@ -155,7 +155,7 @@ cv_lin_log_final <- cv_lin_log_3_4 %>%
                      grepl("1", winner) ~
                        "Linear"
            )) %>%
-  select(-age_split, -winner)
+  dplyr::select(-age_split, -winner)
 
 View(cv_lin_log_final)
 

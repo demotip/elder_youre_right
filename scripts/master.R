@@ -49,7 +49,7 @@ source("scripts/contrasts.R")
 # found in the appendix of the paper (Figures 6 to 13).
 source("scripts/plots.R")
 
-# comparison_plots is the code for the predicted probabilities plots - to be edited. 
+# comparison_plots is the code for the predicted probabilities plots. 
 # Same dependencies as contrasts.R. 
 source("scripts/comparison_plots.R")
 
@@ -61,11 +61,11 @@ source("scripts/cross_validation.R")
 # and significance of the results. Same dependencies as plots.R. 
 source("scripts/presentable_table.R")
 
-# regression_table.R creates full regression tables to go into the appendix. 
+# regression_tables.R creates full regression tables to go into the appendix. 
 # Also runs the full logistic and ordered logistic models,
 # Organized by outcome group. 
 # Same dependencies as contrasts.R. 
-source("scripts/regression_table.R")
+source("scripts/regression_tables.R")
 
 # results_tables.R creates tables with the estimate and standard error. 
 # Same dependencies as plots.R. 
