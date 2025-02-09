@@ -1,13 +1,5 @@
 # Balance on demographic variables (Rounds 3/4 and Round 7) ----
 
-# Load packages
-library(tidyverse)
-library(xtable)
-library(gridExtra)
-library(fastDummies)
-library(devtools)
-library(TOSTER)
-
 # Load data 
 afpr <- readRDS("./data_clean/afpr_ages.rds")
 
@@ -80,15 +72,41 @@ ranksum_group_fun <- function(variable, data) {
                     p_younger = ranksum_younger$p.value))
 }
 
-mean_group_fun <- function(variable, data ) {
+# mean_group_fun <- function(variable, data ) { #NOT WORKING - using spread and !!sym which are both deprecated
+#   
+#   sum_table <- data %>%
+#     filter(!is.na(coarsened_age_35)) %>%
+#     group_by(coarsened_age_35) %>%
+#     summarise(mean = mean(!!sym(variable), na.rm = TRUE)) %>%
+#     spread(coarsened_age_35, mean) %>%
+#     mutate(Variable = variable) %>%
+#     dplyr::select(Variable, everything())
+#   return(sum_table)
+# }
+
+mean_group_fun <- function(variable, data) {
+  
+  # Check if variable exists in data
+  if (!(variable %in% colnames(data))) {
+    stop(paste("Column", variable, "not found in data"))
+  }
+  
+  # Check if variable contains numeric values
+  if (!is.numeric(data[[variable]])) {
+    stop(paste("Column", variable, "is not numeric"))
+  }
+  
+  # Convert coarsened_age_35 to character (if needed)
+  data$coarsened_age_35 <- as.character(data$coarsened_age_35)
   
   sum_table <- data %>%
     filter(!is.na(coarsened_age_35)) %>%
     group_by(coarsened_age_35) %>%
-    summarise(mean = mean(!!sym(variable), na.rm = TRUE)) %>%
-    spread(coarsened_age_35, mean) %>%
+    summarise(mean = mean(.data[[variable]], na.rm = TRUE), .groups = "drop") %>%
+    pivot_wider(names_from = coarsened_age_35, values_from = mean, names_prefix = "age_") %>%
     mutate(Variable = variable) %>%
     dplyr::select(Variable, everything())
+  
   return(sum_table)
 }
 
@@ -110,24 +128,28 @@ statistical_tests_3_4 <- map(demographic_groups, function(x) {
 means_3_4 <- map(demographic_groups, ~mean_group_fun(., data = afpr[afpr$round %in% 3:4, ])) %>%
   do.call("rbind", .)
 
+View(means_3_4)
+
+gsub("^age_| \\(age 35 cutoff\\)$", "", "age_Both older (age 35 cutoff)")
+
 # Calculate mean differences
 means_table_3_4 <- means_3_4 %>%
-  `colnames<-`(trimws(gsub("\\(|\\)|\\`|\\`|age 35 cutoff", "", colnames(.)))) %>%
+  `colnames<-`(trimws(gsub("^age_| \\(age 35 cutoff\\)$", "", colnames(.)) )) %>%
   mutate(difference_older = `Both older` - `Interviewer younger`,
-         differnece_younger = `Both younger` - `Interviewer older`) %>%
+         difference_younger = `Both younger` - `Interviewer older`) %>% #This was where differnece_younger started
   dplyr::select(Variable, 
                 `Both older`, `Interviewer younger`, difference_older,
-                `Both younger`, `Interviewer older`, differnece_younger)
+                `Both younger`, `Interviewer older`, difference_younger)
 
 # Format means table to have significance stars if p < 0.05
 balance_table_3_4 <- means_table_3_4 %>%
   left_join(statistical_tests_3_4) %>%
-  mutate_at(vars(-one_of("Variable", "p_older", "p_younger", "difference_older", "differnece_younger")), list(~round(., 3))) %>%
-  mutate_at(vars(one_of("difference_older", "differnece_younger")), list(~round(., 2))) %>%
+  mutate_at(vars(-one_of("Variable", "p_older", "p_younger", "difference_older", "difference_younger")), list(~round(., 3))) %>%
+  mutate_at(vars(one_of("difference_older", "difference_younger")), list(~round(., 2))) %>%
   mutate(difference_older = case_when(p_older >= .05 ~ as.character(difference_older),
                                       p_older < 0.05 ~ paste0(difference_older, "*")),
-         differnece_younger = case_when(p_younger >= .05 ~ as.character(differnece_younger),
-                                        p_younger < .05 ~ paste0(differnece_younger, "*"))) %>%
+         difference_younger = case_when(p_younger >= .05 ~ as.character(difference_younger),
+                                        p_younger < .05 ~ paste0(difference_younger, "*"))) %>%
   dplyr::select(-p_older, -p_younger)
 
 # Write balance table as CSV to be imported into MICROSOFT WORD ----
@@ -149,22 +171,23 @@ means_7 <- map(demographic_groups, ~mean_group_fun(., data = afpr[afpr$round %in
 
 # Calculate mean differences
 means_table_7 <- means_7 %>%
-  `colnames<-`(trimws(gsub("\\(|\\)|\\`|\\`|age 35 cutoff", "", colnames(.)))) %>%
+  # `colnames<-`(trimws(gsub("\\(|\\)|\\`|\\`|age 35 cutoff", "", colnames(.)))) %>%
+  `colnames<-`(trimws(gsub("^age_| \\(age 35 cutoff\\)$", "", colnames(.)) )) %>%
   mutate(difference_older = `Both older` - `Interviewer younger`,
-         differnece_younger = `Both younger` - `Interviewer older`) %>%
+         difference_younger = `Both younger` - `Interviewer older`) %>%
   dplyr::select(Variable, 
                 `Both older`, `Interviewer younger`, difference_older,
-                `Both younger`, `Interviewer older`, differnece_younger)
+                `Both younger`, `Interviewer older`, difference_younger)
 
 # Format means table to have significance stars if p < 0.05
 balance_table_7 <- means_table_7 %>%
   left_join(statistical_tests_7) %>%
-  mutate_at(vars(-one_of("Variable", "p_older", "p_younger", "difference_older", "differnece_younger")), list(~round(., 3))) %>%
-  mutate_at(vars(one_of("difference_older", "differnece_younger")), list(~round(., 2))) %>%
+  mutate_at(vars(-one_of("Variable", "p_older", "p_younger", "difference_older", "difference_younger")), list(~round(., 3))) %>%
+  mutate_at(vars(one_of("difference_older", "difference_younger")), list(~round(., 2))) %>%
   mutate(difference_older = case_when(p_older >= .05 ~ as.character(difference_older),
                                       p_older < 0.05 ~ paste0(difference_older, "*")),
-         differnece_younger = case_when(p_younger >= .05 ~ as.character(differnece_younger),
-                                        p_younger < .05 ~ paste0(differnece_younger, "*"))) %>%
+         difference_younger = case_when(p_younger >= .05 ~ as.character(difference_younger),
+                                        p_younger < .05 ~ paste0(difference_younger, "*"))) %>%
   dplyr::select(-p_older, -p_younger)
 
 # Write balance table as CSV to be imported into MICROSOFT WORD ----
@@ -186,22 +209,23 @@ means_7_mauritius <- map(demographic_groups, ~mean_group_fun(., data = afpr[afpr
 
 # Calculate mean differences
 means_table_7_mauritius <- means_7_mauritius %>%
-  `colnames<-`(trimws(gsub("\\(|\\)|\\`|\\`|age 35 cutoff", "", colnames(.)))) %>%
+  # `colnames<-`(trimws(gsub("\\(|\\)|\\`|\\`|age 35 cutoff", "", colnames(.)))) %>%
+  `colnames<-`(trimws(gsub("^age_| \\(age 35 cutoff\\)$", "", colnames(.)) )) %>%
   mutate(difference_older = `Both older` - `Interviewer younger`,
-         differnece_younger = `Both younger` - `Interviewer older`) %>%
+         difference_younger = `Both younger` - `Interviewer older`) %>%
   dplyr::select(Variable, 
                 `Both older`, `Interviewer younger`, difference_older,
-                `Both younger`, `Interviewer older`, differnece_younger)
+                `Both younger`, `Interviewer older`, difference_younger)
 
 # Format means table to have significance stars if p < 0.05
 balance_table_7_mauritius <- means_table_7_mauritius %>%
   left_join(statistical_tests_7_mauritius) %>%
-  mutate_at(vars(-one_of("Variable", "p_older", "p_younger", "difference_older", "differnece_younger")), list(~round(., 3))) %>%
-  mutate_at(vars(one_of("difference_older", "differnece_younger")), list(~round(., 2))) %>%
+  mutate_at(vars(-one_of("Variable", "p_older", "p_younger", "difference_older", "difference_younger")), list(~round(., 3))) %>%
+  mutate_at(vars(one_of("difference_older", "difference_younger")), list(~round(., 2))) %>%
   mutate(difference_older = case_when(p_older >= .05 ~ as.character(difference_older),
                                       p_older < 0.05 ~ paste0(difference_older, "*")),
-         differnece_younger = case_when(p_younger >= .05 ~ as.character(differnece_younger),
-                                        p_younger < .05 ~ paste0(differnece_younger, "*"))) %>%
+         difference_younger = case_when(p_younger >= .05 ~ as.character(difference_younger),
+                                        p_younger < .05 ~ paste0(difference_younger, "*"))) %>%
   dplyr::select(-p_older, -p_younger)
 
 # Write balance table as CSV to be imported into MICROSOFT WORD ----
@@ -216,35 +240,62 @@ equivalence_intervals <- function(data, var_name, level = 1,
                                   alpha = 0.05,
                                   lower_equivalence_bound = -0.25,
                                   upper_equivalence_bound = 0.25,
-                                  type = "prop") {
+                                  type = type) {
   
   if(type == "t") { # Relevant only for age
     
-    tost_est <- dataTOSTtwo(data, var_name, group, alpha = alpha,
+    # print(1)
+    
+    tost_est <- dataTOSTtwo(data, !!sym(var_name), 
+                            group = "coarsened_age_35", 
+                            alpha = alpha,
                             low_eqbound = lower_equivalence_bound, 
                             high_eqbound = upper_equivalence_bound)
-    std_dev <- sd(data[, var_name], na.rm = TRUE)
+    
+    # print("TOST Output:")
+    # print(tost_est)
+    # print(tost_est$eqb$asDF)
+    # print(tost_est$tost$asDF)
+    
+    # std_dev <- sd(data[, var_name], na.rm = TRUE)
+    std_dev <- sd(as.numeric(data[[var_name]] == level), na.rm = TRUE)
     est <- as.numeric(diff(t(tost_est$desc$asDF[, c("m[2]", "m[1]")])))
-    lower <- as.numeric(tost_est$eqb$asDF["cil[raw]"])
-    upper <- as.numeric(tost_est$eqb$asDF["ciu[raw]"])
+    lower <- as.numeric(tost_est$eqb$asDF["low[cohen]"]) #cil[raw]
+    upper <- as.numeric(tost_est$eqb$asDF["high[cohen]"]) #ciu[raw]
     p_upper <- as.numeric(tost_est$tost$asDF["p[1]"])
     p_lower <- as.numeric(tost_est$tost$asDF["p[2]"])
     
     } else {
       
-      tost_est <- datatosttwoprop(data, var_name, level, group, alpha, 
+      # print(2)
+      
+      tost_est <- datatosttwoprop(data, !!sym(var_name), 
+                                  level = level, 
+                                  group = "coarsened_age_35", 
+                                  alpha = alpha, 
                                   low_eqbound = lower_equivalence_bound, 
                                   high_eqbound = upper_equivalence_bound)
-      std_dev <- sd(data[, var_name] == level, na.rm = TRUE)
+      
+      if(var_name == "Post-secondary") { 
+        data <- data[!is.na(data[[var_name]]), ]
+      }
+      
+      # print("TOST Output:")
+      # print(tost_est)
+      # print(tost_est$eqb$asDF)
+      # print(tost_est$tost$asDF)
+      
+      std_dev <- sd(as.numeric(data[[var_name]] == level), na.rm = TRUE)
+      # std_dev <- sd(data[, var_name] == level, na.rm = TRUE)
       est <- as.numeric(diff(t(tost_est$desc$asDF[, c("prop[2]", "prop[1]")])))
-      lower <- as.numeric(tost_est$eqb$asDF["cil"])
-      upper <- as.numeric(tost_est$eqb$asDF["ciu"])
-      p_upper <- as.numeric(tost_est$tost$asDF["p[1]"])
-      p_lower <- as.numeric(tost_est$tost$asDF["p[2]"])
+      lower <- as.numeric(tost_est$eqb$asDF["cil"][[1]]) #"cil"
+      upper <- as.numeric(tost_est$eqb$asDF["ciu"][[1]]) #"ciu"
+      p_upper <- as.numeric(tost_est$tost$asDF["p[0]"]) #"p[1]"
+      p_lower <- as.numeric(tost_est$tost$asDF["p[1]"]) #"p[2]"
     
     }
   
-  out <- data.frame(est = est, lower = lower, upper = upper,
+  out <- data.frame(name = var_name, est = est, lower = lower, upper = upper,
                     std_dev = std_dev, est_sd = est / std_dev,
                     lower_sd = lower / std_dev, upper_sd = upper / std_dev,
                     p_upper = p_upper, p_lower = p_lower)
@@ -254,55 +305,59 @@ equivalence_intervals <- function(data, var_name, level = 1,
   
 }
 
+# demographic_groups_2 <- demographic_groups[-5] #problem with Post-secondary
 
+demo_ages <- expand_grid(demo_var = demographic_groups,
+                         age_group = c("younger", "older"))
 
-
-equivalence_tests <- expand_grid(demo_var = demographic_groups,
-            age_group = c("younger", "older")) %>%
+equivalence_tests <- demo_ages %>%
   pmap_dfr(function(demo_var, age_group) {
-    
-    if(demo_var == "age") type <- "t" else type <- "prop"
     
     # Filter the data by young and old to assess age-diff 
     # balance within the two groups
     if(age_group == "older") { # Older respondents subset
-      afpr <- filter(afpr, coarsened_age_35 %in% 
+      afpr_subset <- filter(afpr, coarsened_age_35 %in% 
                c("Both older (age 35 cutoff)", 
                  "Interviewer younger (age 35 cutoff)"))
     } else { # Younger respondents subset
-      afpr <- filter(afpr, coarsened_age_35 %in% 
+      afpr_subset <- filter(afpr, coarsened_age_35 %in% 
                        c("Both younger (age 35 cutoff)", 
                          "Interviewer older (age 35 cutoff)"))
     }
     
-    # Estimate equivalence interval
-    equivalence_intervals(data = afpr, 
-                          var_name = demo_var,
-                          group = "coarsened_age_35",
-                          lower_equivalence_bound = -0.25,
-                          upper_equivalence_bound = 0.25,
-                          alpha = 0.05,
-                          type = type) %>%
-      mutate(name = demo_var,
-             title = paste0(str_to_sentence(age_group),
-                            " respondents"))
+    demo_var <- as.character(demo_var)[1]
+    
+    type <- if (demo_var == "age") "t" else "prop"
+    
+    equivalence_results <- tryCatch({
+      equivalence_intervals(data = afpr_subset,
+                            var_name = demo_var,
+                            group = "coarsened_age_35",
+                            lower_equivalence_bound = -0.25,
+                            upper_equivalence_bound = 0.25,
+                            alpha = 0.05,
+                            type = type)
+    }, error = function(e) {
+      warning("Error in equivalence_intervals for ", demo_var, ": ", e$message)
+      return(NULL)  # Skip if error occurs
+    })
   })
-            
+
 ggplot(equivalence_tests, aes(x = est_sd, y = name)) +
   coord_cartesian(xlim = c(-0.36, 0.36)) +
   scale_x_continuous(breaks = c(-0.36, -0.3, -0.25, -0.2, -0.1, 0,
                                 0.1, 0.2, 0.25, 0.3, 0.36)) +
   labs(x = "Equivalence range (in std. dev.)", y = "") +
   geom_vline(xintercept = c(-0.36, -0.25, 0.25, 0.36), 
-             linetype = 3, size = 0.5) +
+             linetype = 3, linewidth = 0.5) +
   geom_vline(xintercept = seq(-0.3, 0.3, 0.1),
-             linetype = 1, size = 0.5,
+             linetype = 1, linewidth = 0.5,
              colour = "grey90") +
-  geom_vline(xintercept = 0, linetype = "dashed", size = 0.6) +
+  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 0.6) +
   geom_segment(aes(x = lower_sd, xend = upper_sd, yend = name),
-               size = 4, color = "grey70") +
+               linewidth = 4, color = "grey70") +
   geom_point() +
-  facet_wrap(~title) +
+  # facet_wrap(~title) +
   theme_linedraw() +
   theme(axis.title.y = element_blank(),
         axis.text.x = element_text(angle = 90,

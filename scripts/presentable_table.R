@@ -1,10 +1,10 @@
 # This is a script that produces tables of the significance and direction of
 # the age variable in all regressions.
 
-library(groundhog)
+# library(groundhog)
 
-plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts")
-groundhog.library(plot_30_yr, "2021-11-01")
+# plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts")
+# groundhog.library(plot_30_yr, "2021-11-01")
 
 font_add_google("Roboto", "Roboto")
 showtext_auto()
@@ -33,7 +33,7 @@ sig_tables <- lapply(unique(age_diff_models_table$group[!(age_diff_models_table$
     filter(age_variable != "coarsened_age_35_originalscale") %>%
     mutate(sig_pos = ifelse(p.value < 0.05, ifelse(upper < 0, "-", "+"), "null")) %>% 
     pivot_wider(names_from = term,
-                values_from = sig_pos, label) 
+                values_from = sig_pos, id_cols =label) 
   
   table$no_pos <- rowSums(table == "+")
   table$no_neg <- rowSums(table == "-")
@@ -54,7 +54,8 @@ youth_mauritius <- age_diff_models_table %>%
 
 youth_mauritius_wider <- youth_mauritius %>%
   pivot_wider(names_from = term,
-              values_from = sig_pos, label,
+              values_from = sig_pos, 
+              id_cols = label,
               values_fn = list) %>%
   dplyr::rename(., younger_30_m = coarsened_age_30younger_int,
          younger_35_m = coarsened_age_35younger_int,
@@ -80,7 +81,8 @@ youth_all <- age_diff_models_table %>%
 
 youth_all_wider <- youth_all %>%
   pivot_wider(names_from = term,
-              values_from = sig_pos, label,
+              values_from = sig_pos, 
+              id_cols = label,
               values_fn = list) %>%
   mutate(coarsened_age_30younger_int = as.character(coarsened_age_30younger_int),
          coarsened_age_35younger_int = as.character(coarsened_age_35younger_int),
@@ -103,8 +105,8 @@ sig_tables$youth_outcomes <- youth_age_diff
 
 ## Exporting these as .docx
 
-datasummary_df(sig_tables$pro_outcomes, output = "tables/significance_tables/sig_table_pro.docx")
-datasummary_df(sig_tables$pol_outcomes, output = "tables/significance_tables/sig_table_pol.docx")
-datasummary_df(sig_tables$stat_outcomes, output = "tables/significance_tables/sig_table_stat.docx")
-datasummary_df(sig_tables$eth_outcomes, output = "tables/significance_tables/sig_table_eth.docx")
-datasummary_df(sig_tables$youth_outcomes, output = "tables/significance_tables/sig_table_youth.docx") 
+# datasummary_df(sig_tables$pro_outcomes, output = "tables/significance_tables/sig_table_pro.docx")
+# datasummary_df(sig_tables$pol_outcomes, output = "tables/significance_tables/sig_table_pol.docx")
+# datasummary_df(sig_tables$stat_outcomes, output = "tables/significance_tables/sig_table_stat.docx")
+# datasummary_df(sig_tables$eth_outcomes, output = "tables/significance_tables/sig_table_eth.docx")
+# datasummary_df(sig_tables$youth_outcomes, output = "tables/significance_tables/sig_table_youth.docx") 

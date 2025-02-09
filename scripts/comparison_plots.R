@@ -1,11 +1,14 @@
-source("scripts/contrasts.R") # THIS CODE REQUIRES THE SAME SET-UP FOR CONTRASTS.R: THE CONTRASTS MATRIX, OUTCOME_VARIABLES, ETC
-library(groundhog)
+# NOTE: 
+# THIS CODE REQUIRES THE SAME SET-UP FOR CONTRASTS.R: 
+# THE CONTRASTS MATRIX, OUTCOME_VARIABLES, ETC
+source("scripts/contrasts.R")
+# library(groundhog)
+# 
+# marg_effects <- c("cowplot", "tidyverse", "marginaleffects")
+# 
+# groundhog.library(marg_effects, "2023-11-01")
 
-marg_effects <- c("cowplot", "tidyverse", "marginaleffects")
-
-groundhog.library(marg_effects, "2021-11-01")
-
-pacman::p_load(tidyverse, marginaleffects, ggplot2, magrittr, plyr, glue) 
+# pacman::p_load(tidyverse, marginaleffects, ggplot2, magrittr, plyr, glue) 
 
 # COMPARISON PLOTS
 
@@ -37,9 +40,7 @@ outcome_age_combos_binary <- outcome_age_combos %>%
   filter(outcome %in% binary_var_names) %>%
   dplyr::select(!starts_with("z_")) 
 
-
-# NOTE: avg_comparisons only works with newer versions of marginaleffects.
-# It's necessary to run this part of the script with a newer version of R.
+# NOTE: avg_comparisons only works with newer versions of marginaleffects: at least version 0.10.0. 
 
 comparisons_binary <- 
   pmap_dfr(outcome_age_combos_binary, function(outcome, age_variable, round) {
@@ -79,25 +80,25 @@ comparisons_binary <-
     
     list_1 <- list("pairwise")
     names(list_1) = {age_variable}
-    
+
     comparisons <- marginaleffects::avg_comparisons(
       model,
       variables = list_1 #extract the name of the variable from the model object
       ) %>%
       mutate(outcome = {outcome_variable},
              logistic = "Linear-based estimate")
-    
+
     comparisons_2 <- marginaleffects::avg_comparisons(
       model_logistic,
       variables = list_1) %>%
-      mutate(outcome = {outcome_variable}, 
-             logistic = "Logistic-based estimate")  
-    
+      mutate(outcome = {outcome_variable},
+             logistic = "Logistic-based estimate")
+
     return(rbind(comparisons, comparisons_2))
   }) %>%
-  mutate(label = plyr::mapvalues(outcome, 
+  mutate(label = plyr::mapvalues(outcome,
                                  paste0(variable_labels$var),
-                                 as.character(variable_labels$label))) 
+                                 as.character(variable_labels$label)))
 
 contrasts_comparisons <- c("mean(Interviewer younger (age 35 cutoff)) - mean(Both older (age 35 cutoff))", 
   "mean(Both younger (age 35 cutoff)) - mean(Interviewer younger (age 35 cutoff))",

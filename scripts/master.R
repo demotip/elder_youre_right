@@ -1,21 +1,29 @@
 # Groundhog etc
 library(groundhog)
+library(pacman)
 
-master <- c("haven", "labelled", "tidyverse", #clean_and_combine_data
+master <- c("cli", "rlang", "dplyr", 
+            "labelled", "tidyverse", #clean_and_combine_data
             "haven", "lubridate",  #append_age_differences
             #none for variable_labels
             "xtable", "gridExtra", "fastDummies", "devtools", "TOSTER", #balance_tables
             "kableExtra", "showtext", "sysfonts", "ggtext", #descriptive_statistics.R
             "glue", "lfe", "lmtest", "sandwich", "modelsummary", #contrasts.R
             "cowplot", #plots.R
-            #none for comparison_plots.R(?)
+            "marginaleffects", #comparison_plots.R
             "boot", "caret", "rms", "htmlTable", #cross_validation.R
-            #none for presentable_table.R
+            "pandoc", #presentable_table.R
+            "texreg", #regression_tables.R
             "flextable", "gt", "janitor", "kableExtra")
 
-groundhog.library(master, "2021-11-01")
+# groundhog.library(master, force.install=TRUE, "2025-02-06")
+p_load(master, install = TRUE, character.only = TRUE)
 
 # Running everything all at once
+
+# variable_labels.R generates a dataframe of variable names, variable descriptions, 
+# and variable groupings. This dataframe is used in subsequent files to group and relabel outcomes.
+source("scripts/variable_labels.R")
 
 # clean_and_combine_data.R combines and cleans Afrobarometer rounds 3, 4, and 7
 # and outputs afpr_append.rds. For round 7, there are three datasets to combine: 
@@ -27,12 +35,8 @@ source("scripts/clean_and_combine_data.R")
 # data based on the ages of interviewers and respondents and saves this as a new dataset: afpr_ages.rds.
 source("scripts/append_age_differences.R")
 
-# variable_labels.R generates a dataframe of variable names, variable descriptions, 
-# and variable groupings. This dataframe is used in subsequent files to group and relabel outcomes.
-source("scripts/variable_labels.R")
-
 # balance_tables.R uses afpr_ages.rds to generate the covariate balance table found in Table 3 of the paper.
-source("scripts/balance_tables.R")
+source("scripts/balance_tables.R") 
 
 # descriptive_statistics.R uses afpr_ages.rds to create tables and figures that compare the age distributions 
 # of respondents and interviewers in the Afrobarometer data (Table 2 and Figure 1 in the paper). 

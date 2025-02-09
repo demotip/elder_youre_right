@@ -1,12 +1,9 @@
 # MAKING FULL REGRESSION TABLES FOR BOTH LINEAR AND LOGISTIC/ORDERED REGRESSIONS
 
-source("scripts/descriptive_statistics.R")
-source("scripts/variable_labels.R")
+# library(groundhog)
 
-library(groundhog)
-
-reg_tables <- c("glue", "lfe", "tidyverse", "lmtest", "sandwich", "modelsummary", "janitor", "kableExtra")
-groundhog.library(reg_tables, "2021-11-01")
+# reg_tables <- c("glue", "lfe", "tidyverse", "lmtest", "sandwich", "modelsummary", "janitor", "kableExtra")
+# groundhog.library(reg_tables, "2021-11-01")
 
 country_levels <- levels(as.factor(afpr$country))
 country_levels_formatted <- paste0("country",country_levels)
@@ -184,23 +181,6 @@ regression_output_adidafe$pol <- regression_output_adidafe$pol[order(names(regre
 regression_output_adidafe$pro <- regression_output_adidafe$pro[order(names(regression_output_adidafe$pro))]
 regression_output_adidafe$eth <- regression_output_adidafe$eth[order(names(regression_output_adidafe$eth))]
 regression_output_adidafe$youth <- regression_output_adidafe$youth[order(names(regression_output_adidafe$youth))]
-
-
-# modelsummary_function_adida <- function(data_frame) {
-#   modelsummary(data_frame, coef_omit = "enumeth|region|tribe|round",
-#                coef_map = cm,
-#                estimate = c("{estimate} ({std.error}){stars}"),
-#                fmt = 2,
-#                statistic = NULL,
-#                output = "latex",  #undocumented but need to specify here to output as latex
-#                caption = paste0(""),
-#                booktabs = TRUE,
-#                linesep = "", 
-#                escape = TRUE, 
-#                notes = list("Regression models for the estimates that include fixed effects present in Adida et al. (2016). Models all use robust standard errors. P-values: *** p<0.001, ** p<0.01, * p<0.05"),
-#                output = paste0("tables/reg_table_",data_frame,".docx")
-#                 ) 
-# }
 
 # For display - splitting the tables so they have a maximum of 15 outcome vars each
 

@@ -1,9 +1,7 @@
-library(groundhog)
-clean_and_combine_data <- c("haven", "labelled", "tidyverse")
-
-groundhog.library(clean_and_combine_data, "2021-11-01")
-
-source("scripts/variable_labels.R")
+# library(groundhog)
+# clean_and_combine_data <- c("haven", "labelled", "tidyverse")
+# 
+# groundhog.library(clean_and_combine_data, "2021-11-01")
 
 # "Not in" convenience operator
 '%!in%' <- function(x,y)!('%in%'(x,y))
@@ -30,7 +28,7 @@ afpr$int_id <- afpr$q110
 # Investiage missing noncoeth and minority
 afpr %>%
   filter(is.na(noncoeth) | is.na(minority)) %>%
-  select(tribe, enumeth) 
+  dplyr::select(tribe, enumeth) 
 
 # All missing noncoeth and minority in round 3 and 4 are because
 # either respondent or interviewer tribe are missing
@@ -38,7 +36,7 @@ afpr %>%
 # Import merged AB round 7 data ----
 ab7 <- read_sav("data_raw/r7_merged_data_34ctry.release.sav") 
 
-error("What's the matter with Mozambique")
+# error("What's the matter with Mozambique")
 # Enumeth not available for Mozambique in round 3
 afpr %>%
   filter(round == 3) %>%
@@ -173,17 +171,22 @@ ab7_full <- ab7_full %>%
                                        NA, 
                                        treatedunfairly_group)) %>%
   mutate(idrank = ifelse(idrank %in% c(-1, 7, 8, 9, 99), NA, idrank - 1)) %>%
-  mutate(gender = case_when(gender == 2 ~ 0, #2 = female
-                            gender == 1 ~ 1, #1 = male
+  mutate(gender = case_when(gender == 2 ~ 0,
+                            gender == 1 ~ 1,
                             gender == -1 ~ NA_real_)) %>%
   mutate(urban = ifelse(urban == 1, 1, 0)) %>%
   mutate(round = 7)
+
+
 
 # FIX THE REGION VARIABLE SO IT MATCHES IN ALL ROUNDS ----
 
 ab7_full$region <- tolower(ab7_full$region)
 afpr$region <- remove_attributes(to_character(afpr$region), "label")
-afpr$region[grepl("ou\x8em\x8e", afpr$region)] <- "oueme"
+# afpr$region[grepl("ou\x8em\x8e", afpr$region)] <- "oueme" # Encoding issue here 
+afpr$region <- iconv(afpr$region, from = "latin1", to = "UTF-8")  # Converting encoding to UTF-8
+afpr$region <- gsub("[^[:alnum:] ]", "", afpr$region)  # Removing special characters 
+afpr$region[grepl("oueme", afpr$region, ignore.case = TRUE)] <- "oueme" #Seems to have worked?
 
 # Some manual edits to make regions match between afpr and ab7
 ab7_full <- ab7_full %>%
@@ -288,7 +291,7 @@ calculate_mode <- function(x) {
 afpr <- afpr %>%
   group_by(country, region, round) %>%
   summarise(modal_tribe = calculate_mode(tribe)) %>%
-  right_join(afpr, by = c("country", "region", "round")) %>%
+  dplyr::right_join(afpr, by = c("country", "region", "round")) %>%
   ungroup()
 
 afpr <- afpr %>%

@@ -1,9 +1,9 @@
 # DESCRIPTIVE STATISTICS ----
 
-library(groundhog)
-
-desc_stats <- c("kableExtra", "tidyverse", "showtext", "sysfonts", "ggtext")
-groundhog.library(desc_stats, "2021-11-01")
+# library(pacman)
+# 
+# desc_stats <- c("kableExtra", "tidyverse", "showtext", "sysfonts", "ggtext")
+# p_load(desc_stats, update = TRUE)
 
 # Load data  
 afpr <- readRDS("data_clean/afpr_ages.rds")
@@ -46,27 +46,35 @@ ages_df <- map_dfr(c("All", 3, 4, 7), function(x) {
     # Filter to include only distinct interviewer, no repeats
     distinct(int_id, .keep_all = TRUE) %>%
     dplyr::select(-int_id) %>%
-    summarise_all(list(int_mean = ~mean(., na.rm = T), 
-                       int_sd = ~sd(., na.rm = T), 
+    summarise_all(list(int_mean = ~mean(., na.rm = T),
+                       int_sd = ~sd(., na.rm = T),
                        int_n = ~n())) %>%
+    # summarise(across(everything(), list(mean = ~mean(., na.rm = TRUE),
+    #                                     sd = ~sd(., na.rm = TRUE),
+    #                                     n = ~n()))) %>%
     mutate(round = round_label)
-  
+
   # Respondent ages and age differences
   resp_ages <- afpr %>%
     dplyr::select(age, age_difference) %>%
     # Can safelyy na_omit at this point
     na.omit() %>%
-    summarise(across(everything(), 
-                     list(mean = ~mean(., na.rm = T), 
-                          sd = ~sd(., na.rm = T), 
-                          n = ~n()),
-                     .names = "{.col}_{.fn}")) %>%
+    # summarise(across(everything(),
+    #                  list(mean = ~mean(., na.rm = T),
+    #                       sd = ~sd(., na.rm = T),
+    #                       n = ~n()),
+    #                  .names = "{.col}_{.fn}")) %>%
+    summarise_all(list(mean = ~mean(., na.rm = TRUE), 
+                       sd = ~sd(., na.rm = TRUE), 
+                       n = ~sum(!is.na(.)))) %>%
     # Reverse so that table describes respondent age - interviewer age
-    mutate(age_difference_mean = age_difference_mean*-1) %>%
+    # mutate(age_difference_mean = age_difference_mean*-1) %>%
+    mutate(age_difference_mean = ifelse(!is.na(age_difference_mean), age_difference_mean * -1, NA)) %>%
     mutate(round = round_label)
-  
-  left_join(resp_ages, int_ages)
-  
+
+  # left_join(resp_ages, int_ages)
+  left_join(resp_ages, int_ages, by = "round")
+
 })
 
 ages_df <- ages_df %>%
@@ -96,7 +104,7 @@ coarsened_35_desc <- afpr %>%
 
 coarsened_35_desc <- coarsened_35_desc %>%
   group_by(round) %>%
-  count(coarsened_age_35) %>%
+  dplyr::count(coarsened_age_35) %>%
   na.omit() %>%
   mutate(percent = round((n/sum(n)*100), 2)) %>%
   ungroup() %>%
@@ -149,7 +157,7 @@ coarsened_35_round_7 <- map_dfr(c("Mauritius", "All Round 7"), function(x) {
     
     afpr %>%
       filter(round == 7) %>%
-      count(coarsened_age_35) %>%
+      dplyr::count(coarsened_age_35) %>%
       na.omit() %>%
       mutate(percent = round((n/sum(n)*100), 2)) %>%
       ungroup() %>%
@@ -264,7 +272,7 @@ older_younger_desc_3_4$variable <- factor(older_younger_desc_3_4$variable, varia
 # older_younger_desc_3_4 <- older_younger_desc_3_4 %>%
 #   arrange(variable) 
 
-View(older_younger_desc_3_4)
+# View(older_younger_desc_3_4)
 
 map(c("stat_outcomes","pol_outcomes","eth_outcomes","pro_outcomes"), function(x) {
   older_younger_desc_3_4 %>%
@@ -400,7 +408,7 @@ mauritius_descriptives <- mauritius_descriptives %>%
   arrange(variable) %>%
   slice(2:7) # Removing youth_needs
 
-View(mauritius_descriptives)
+# View(mauritius_descriptives)
   
 # changed from uganda_mauritius_descriptives
 mauritius_descriptives %>%

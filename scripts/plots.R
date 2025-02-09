@@ -1,14 +1,12 @@
 # PLOTS FROM PAPER ----
 
-library(groundhog)
+# library(groundhog)
 
-plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts", "forcats")
-groundhog.library(plot_30_yr, "2021-11-01")
+# plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts", "forcats")
+# groundhog.library(plot_30_yr, "2021-11-01")
 
 font_add_google("Roboto", "Roboto")
 showtext_auto()
-
-source("scripts/variable_labels.R")
 
 age_diff_models_og <- readRDS("data_clean/age_diff_models.rds")
 
