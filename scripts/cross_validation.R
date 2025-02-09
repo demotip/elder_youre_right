@@ -1,14 +1,3 @@
-# source("scripts/contrasts.R")
-# source("scripts/variable_labels.R")
-
-# Loading necessary packages ----
-
-# library(groundhog)
-
-# cv <- c("glue", "lfe", "tidyverse", "lmtest", 
-#         "sandwich", "modelsummary", "boot", "caret", "rms", "htmlTable")
-# 
-# groundhog.library(cv, "2021-11-01")
 
 # Setting up fixed effects as factors ----
 

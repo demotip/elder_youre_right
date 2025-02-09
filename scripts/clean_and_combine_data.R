@@ -1,8 +1,3 @@
-# library(groundhog)
-# clean_and_combine_data <- c("haven", "labelled", "tidyverse")
-# 
-# groundhog.library(clean_and_combine_data, "2021-11-01")
-
 # "Not in" convenience operator
 '%!in%' <- function(x,y)!('%in%'(x,y))
 

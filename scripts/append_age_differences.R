@@ -1,15 +1,5 @@
-# The same as append_age_differences.R, with the 30-yr cutoff included
-# Very minimal changes with this one - same output file name
-# so I don't have to mess with the other files
-
 # This file incorporates age difference into the Adida et al Afrobarometer
 # dataset (Rounds 3 and 4)
-
-# library(groundhog)
-
-# append_age_differences <- c("haven", "lubridate", "tidyverse")
-# 
-# groundhog.library(append_age_differences, "2021-11-01")
 
 # "Not in" convenience operator
 '%!in%' <- function(x,y)!('%in%'(x,y))

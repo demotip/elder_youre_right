@@ -1,10 +1,5 @@
 # DESCRIPTIVE STATISTICS ----
 
-# library(pacman)
-# 
-# desc_stats <- c("kableExtra", "tidyverse", "showtext", "sysfonts", "ggtext")
-# p_load(desc_stats, update = TRUE)
-
 # Load data  
 afpr <- readRDS("data_clean/afpr_ages.rds")
 source("scripts/variable_labels.R")

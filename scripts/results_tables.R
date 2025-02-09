@@ -1,12 +1,6 @@
 # Using modelsummary to make tables for the results of the regressions,
 # separated by group and using the data frame format calculated in contrasts.R.
 
-# library(groundhog)
-# plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts", "modelsummary", "flextable", "gt")
-# groundhog.library(plot_30_yr, "2021-11-01")
-
-source("scripts/variable_labels.R")
-
 age_diff_models_results <- readRDS("data_clean/age_diff_models.rds")
 
 age_diff_models_results <- age_diff_models_results %>%

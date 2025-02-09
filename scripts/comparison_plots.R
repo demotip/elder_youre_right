@@ -1,14 +1,5 @@
-# NOTE: 
-# THIS CODE REQUIRES THE SAME SET-UP FOR CONTRASTS.R: 
+# NOTE: THIS CODE REQUIRES THE SAME SET-UP FOR CONTRASTS.R -
 # THE CONTRASTS MATRIX, OUTCOME_VARIABLES, ETC
-
-# library(groundhog)
-# 
-# marg_effects <- c("cowplot", "tidyverse", "marginaleffects")
-# 
-# groundhog.library(marg_effects, "2023-11-01")
-
-# pacman::p_load(tidyverse, marginaleffects, ggplot2, magrittr, plyr, glue) 
 
 # COMPARISON PLOTS
 

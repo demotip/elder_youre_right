@@ -1,10 +1,5 @@
 # MAKING FULL REGRESSION TABLES FOR BOTH LINEAR AND LOGISTIC/ORDERED REGRESSIONS
 
-# library(groundhog)
-
-# reg_tables <- c("glue", "lfe", "tidyverse", "lmtest", "sandwich", "modelsummary", "janitor", "kableExtra")
-# groundhog.library(reg_tables, "2021-11-01")
-
 country_levels <- levels(as.factor(afpr$country))
 country_levels_formatted <- paste0("country",country_levels)
 

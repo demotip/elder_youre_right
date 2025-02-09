@@ -75,8 +75,8 @@ variable_labels <-
       "nocleanwater",
       "notenoughfood",
       "ec_conditions_self",
-      "gov_manage_economy", # from pol
-      "ec_conditions_ctry", # from pol
+      "gov_manage_economy", # from pol_outcomes
+      "ec_conditions_ctry", # from pol_outcomes
       # POL OUTCOMES
       "bribe1",
       "knows_MP",

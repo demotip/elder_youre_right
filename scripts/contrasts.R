@@ -1,44 +1,22 @@
 # MAIN RESULTS OF PAPER ----
 
-# LOAD NECESSARY PACKAGES ----
-
-# library(groundhog)
-# 
-# contrasts <- c("glue", "lfe", "tidyverse", "lmtest", "sandwich", "modelsummary")
-# # groundhog.library(contrasts, "2021-11-01")
-# groundhog.library(contrasts, "2023-11-01")
-
 # READ IN DATA AND FUNCTIONS ----
 
 # Load Adida et al. Afrobarometer data with age difference appended
 # age differences appended in scripts/adida_append_age_differences.R
 afpr <- readRDS("./data_clean/afpr_ages.rds")
 
-# Get list of outcomes and dataframe with outcome descriptions
-source("scripts/variable_labels.R")
-
 # Convenience function, opposite of %in%
 '%!in%' <- function(x,y)!('%in%'(x,y))
 
 # Reverse code present living conditions so direction is consistent with other variables
-# afpr$z_ec_conditions_self <- as.vector(scale(6 - afpr$ec_conditions_self))
 
 # STAT OUTCOMES
-# afpr$z_ec_conditions_self <- as.vector(scale(afpr$ec_conditions_self -2 ))
 afpr$z_notenoughfood <- as.vector(scale((afpr$notenoughfood -2 ) * -1))
 afpr$z_noincome <-  as.vector(scale((afpr$noincome -2 ) * -1))
 afpr$z_nocleanwater <- as.vector(scale((afpr$nocleanwater -2 ) * -1))
 afpr$z_crime <- as.vector(scale((afpr$crime -2 ) * -1))
 afpr$z_aids <- as.vector(scale((afpr$aids * -1) + 1))
-
-# YOUTH OUTCOMES
-# afpr$z_youth_needs <- as.vector(scale((afpr$youth_needs -2 ) * -1))
-# afpr$z_youth_employment <- as.vector(scale((afpr$youth_employment -2 ) * -1))
-# afpr$z_youth_pregnancy <- as.vector(scale((afpr$youth_pregnancy -2 ) * -1))
-# afpr$z_youth_drugabuse <- as.vector(scale((afpr$youth_drugabuse -2 ) * -1))
-# afpr$z_youth_alcohol <- as.vector(scale((afpr$youth_alcohol -2 ) * -1))
-# afpr$z_youth_delinquency <- as.vector(scale((afpr$youth_delinquency -2 ) * -1))
-# afpr$z_youth_smoking <- as.vector(scale((afpr$youth_smoking -2 ) * -1))
 
 # ETH OUTCOMES
 afpr$z_idrank <- as.vector(scale((afpr$idrank -2 ) * -1))

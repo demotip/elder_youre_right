@@ -1,15 +1,8 @@
 # This is a script that produces tables of the significance and direction of
 # the age variable in all regressions.
 
-# library(groundhog)
-
-# plot_30_yr <- c("cowplot", "tidyverse", "showtext", "sysfonts")
-# groundhog.library(plot_30_yr, "2021-11-01")
-
 font_add_google("Roboto", "Roboto")
 showtext_auto()
-
-source("scripts/variable_labels.R")
 
 age_diff_models_table <- readRDS("data_clean/age_diff_models.rds")
 
