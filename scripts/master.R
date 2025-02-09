@@ -1,6 +1,6 @@
 # Groundhog etc
 library(groundhog)
-library(pacman)
+# library(pacman)
 
 master <- c("cli", "rlang", "dplyr", 
             "labelled", "tidyverse", #clean_and_combine_data
@@ -16,8 +16,8 @@ master <- c("cli", "rlang", "dplyr",
             "texreg", #regression_tables.R
             "flextable", "gt", "janitor", "kableExtra")
 
-# groundhog.library(master, force.install=TRUE, "2025-02-06")
-p_load(master, install = TRUE, character.only = TRUE)
+groundhog.library(master, force.install=FALSE, "2025-02-06")
+# p_load(master, install = TRUE, character.only = TRUE)
 
 # Running everything all at once
 
