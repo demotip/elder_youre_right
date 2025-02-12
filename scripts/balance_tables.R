@@ -128,8 +128,6 @@ statistical_tests_3_4 <- map(demographic_groups, function(x) {
 means_3_4 <- map(demographic_groups, ~mean_group_fun(., data = afpr[afpr$round %in% 3:4, ])) %>%
   do.call("rbind", .)
 
-View(means_3_4)
-
 gsub("^age_| \\(age 35 cutoff\\)$", "", "age_Both older (age 35 cutoff)")
 
 # Calculate mean differences
@@ -232,7 +230,6 @@ balance_table_7_mauritius <- means_table_7_mauritius %>%
 write.csv(as.data.frame(balance_table_7_mauritius), "tables/balance_table_round_7_mauritius.csv")
 
 
-
 # %%%% EQUIVALENCE TESTS %%%% ----
 
 equivalence_intervals <- function(data, var_name, level = 1,
@@ -244,30 +241,32 @@ equivalence_intervals <- function(data, var_name, level = 1,
   
   if(type == "t") { # Relevant only for age
     
-    # print(1)
-    
-    tost_est <- dataTOSTtwo(data, !!sym(var_name), 
-                            group = "coarsened_age_35", 
+    tost_est <- dataTOSTtwo(data, !!sym(var_name),
+                            group = "coarsened_age_35",
                             alpha = alpha,
-                            low_eqbound = lower_equivalence_bound, 
+                            low_eqbound = lower_equivalence_bound,
                             high_eqbound = upper_equivalence_bound)
     
-    # print("TOST Output:")
-    # print(tost_est)
-    # print(tost_est$eqb$asDF)
-    # print(tost_est$tost$asDF)
+    # tost_est <- t_TOST(x = data, 
+    #                    # y = data$`var_name`,
+    #                    group = "coarsened_age_35",
+    #                    alpha = alpha,
+    #                    eqb = c(`lower_equivalence_bound`, `upper_equivalence_bound`),
+    #                    eqbound_type = "raw")
     
-    # std_dev <- sd(data[, var_name], na.rm = TRUE)
-    std_dev <- sd(as.numeric(data[[var_name]] == level), na.rm = TRUE)
+    # print(tost_est$eqb$asDF)
+    # print(tost_est$eqb)
+    # print(tost_est$tost$asDF)
+    # print(tost_est$tost)
+    
+    std_dev <- sd(data[, var_name], na.rm = TRUE)
     est <- as.numeric(diff(t(tost_est$desc$asDF[, c("m[2]", "m[1]")])))
-    lower <- as.numeric(tost_est$eqb$asDF["low[cohen]"]) #cil[raw]
-    upper <- as.numeric(tost_est$eqb$asDF["high[cohen]"]) #ciu[raw]
+    lower <- as.numeric(tost_est$eqb$asDF["low[raw]"]) #cil[raw]
+    upper <- as.numeric(tost_est$eqb$asDF["high[raw]"]) #ciu[raw]
     p_upper <- as.numeric(tost_est$tost$asDF["p[1]"])
     p_lower <- as.numeric(tost_est$tost$asDF["p[2]"])
     
     } else {
-      
-      # print(2)
       
       tost_est <- datatosttwoprop(data, !!sym(var_name), 
                                   level = level, 
@@ -276,17 +275,12 @@ equivalence_intervals <- function(data, var_name, level = 1,
                                   low_eqbound = lower_equivalence_bound, 
                                   high_eqbound = upper_equivalence_bound)
       
-      if(var_name == "Post-secondary") { 
-        data <- data[!is.na(data[[var_name]]), ]
-      }
-      
-      # print("TOST Output:")
-      # print(tost_est)
       # print(tost_est$eqb$asDF)
+      # print(tost_est$eqb)
       # print(tost_est$tost$asDF)
+      # print(tost_est$tost)
       
-      std_dev <- sd(as.numeric(data[[var_name]] == level), na.rm = TRUE)
-      # std_dev <- sd(data[, var_name] == level, na.rm = TRUE)
+      std_dev <- sd(data[, var_name] == level, na.rm = TRUE)
       est <- as.numeric(diff(t(tost_est$desc$asDF[, c("prop[2]", "prop[1]")])))
       lower <- as.numeric(tost_est$eqb$asDF["cil"][[1]]) #"cil"
       upper <- as.numeric(tost_est$eqb$asDF["ciu"][[1]]) #"ciu"
@@ -305,17 +299,16 @@ equivalence_intervals <- function(data, var_name, level = 1,
   
 }
 
-# demographic_groups_2 <- demographic_groups[-5] #problem with Post-secondary
-
 demo_ages <- expand_grid(demo_var = demographic_groups,
-                         age_group = c("younger", "older"))
+                         age_group = c("Younger Respondents", 
+                                       "Older Respondents"))
 
 equivalence_tests <- demo_ages %>%
   pmap_dfr(function(demo_var, age_group) {
     
     # Filter the data by young and old to assess age-diff 
     # balance within the two groups
-    if(age_group == "older") { # Older respondents subset
+    if(age_group == "Older Respondents") { # Older respondents subset
       afpr_subset <- filter(afpr, coarsened_age_35 %in% 
                c("Both older (age 35 cutoff)", 
                  "Interviewer younger (age 35 cutoff)"))
@@ -329,18 +322,15 @@ equivalence_tests <- demo_ages %>%
     
     type <- if (demo_var == "age") "t" else "prop"
     
-    equivalence_results <- tryCatch({
-      equivalence_intervals(data = afpr_subset,
+    equivalence_results_1 <- equivalence_intervals(data = afpr_subset,
                             var_name = demo_var,
                             group = "coarsened_age_35",
                             lower_equivalence_bound = -0.25,
                             upper_equivalence_bound = 0.25,
                             alpha = 0.05,
                             type = type)
-    }, error = function(e) {
-      warning("Error in equivalence_intervals for ", demo_var, ": ", e$message)
-      return(NULL)  # Skip if error occurs
-    })
+    
+    equivalence_results <- cbind(equivalence_results_1, `age_group`)
   })
 
 ggplot(equivalence_tests, aes(x = est_sd, y = name)) +
@@ -357,7 +347,7 @@ ggplot(equivalence_tests, aes(x = est_sd, y = name)) +
   geom_segment(aes(x = lower_sd, xend = upper_sd, yend = name),
                linewidth = 4, color = "grey70") +
   geom_point() +
-  # facet_wrap(~title) +
+  facet_wrap(~age_group) +
   theme_linedraw() +
   theme(axis.title.y = element_blank(),
         axis.text.x = element_text(angle = 90,
