@@ -35,10 +35,6 @@ source("scripts/clean_and_combine_data.R")
 # as a new dataset: afpr_ages.rds.
 source("scripts/append_age_differences.R")
 
-# balance_tables.R uses afpr_ages.rds to generate the covariate balance table 
-# found in Table 3 of the paper.
-source("scripts/balance_tables.R") 
-
 # descriptive_statistics.R uses afpr_ages.rds to create tables and figures 
 # that compare the age distributions of respondents and interviewers 
 # in the Afrobarometer data (Table 2 and Figure 1 in the paper). 
