@@ -15,22 +15,23 @@ The data for this paper is Afrobarometer (rounds 3 and 4) data from Adida et al.
 2) `append_age_differences.R` appends age difference variables to the Afrobarometer data based on the ages of interviewers and respondents and saves this as a new dataset: afpr_ages.rds.
 
 3) `variable_labels.R` generates a dataframe of variable names, variable descriptions, and variable groupings. This dataframe is used in subsequent files to group and relabel outcomes.
-4) `balance_tables.R` uses afpr_ages.rds to generate the covariate balance table found in Table 3 of the paper.
+   
+5) `balance_tables.R` uses afpr_ages.rds to generate the covariate balance table found in Table 3 of the paper.
 descriptive_statistics.R uses afpr_ages.rds to create tables and figures that compare the age distributions of respondents and interviewers in the Afrobarometer data (Table 2 and Figure 1 in the paper). This file also creates tables that compare the responses of older and younger interviewers (Table 4 and Table 5 in the paper).
 
-5) `contrasts.R` runs the main models (with 35-years old age cutoff) as well as the appendix models (with 40-years old age cutoff and 10-year age difference) using afpr_ages.rds. Model estimates are tidied into a dataframe and saved as age_diff_models.rds.
+6) `contrasts.R` runs the main models (with 35-years old age cutoff) as well as the appendix models (with 40-years old age cutoff and 10-year age difference) using afpr_ages.rds. Model estimates are tidied into a dataframe and saved as age_diff_models.rds.
 
-6) `plots.R` creates plots of our main findings (Figures 2 to 5) and the plots found in the appendix of the paper (Figures 6 to 13).
+7) `plots.R` creates plots of our main findings (Figures 2 to 5) and the plots found in the appendix of the paper (Figures 6 to 13).
 
-7) `comparison_plots` is the code for the predicted probabilities plots - to be edited. Same dependencies as contrasts.R. 
+8) `comparison_plots` is the code for the predicted probabilities plots. 
 
-8) `cross_validation.R` conducts cross-validations between logistic/ordered and linear regressions. Same dependencies as contrasts.R. 
+9) `cross_validation.R` conducts cross-validations between logistic/ordered and linear regressions. 
 
-9) `presentable_table.R` makes tables for the main paper which only show the direction and significance of the results. Same dependencies as plots.R. 
+10) `presentable_table.R` makes tables for the main paper which only show the direction and significance of the results. 
 
-10) `regression_tables.R` creates full regression tables to go into the appendix. Same dependencies as contrasts.R. 
+11) `regression_tables.R` creates full regression tables to go into the appendix.
 
-11) `results_tables.R` creates tables with the estimate and standard error. Same dependencies as plots.R. 
+12) `results_tables.R` creates tables with the estimate and standard error. 
 
 ## `tables`
 
