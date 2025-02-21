@@ -5,13 +5,14 @@ append_age_differences.R appends age difference variables to the Afrobarometer d
 variable_labels.R generates a dataframe of variable names, variable descriptions, and variable groupings. This dataframe is used in subsequent files to group and relabel outcomes.
 
 balance_tables.R uses afpr_ages.rds to generate the covariate balance table found in Table 3 of the paper.
+
 descriptive_statistics.R uses afpr_ages.rds to create tables and figures that compare the age distributions of respondents and interviewers in the Afrobarometer data (Table 2 and Figure 1 in the paper). This file also creates tables that compare the responses of older and younger interviewers (Table 4 and Table 5 in the paper).
 
 contrasts.R runs the main models (with 35-years old age cutoff) as well as the appendix models (with 40-years old age cutoff and 10-year age difference) using afpr_ages.rds. Model estimates are tidied into a dataframe and saved as age_diff_models.rds.
 
 plots.R creates plots of our main findings (Figures 2 to 5) and the plots found in the appendix of the paper (Figures 6 to 13).
 
-comparison_plots is the code for the predicted probabilities plots - to be edited. Same dependencies as contrasts.R. 
+comparison_plots is the code for the predicted probabilities plots. Same dependencies as contrasts.R. 
 
 cross_validation.R conducts cross-validations between logistic/ordered and linear regressions. Same dependencies as contrasts.R. 
 
